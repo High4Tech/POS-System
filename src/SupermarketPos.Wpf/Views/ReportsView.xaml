@@ -145,7 +145,8 @@
                     <GridSplitter Grid.Row="1" Height="12" VerticalAlignment="Top" Style="{StaticResource HeightDivider}"/><StackPanel Grid.Row="1" Margin="0,12,0,0"><DockPanel Margin="0,8">
                         <WrapPanel DockPanel.Dock="Right" Visibility="{Binding SelectedSale.ReceiptNo,Converter={StaticResource StrToVis},FallbackValue=Collapsed}">
                          <Button Content="{loc:T Trade_RepeatSale}" Command="{Binding RepeatSelectedSaleCommand}" Style="{StaticResource GhostButton}" Margin="3"/>
-                         <Button Content="{loc:T Trade_ReturnItems}" Command="{Binding ReturnItemsCommand}" Style="{StaticResource GhostButton}" Margin="3"/>
+                         <Button Content="{loc:T Trade_ReturnItems}" Command="{Binding ReturnItemsCommand}" Style="{StaticResource GhostButton}" Margin="3"
+                                 Visibility="{Binding ShowMargin, Converter={StaticResource BoolToVis}}"/>
                          <Button Content="{loc:T Trade_ViewMargin}" Command="{Binding ViewMarginCommand}" Style="{StaticResource GhostButton}" Margin="3"
                                  Visibility="{Binding ShowMargin, Converter={StaticResource BoolToVis}}"/>
                          <Button Content="{loc:T Trade_InvoiceAudit}" Command="{Binding ViewInvoiceAuditCommand}" Style="{StaticResource GhostButton}" Margin="3"

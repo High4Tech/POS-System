@@ -10,7 +10,8 @@
             <TextBlock DockPanel.Dock="Top" Text="{loc:T Products_Title}" Style="{StaticResource H1}" Margin="0,0,0,12"/>
             <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
               <WrapPanel DockPanel.Dock="Right" Margin="10,0,0,0">
-                <Button Content="{loc:T Products_New}" Command="{Binding NewCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0"/>
+                <Button Content="{loc:T Products_New}" Command="{Binding NewCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0"
+                        Visibility="{Binding CanManageStock, Converter={StaticResource BoolToVis}}"/>
                 <Button Content="{loc:T Pharmacy_Locations}" Command="{Binding ManageStockLocationsCommand}" Style="{StaticResource GhostButton}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,8,0"/>
                 <Button Content="{loc:T Common_More}" Style="{StaticResource GhostButton}" Click="OpenMore">
                   <Button.ContextMenu><ContextMenu DataContext="{Binding PlacementTarget.DataContext,RelativeSource={RelativeSource Self}}">

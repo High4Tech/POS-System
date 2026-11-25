@@ -5,11 +5,11 @@
 | Feature | Business scope | Implementation | UI entry | Shortcut | Test |
 | --- | --- | --- | --- | --- | --- |
 | Payments and Clear Cart | Shared | Atomic posting, SQLite confirmation identity and safe cart clear | Register payment actions | F1–F4 | Checkout and shortcut tests |
-| Saved cart | Shared | One encrypted draft per operator; revalidate current stock and units on restore | Cart toolbar | Ctrl+S / Ctrl+Shift+O | Draft round trip |
+| Saved cart | Shared | One encrypted draft per operator, revalidate current stock and units on restore | Cart toolbar | Ctrl+S / Ctrl+Shift+O | Draft round trip |
 | Invoice search | Shared | Parameterized date, text, method, status and price queries, 100 invoices per page | Sales & Reports | Ctrl+G / Ctrl+Shift+O | Filter probes |
-| Receipt actions and A4 reports | Shared | Existing immutable receipt amounts; PDF, WhatsApp and selected print queue | Invoice preview / generated report | Ctrl+P | Rendering; physical print unverified |
+| Receipt actions and A4 reports | Shared | Existing immutable receipt amounts, PDF, WhatsApp and selected print queue | Invoice preview / generated report | Ctrl+P | Rendering, physical print unverified |
 | Customer accounts | Shared | Sale-attached details, posted receivables, partial repayment and running ledger | Customers / Register chooser | Ctrl+B / Alt+F1 / F12 | Focused ledger probe |
-| Sales returns | Eligible profiles | Partial cash, externally confirmed card and Udhar; idempotent refund and traceable disposition | Sales & Reports → Return Items | Ctrl+Shift+R | Return cases |
+| Sales returns | Eligible profiles | Partial cash, externally confirmed card and Udhar, idempotent refund and traceable disposition | Sales & Reports → Return Items | Ctrl+Shift+R | Return cases |
 | Repeat Sale and frequent items | Shared | Current prices/stock, Add/Replace/Cancel and real purchase frequency | Invoice / Register customer | Ctrl+Alt+R / Ctrl+Alt+T | Repeat and dialog probes |
 | Product history and information | Shared | Historical prices, authorized customer names and read-only product information | Cart selection / Inventory | Ctrl+H / Ctrl+Alt+I | Item history probe |
 | Margin and audit | Owner | Currency-safe margin math, missing cost warning, guarded cost views and linked events | Register / selected invoice | Shift+V for margin | Cashier restrictions |
@@ -42,25 +42,25 @@
 | 20 | Alt+H mnemonic / Help | Ctrl+Shift+H | Ctrl+Shift+H | Equivalent | Reuses an existing workflow or a registered command |
 | 21 | Ctrl+Q / Save and post | F1/F2/F3 plus Complete Payment | F1/F2/F3 | Equivalent | Reuses an existing workflow or a registered command |
 | 22 | Ctrl+G / Previous invoices | Ctrl+G | Ctrl+G | Reused | Reuses an existing workflow or a registered command |
-| 23 | Ctrl+A / Invoice template | Native Select All; template module excluded | — | Excluded | Outside retail scope or preserves an existing key |
+| 23 | Ctrl+A / Invoice template | Native Select All, template module excluded | — | Excluded | Outside retail scope or preserves an existing key |
 | 24 | Ctrl+Alt+D / Delivery order | Delivery excluded | — | Excluded | Outside retail scope or preserves an existing key |
-| 25 | Ctrl+U / Due fulfillment items | Fulfillment excluded; Udhar is separate | — | Excluded | Outside retail scope or preserves an existing key |
+| 25 | Ctrl+U / Due fulfillment items | Fulfillment excluded, Udhar is separate | — | Excluded | Outside retail scope or preserves an existing key |
 | 26 | Ctrl+H / Item sales history | Ctrl+H in Register or Inventory | Ctrl+H | Implemented | Reuses an existing workflow or a registered command |
 | 27 | Ctrl+B / Previous invoice balance | Ctrl+B for customer ledger or Customers | Ctrl+B | Equivalent | Reuses an existing workflow or a registered command |
-| 28 | Ctrl+Z / Save normal invoice | Native Undo; payment confirmation posts sale | Page action | Equivalent | Reuses an existing workflow or a registered command |
+| 28 | Ctrl+Z / Save normal invoice | Native Undo, payment confirmation posts sale | Page action | Equivalent | Reuses an existing workflow or a registered command |
 | 29 | Shift+V / Invoice margin | Shift+V in Register or Reports for owner | Shift+V | Implemented | Reuses an existing workflow or a registered command |
 | 30 | Ctrl+Alt+C / Select customer | Ctrl+Alt+C in Register | Ctrl+Alt+C | Reused | Reuses an existing workflow or a registered command |
 | 31 | Ctrl+Alt+T / Top items | Ctrl+Alt+T with Register customer | Ctrl+Alt+T | Implemented | Reuses an existing workflow or a registered command |
 | 32 | Ctrl+Alt+I / Item information | Ctrl+Alt+I on selected product | Ctrl+Alt+I | Implemented | Reuses an existing workflow or a registered command |
 | 33 | Ctrl+Alt+R / Recurring invoice | Ctrl+Alt+R repeats a saved transaction into cart | Ctrl+Alt+R | Equivalent | Reuses an existing workflow or a registered command |
-| 34 | F4 / Expand box | Native resizing; F4 reserved for Clear Cart | — | Excluded | Outside retail scope or preserves an existing key |
-| 35 | F1 / Account ledger | Alt+F1; F1 reserved for Cash | Alt+F1; | Equivalent | Reuses an existing workflow or a registered command |
+| 34 | F4 / Expand box | Native resizing, F4 reserved for Clear Cart | — | Excluded | Outside retail scope or preserves an existing key |
+| 35 | F1 / Account ledger | Alt+F1, F1 reserved for Cash | Alt+F1, | Equivalent | Reuses an existing workflow or a registered command |
 | 36 | F10 / Invoice header | Ctrl+Shift+O in Reports opens full invoice | Ctrl+Shift+O | Equivalent | Reuses an existing workflow or a registered command |
 | 37 | F11 / Area-wise customers | Structured area management excluded | — | Excluded | Outside retail scope or preserves an existing key |
 | 38 | F12 / Customer information | F12 opens Register chooser | F12 | Reused | Reuses an existing workflow or a registered command |
 | 39 | Alt+F1 / Balance summary | Alt+F1 opens ledger with running balance | Alt+F1 | Equivalent | Reuses an existing workflow or a registered command |
 | 40 | Alt+F2 / Refused sale | Refused-sale logging excluded | — | Excluded | Outside retail scope or preserves an existing key |
-| 41 | Alt+F3 / Barcode printing | Alt+F3 exports shelf labels; rack labels use their panel | Alt+F3 | Reused | Reuses an existing workflow or a registered command |
+| 41 | Alt+F3 / Barcode printing | Alt+F3 exports shelf labels, rack labels use their panel | Alt+F3 | Reused | Reuses an existing workflow or a registered command |
 | 42 | Alt+F6 / Item associations | New associations module excluded | — | Excluded | Outside retail scope or preserves an existing key |
 | 43 | Alt+F7 / Item notes | Product notes are absent | — | Unsupported | No internal product notes workflow |
 | 44 | Alt+F8 / Customer quotations | Quotations excluded | — | Excluded | Outside retail scope or preserves an existing key |
@@ -71,7 +71,7 @@
 | Key | Action / context | Eligibility |
 | --- | --- | --- |
 | F1, F2, F3, F4 | Cash, Card, Udhar and Clear Cart in Register | Current cart and payment validation |
-| Ctrl+F | Focus a supported search on the active page | Visible search; Purchases requires owner |
+| Ctrl+F | Focus a supported search on the active page | Visible search, Purchases requires owner |
 | Ctrl+S | Save Register draft or Inventory product | Ready cart or owner with editable product |
 | Ctrl+P | Print selected invoice or generated A4 sales report | Sales & Reports and an available Windows queue |
 | Ctrl+G | Open Sales & Reports | Signed-in workspace |
@@ -108,11 +108,11 @@
 
 ## Financial integrity, performance, database and Windows build
 
-The Windows WPF application and desktop harness compile with zero warnings and errors. An interim retail run passed 198 automated tests and 79 focused WPF/financial checks, including repeated checkout confirmation, owner and cashier margin access, draft recovery, report filtering and actual repayment/return movements. The later candidate adds A4 report printing, receipt links and filtering in the ledger, explicit quantity-based return status, and safe price separation when adding a repeated sale. See the final verification entry in Git history for those checks.
+The Windows WPF application and desktop harness built with zero warnings and errors. The automated suite passed 198 tests, including replaying a checkout confirmation without another sale or stock movement. The focused desktop candidate passed 81 assertions, including draft recovery, Add/Replace/Cancel for Repeat Sale, the six-page keyboard reference, protected cashier cost access, historic invoice snapshots, filtering, and partial repayment and return posting. An earlier concurrent desktop run timed out in the harness, then the focused candidate completed. The self-contained local Windows x64 beta.6 build compiled and its development metadata passed verification.
 
-The interim isolated fixture measured 136 ms for Register data, 29 ms for Inventory data, 31 ms for invoice history, 16 ms for invoice filtering, 450 ms to open the ledger, 250 ms for Frequently Purchased, 484 ms for item history, 20 ms for repeat staging and 402 ms for return confirmation. The shortcut overlay took 1.29–1.67 s including WPF layout in that run. This was a small fixture on this PC, not a cold-start or production-scale benchmark.
+On the focused small test fixture, measured data load was 173 ms for Register, 25 ms for Inventory, 71 ms for invoice history and 20 ms for invoice filtering. The ledger opened in 709 ms, Frequently Purchased in 336 ms, product sales history in 787 ms, repeat staging in 27 ms and return confirmation in 530 ms. First shell render took 1.67 s. Shortcut help showed 30 binding identities across the six measured pages. It took 2.58–7.29 s in the run with concurrent work and 1.29–1.67 s in an earlier lower-load run. These desktop-harness measurements include visual layout and do not measure a production catalog or a cold process start.
 
-Schema 14 adds a nullable checkout identity with a unique index and indexes for invoice date, customer identity and product-to-invoice lookups. There is no change to original invoice monetary snapshots. Drafts live in Windows-protected machine-local storage. Retail data used in tests is disposable.
+Schema 14 adds a nullable unique checkout identity and indexes for invoice date, customer identity and product-to-invoice lookup. SQLite query plans used those indexes and the existing return invoice/status index. The schema 13 → 14 test preserved every original row and column in 32 tables. SQLite integrity was verified, and the POS restore service successfully restored a schema 14 backup. Drafts live in Windows-protected local storage.
 
 ## Source versions
 

@@ -1153,4 +1153,5 @@
   <data name="Trade_PrintReport" xml:space="preserve"><value>Print report</value></data>
   <data name="Trade_PrintReportRequired" xml:space="preserve"><value>Requires a generated report and no selected invoice</value></data>
   <data name="Trade_LedgerFilter" xml:space="preserve"><value>Filter by date, receipt, or transaction</value></data>
+  <data name="Trade_CloseEditorRequired" xml:space="preserve"><value>Save or close the open product first</value></data>
 </root>

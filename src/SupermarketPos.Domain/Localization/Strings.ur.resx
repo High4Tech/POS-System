@@ -1153,4 +1153,5 @@
   <data name="Trade_PrintReport" xml:space="preserve"><value>رپورٹ پرنٹ کریں</value></data>
   <data name="Trade_PrintReportRequired" xml:space="preserve"><value>رپورٹ بنائیں اور انوائس کا انتخاب ہٹا دیں</value></data>
   <data name="Trade_LedgerFilter" xml:space="preserve"><value>تاریخ، رسید یا لین دین سے تلاش کریں</value></data>
+  <data name="Trade_CloseEditorRequired" xml:space="preserve"><value>پہلے کھلی پروڈکٹ محفوظ یا بند کریں</value></data>
 </root>

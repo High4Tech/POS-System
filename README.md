@@ -1,5 +1,11 @@
 # 🛒 Supermarket POS
 
+## High4Tech Windows POS
+
+The current Windows source is in `src/`. The Android scanner is in `mobile-scanner/`, the update and licensing worker is in `publisher/`, and local verification tools are in `engineering/`.
+
+See the [retail feature and shortcut report](docs/RETAIL_FEATURES_AND_SHORTCUTS.md) for the current workflows, verification results, and source tags. The screenshots below show the original project.
+
 A real, object-oriented **point-of-sale** desktop application for a small supermarket — scan products, build a cart, apply discounts, take payment, print a TR-style receipt, and decrement stock — backed by an admin area for products, inventory, sales history and end-of-day reports.
 
 Local-only (SQLite), no internet required. Ships as a single-file Windows `.exe`.

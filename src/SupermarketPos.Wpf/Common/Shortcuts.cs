@@ -148,7 +148,8 @@ internal static class Shortcuts
         if (inventory is not null || reference && screen == "products")
         {
             if (shell.CanManageStock && !shell.IsReadOnly)
-                yield return new(Key.N, ctrl | shift, "Products_New", Run(inventory?.NewCommand));
+                yield return new(Key.N, ctrl | shift, "Products_New", inventory is { IsEditorOpen: false } ? Run(inventory.NewCommand) : null,
+                    "Trade_CloseEditorRequired");
             var row = otherPage is null ? (Keyboard.FocusedElement as FrameworkElement)?.DataContext as ProductRowViewModel : null;
             var editorOpen = inventory?.IsEditorOpen == true;
             if (!editorOpen || reference)
