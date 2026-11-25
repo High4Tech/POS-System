@@ -37,6 +37,8 @@ public sealed partial class ProductsViewModel : ObservableObject
     private readonly IPurchaseService _purchases;
     private readonly BulkRecordService _bulk;
     private readonly ITradeLedger _ledger;
+    private readonly IAuthService _auth;
+    public bool CanManageStock => _auth.CurrentUser?.IsAdmin == true;
     private bool _readingCapture;
     private bool _inventoryActive;
     private bool _importDialogOpen;
@@ -51,9 +53,10 @@ public sealed partial class ProductsViewModel : ObservableObject
                              ISettingsRepository settings, IShelfLabelService labels, IUnitOfWork uow,
                              PosStorage storage, IInventoryService inventory, IBarcodeService barcodes,
                              ScannerController scanner, ScannerFeedback sound, IPurchaseService purchases, BulkRecordService bulk,
-                             RegisterBarcodeLookup lookup, ITradeLedger ledger,IBusinessSetup businessSetup,SupermarketPos.Infrastructure.Business.MedicineCatalogService medicineCatalog,SupermarketPos.Infrastructure.Business.PharmacyInventory pharmacyInventory,SupermarketPos.Infrastructure.Business.StockLocationService stockLocations, SupermarketPos.Infrastructure.Business.SaleHistory saleSnapshots)
+                             RegisterBarcodeLookup lookup, ITradeLedger ledger,IBusinessSetup businessSetup,SupermarketPos.Infrastructure.Business.MedicineCatalogService medicineCatalog,SupermarketPos.Infrastructure.Business.PharmacyInventory pharmacyInventory,SupermarketPos.Infrastructure.Business.StockLocationService stockLocations, SupermarketPos.Infrastructure.Business.SaleHistory saleSnapshots, IAuthService auth)
     {
         _products = products;
+        _auth = auth;
         _saleSnapshots = saleSnapshots;
         _categories = categories;
         _settings = settings;
@@ -166,6 +169,7 @@ public sealed partial class ProductsViewModel : ObservableObject
 
     private async Task LoadEditorOptionsAsync(AppSettings settings)
     {
+        OnPropertyChanged(nameof(CanManageStock));
         var business=(await _businessSetup.LoadAsync()).Profile;DeviceTrackingAvailable=business.DeviceTrackingAvailable;IsPharmacy=Editor.IsPharmacy=business.IsPharmacy;Editor.LooseEnabled=business.LooseGoodsAvailable;Editor.PackagesEnabled=business.PackagingAvailable;
         PrepareMedicineSearch();
         _categoryList = (await _categories.GetAllAsync()).ToList();
@@ -185,6 +189,7 @@ public sealed partial class ProductsViewModel : ObservableObject
     public async Task BeginScannerEntryAsync(string? barcode, bool purchasing = false, int? supplierId = null,
         string? productName = null, bool trackExpiry = false)
     {
+        _auth.RequireAdmin();
         await LoadEditorOptionsAsync(await _settings.GetAsync());
         OpenNewProduct(barcode, scannerEntry: true, purchasing: purchasing);
         Editor.SupplierId = supplierId ?? 0;
@@ -199,7 +204,7 @@ public sealed partial class ProductsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void New(){OpenNewProduct(null);}
+    private void New(){if (CanManageStock) OpenNewProduct(null);}
 
     private void OpenNewProduct(string? barcode, bool scannerEntry = false, bool purchasing = false)
     {
@@ -221,6 +226,7 @@ public sealed partial class ProductsViewModel : ObservableObject
     private void Edit(ProductRowViewModel? row)
     {
         if (row is null) return;
+        if (!CanManageStock) { ProductInformationCommand.Execute(row.Product); return; }
         IsCaptureArmed = false;
         IsScannerEntry = false;
         IsPurchaseEntry = false;
@@ -232,6 +238,10 @@ public sealed partial class ProductsViewModel : ObservableObject
         RestockAmount = string.Empty;
         IsEditorOpen = true;
     }
+
+    [RelayCommand]
+    private Task ProductInformationAsync(Product? product) => product is not null && !InAppDialog.IsOpen
+        ? Views.ProductInformation.ShowAsync(product, IsPharmacy) : Task.CompletedTask;
 
     [RelayCommand]
     private void CancelEdit() => IsEditorOpen = false;
@@ -372,6 +382,7 @@ public sealed partial class ProductsViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveAsync()
     {
+        if (!CanManageStock) return;
         IsCaptureArmed = false;
         ProductError = null;
         var text = LocalizationManager.Instance;
@@ -521,20 +532,7 @@ public sealed partial class ProductsViewModel : ObservableObject
         if ((productId ?? Editor.Id) is not int id || InAppDialog.IsOpen) return;
         try
         {
-            var invoices = await _saleSnapshots.ForProductAsync(id);
-            var rows = invoices.SelectMany(s => s.Lines.Where(l=>l.ProductId==id).Select(l=>new
-            {
-                Date=s.CreatedAt.ToString("g"), Receipt=s.ReceiptNo, Customer=s.CustomerName,
-                l.Quantity, Unit=LocalizationManager.Instance["Measure_"+l.UnitCode], Price=MoneyText.Format(l.UnitPrice), Total=MoneyText.Format(l.LineGross),
-                l.BatchLot, l.BatchExpiry, l.SerialNumber, l.Imei1, l.Imei2, l.WarrantyUntil
-            })).ToArray();
-            var columns = new List<(string Header, string Property)> { ("Reports_Date","Date"),("Reports_ReceiptNo","Receipt"),
-                ("Customer_Name","Customer"),("Pos_Qty","Quantity"),("Products_Unit","Unit"),("Pos_SalePrice","Price"),("Pos_LineTotal","Total") };
-            if (IsPharmacy && rows.Any(row => row.BatchLot is not null))
-                columns.AddRange([("Batch_Lot","BatchLot"),("Batch_Expiry","BatchExpiry")]);
-            if (DeviceTrackingAvailable && rows.Any(row => row.SerialNumber is not null || row.Imei1 is not null || row.Imei2 is not null || row.WarrantyUntil is not null))
-                columns.AddRange([("Trade_Serial","SerialNumber"),("Trade_Imei1","Imei1"),("Trade_Imei2","Imei2"),("Trade_WarrantyUntil","WarrantyUntil")]);
-            await Views.HistoryTable.ShowAsync("Trade_ProductSales",rows,columns.ToArray());
+            await Views.HistoryTable.ShowProductSalesAsync(_saleSnapshots, id, IsPharmacy, DeviceTrackingAvailable, CanManageStock);
         }
         catch (Exception) { ProductError=LocalizationManager.Instance["Reports_LoadError"]; }
     }
@@ -569,6 +567,7 @@ public sealed partial class ProductsViewModel : ObservableObject
     [RelayCommand]
     private async Task ImportProductsAsync()
     {
+        if (!CanManageStock) return;
         if (_importDialogOpen) return;
         _importDialogOpen = true;
         UpdateInventoryWorkflow();
@@ -658,6 +657,7 @@ public sealed partial class ProductsViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveCategoryAsync()
     {
+        if (!CanManageStock) return;
         var text = LocalizationManager.Instance;
         var name = CategoryName.Trim();
         var id = SelectedCategory?.Id;
@@ -705,6 +705,7 @@ public sealed partial class ProductsViewModel : ObservableObject
     [RelayCommand]
     private async Task RestockAsync()
     {
+        if (!CanManageStock) return;
         if (Editor.IsNew || !decimal.TryParse(RestockAmount.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out var amount) || amount <= 0)
             return;
         try

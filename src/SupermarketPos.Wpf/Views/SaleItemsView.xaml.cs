@@ -15,7 +15,9 @@ public partial class SaleItemsView : UserControl
 
     private void ApplyDeviceVisibility()
     {
-        var visible = Window.GetWindow(this)?.DataContext is not MainViewModel { DeviceColumnsVisible: false };
+        var shell = Window.GetWindow(this)?.DataContext as MainViewModel;
+        UnitCostColumn.Visibility = shell?.CanManageStock == true ? Visibility.Visible : Visibility.Collapsed;
+        var visible = shell is not { DeviceColumnsVisible: false };
         foreach (var column in new[] { SerialColumn, Imei1Column, Imei2Column, WarrantyColumn })
             column.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
     }

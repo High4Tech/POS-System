@@ -1120,4 +1120,37 @@
 <data name="Trade_ReturnIdentityField"><value>Physical batch / device identifier</value></data>
 <data name="Trade_RefundPaid"><value>Refund paid</value></data>
 <data name="Trade_ReturnSummary"><value>Returns posted: {0} · Total {1} · Cash {2} · Card {3} · Receivable reduction {4} · Customer credit {5}</value></data>
+  <data name="Trade_ViewMargin" xml:space="preserve"><value>View margin</value></data>
+  <data name="Trade_InvoiceCost" xml:space="preserve"><value>Cost of goods sold</value></data>
+  <data name="Trade_MarginPercent" xml:space="preserve"><value>Gross margin</value></data>
+  <data name="Trade_MissingMarginCosts" xml:space="preserve"><value>Margin incomplete. Purchase cost is missing for {0} item(s).</value></data>
+  <data name="Trade_RepeatCartChoice" xml:space="preserve"><value>There are items in the cart. How should this sale be repeated?</value></data>
+  <data name="Trade_RepeatAdd" xml:space="preserve"><value>Add to cart</value></data>
+  <data name="Trade_RepeatReplace" xml:space="preserve"><value>Replace cart</value></data>
+  <data name="Trade_FrequentLine" xml:space="preserve"><value>{0} {1} · {2} purchase(s) · Last {3} · {4} · Stock {5}</value></data>
+  <data name="Trade_SaveDraft" xml:space="preserve"><value>Save cart draft</value></data>
+  <data name="Trade_ResumeDraft" xml:space="preserve"><value>Resume saved cart</value></data>
+  <data name="Trade_DraftEmptyCart" xml:space="preserve"><value>Requires an empty cart</value></data>
+  <data name="Trade_DraftUnsupported" xml:space="preserve"><value>This cart includes items that need fresh batch, location, device, or dispensing checks.</value></data>
+  <data name="Trade_DraftSaved" xml:space="preserve"><value>Cart draft saved for this operator.</value></data>
+  <data name="Trade_DraftResumed" xml:space="preserve"><value>Saved cart restored with current stock and prices.</value></data>
+  <data name="Trade_NoDraft" xml:space="preserve"><value>There is no unposted saved cart for this operator.</value></data>
+  <data name="Trade_DraftError" xml:space="preserve"><value>The saved cart could not be read or written.</value></data>
+  <data name="Trade_DraftChanged" xml:space="preserve"><value>The saved cart contains a product, price override, unit, or stock quantity that needs review.</value></data>
+  <data name="Trade_CheckoutConflict" xml:space="preserve"><value>This checkout reference already belongs to a different sale. Review Sales History before retrying.</value></data>
+  <data name="Trade_ToggleRegisterView" xml:space="preserve"><value>Switch Cards and List</value></data>
+  <data name="Trade_ProductInfo" xml:space="preserve"><value>Product information</value></data>
+  <data name="Trade_RemoveCartLine" xml:space="preserve"><value>Remove selected cart item</value></data>
+  <data name="Trade_PricePermission" xml:space="preserve"><value>Only an owner can override the selling price.</value></data>
+  <data name="Trade_InvoiceAudit" xml:space="preserve"><value>Invoice audit</value></data>
+  <data name="Trade_InvoicePosted" xml:space="preserve"><value>Sale posted</value></data>
+  <data name="Trade_FullyReturned" xml:space="preserve"><value>Fully returned</value></data>
+  <data name="Trade_PartiallyReturned" xml:space="preserve"><value>Partially returned</value></data>
+  <data name="Trade_DispositionRestocked" xml:space="preserve"><value>Restocked after verification</value></data>
+  <data name="Trade_DispositionNotRestocked" xml:space="preserve"><value>Kept out of saleable stock</value></data>
+  <data name="Trade_DispositionQuarantined" xml:space="preserve"><value>Quarantined outside saleable stock</value></data>
+  <data name="Trade_PreviousPage" xml:space="preserve"><value>Previous page</value></data>
+  <data name="Trade_PrintReport" xml:space="preserve"><value>Print report</value></data>
+  <data name="Trade_PrintReportRequired" xml:space="preserve"><value>Requires a generated report and no selected invoice</value></data>
+  <data name="Trade_LedgerFilter" xml:space="preserve"><value>Filter by date, receipt, or transaction</value></data>
 </root>

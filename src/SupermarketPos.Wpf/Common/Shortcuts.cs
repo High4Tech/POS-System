@@ -27,7 +27,9 @@ internal static class Shortcuts
     internal static bool TryRun(Window window, MainViewModel shell, Key key, ModifierKeys modifiers)
     {
         if (modifiers==ModifierKeys.None && key is not (Key.F1 or Key.F2 or Key.F3 or Key.F4 or Key.F12)) return false;
-        if (modifiers!=ModifierKeys.None && key is not (Key.F or Key.S or Key.P or Key.H or Key.B or Key.G or Key.C or Key.T or Key.R or Key.I or Key.F1 or Key.F3 or Key.F12)) return false;
+        if (modifiers!=ModifierKeys.None && key is not (Key.F or Key.S or Key.P or Key.H or Key.B or Key.G or Key.C or Key.T or Key.R or Key.I or Key.F1 or Key.F3 or Key.F12 or Key.O or Key.V or Key.L or Key.Delete or Key.N)) return false;
+        if (key == Key.V && modifiers == ModifierKeys.Shift && Keyboard.FocusedElement is System.Windows.Controls.Primitives.TextBoxBase or PasswordBox)
+            return false;
         if(shell.CurrentViewModel is PosViewModel { IsPaymentOpen:true }) return false;
         var entry = Entries(window, shell).FirstOrDefault(s => s.Key == key && s.Modifiers == modifiers);
         if (entry?.Invoke is null) return false;
@@ -43,6 +45,7 @@ internal static class Shortcuts
         var shown = current.Select(entry => entry.Identity).ToHashSet();
         var other = (from page in Pages
                      where page.Screen != shell.ActiveScreen
+                     where page.Screen != "purchases" || shell.CanManageStock
                      from entry in Entries(window, shell, reference: true, otherPage: page.Screen)
                      where !shown.Contains(entry.Identity)
                      group (entry, page.Label) by entry.Identity).Select(group =>
@@ -56,7 +59,8 @@ internal static class Shortcuts
 
         ReferenceRow Row(Entry entry, string page, string? availability) => new(
             (entry.Modifiers.HasFlag(ModifierKeys.Control) ? "Ctrl + " : "") +
-            (entry.Modifiers.HasFlag(ModifierKeys.Alt) ? "Alt + " : "") + entry.Key,
+            (entry.Modifiers.HasFlag(ModifierKeys.Alt) ? "Alt + " : "") +
+            (entry.Modifiers.HasFlag(ModifierKeys.Shift) ? "Shift + " : "") + entry.Key,
             text[entry.Label].Replace($" ({entry.Key})", "", StringComparison.Ordinal), page, availability);
     }
 
@@ -64,19 +68,29 @@ internal static class Shortcuts
     {
         const ModifierKeys ctrl = ModifierKeys.Control;
         const ModifierKeys alt = ModifierKeys.Alt;
+        const ModifierKeys shift = ModifierKeys.Shift;
         static Action? Run(ICommand? command, object? arg = null) => command?.CanExecute(arg) == true ? () => command.Execute(arg) : null;
         var page = otherPage is null ? shell.CurrentViewModel : null;
         var screen = otherPage ?? shell.ActiveScreen;
         var pos = page as PosViewModel;
         if (pos is not null || reference && screen == "pos")
         {
-            if (!reference || !shell.IsReadOnly)
+            if (!shell.IsReadOnly)
             {
                 yield return new(Key.F1, 0, "Pos_Cash", Run(pos?.OpenCashCommand), "Shortcut_CartRequired");
                 yield return new(Key.F2, 0, "Pos_Card", Run(pos?.OpenCardCommand), "Shortcut_CartRequired");
                 yield return new(Key.F3, 0, "Trade_Credit", Run(pos?.OpenCreditCommand), "Shortcut_CartRequired");
+                yield return new(Key.S, ctrl, "Trade_SaveDraft", pos?.Lines.Count > 0 ? Run(pos.SaveDraftCommand) : null, "Shortcut_CartRequired");
+                yield return new(Key.O, ctrl | shift, "Trade_ResumeDraft", pos?.Lines.Count == 0 ? Run(pos.ResumeDraftCommand) : null, "Trade_DraftEmptyCart");
             }
             yield return new(Key.F4, 0, "Pos_Clear", Run(pos?.ClearCartCommand), "Shortcut_CartRequired");
+            if (shell.CanManageStock)
+                yield return new(Key.V, shift, "Trade_ViewMargin", pos?.Lines.Count > 0 ? Run(pos.ViewMarginCommand) : null, "Shortcut_CartRequired");
+            yield return new(Key.L, ctrl | alt, "Trade_ToggleRegisterView", pos is null ? null : () => pos.RegisterList = !pos.RegisterList);
+            var selectedLine = pos?.SelectedCartLine;
+            yield return new(Key.H, ctrl, "Trade_ProductSales", selectedLine?.Line.Product.Id > 0 ? Run(pos?.ViewCartProductHistoryCommand) : null, "Shortcut_ProductRequired");
+            yield return new(Key.I, ctrl | alt, "Trade_ProductInfo", selectedLine is null ? null : Run(pos?.ViewCartProductCommand), "Shortcut_ProductRequired");
+            yield return new(Key.Delete, ctrl | shift, "Trade_RemoveCartLine", selectedLine is null ? null : Run(pos?.RemoveLineCommand, selectedLine), "Shortcut_ProductRequired");
             if (pos?.IsPaymentOpen != true || reference)
             {
                 var select = pos?.IsPaymentOpen == true ? null : Run(pos?.SelectCustomerCommand);
@@ -99,19 +113,29 @@ internal static class Shortcuts
         }
         var search = otherPage is null ? FindSearch(window) : null;
         if (search is not null || reference && (screen is "pos" or "products" or "customers" or "reports" ||
-            screen == "purchases" && shell.IsPharmacy))
+            screen == "purchases" && shell.CanManageStock))
             yield return new(Key.F, ctrl, "Shortcut_FocusSearch", search is null ? null : () => { search.Focus(); search.SelectAll(); });
-        if (!shell.IsReadOnly && (page is ProductsViewModel { IsEditorOpen: true } || reference && screen == "products"))
+        if (shell.CanManageStock && !shell.IsReadOnly && (page is ProductsViewModel { IsEditorOpen: true } || reference && screen == "products"))
             yield return new(Key.S, ctrl, "Scanner_SaveProduct", page is ProductsViewModel { IsEditorOpen: true } editor ? Run(editor.SaveCommand) : null, "Shortcut_EditorRequired");
         var reports = page as ReportsViewModel;
         if (reports?.SelectedSale is not null || reference && screen == "reports")
         {
             var sale = reports?.SelectedSale;
             yield return new(Key.P, ctrl, "Invoice_Print", sale is null ? null : Run(reports?.PrintInvoiceCommand), "Shortcut_InvoiceRequired");
+            yield return new(Key.O, ctrl | shift, "Reports_OpenReceipt", sale is null ? null : Run(reports?.OpenReceiptCommand), "Shortcut_InvoiceRequired");
+            if (shell.CanManageStock)
+                yield return new(Key.V, shift, "Trade_ViewMargin", sale is null ? null : Run(reports?.ViewMarginCommand), "Shortcut_InvoiceRequired");
+            if (shell.CanManageStock && !shell.IsReadOnly)
+                yield return new(Key.R, ctrl | shift, "Trade_ReturnItems", sale is null ? null : Run(reports?.ReturnItemsCommand), "Shortcut_InvoiceRequired");
             if (!reference || !shell.IsReadOnly)
                 yield return new(Key.R, ctrl | alt, "Trade_RepeatSale", sale is null ? null : Run(shell.RepeatSaleCommand, sale.Sale), "Shortcut_InvoiceRequired");
         }
+        if (reports is { HasReport: true, SelectedSale: null } || reference && screen == "reports")
+            yield return new(Key.P, ctrl, "Trade_PrintReport",
+                reports is { HasReport: true, SelectedSale: null } ? Run(reports.PrintReportCommand) : null, "Trade_PrintReportRequired");
         yield return new(Key.G, ctrl, "Nav_Reports", Run(shell.ShowReportsCommand));
+        if (window is MainWindow main)
+            yield return new(Key.H, ctrl | shift, "Nav_Shortcuts", () => _ = main.ShowShortcutsAsync());
         if(page is not PosViewModel { CustomerSummary:not null }) yield return new(Key.B, ctrl, "Nav_Customers", Run(shell.ShowCustomersCommand));
         var customers = page as CustomersViewModel;
         if (customers?.Selected is not null || reference && screen == "customers")
@@ -123,6 +147,8 @@ internal static class Shortcuts
         var inventory = page as ProductsViewModel;
         if (inventory is not null || reference && screen == "products")
         {
+            if (shell.CanManageStock && !shell.IsReadOnly)
+                yield return new(Key.N, ctrl | shift, "Products_New", Run(inventory?.NewCommand));
             var row = otherPage is null ? (Keyboard.FocusedElement as FrameworkElement)?.DataContext as ProductRowViewModel : null;
             var editorOpen = inventory?.IsEditorOpen == true;
             if (!editorOpen || reference)
@@ -130,7 +156,7 @@ internal static class Shortcuts
                 yield return new(Key.F3, alt, "Products_ShelfLabels",
                     editorOpen || reference && inventory?.Products.Count == 0 ? null : Run(inventory?.PrintLabelsCommand), "Shortcut_LabelsRequired");
                 if (!editorOpen && row is not null || reference)
-                    yield return new(Key.I, ctrl | alt, "Products_EditTitle", row is null || editorOpen ? null : Run(inventory?.EditCommand, row), "Shortcut_ProductRequired");
+                    yield return new(Key.I, ctrl | alt, "Trade_ProductInfo", row is null || editorOpen ? null : Run(inventory?.ProductInformationCommand, row.Product), "Shortcut_ProductRequired");
             }
             var hasProduct = row is not null || editorOpen && inventory?.Editor.Id is not null;
             if (hasProduct || reference)
@@ -144,7 +170,7 @@ internal static class Shortcuts
         if (controls.OfType<MedicineSearchBox>().FirstOrDefault(s => s.IsVisible && s.IsEnabled)?.Input is { } medicine) return medicine;
         return controls.OfType<TextBox>().FirstOrDefault(t => t.IsVisible && t.IsEnabled && !t.IsReadOnly &&
             (t.Name == "SearchBox" || t.Name == "InvoiceSearchBox" ||
-            t.GetBindingExpression(TextBox.TextProperty)?.ParentBinding.Path?.Path is "Search" or "Filter"));
+             t.GetBindingExpression(TextBox.TextProperty)?.ParentBinding.Path?.Path is "Search" or "Filter" or "ProductSearch"));
     }
 
     private static IEnumerable<DependencyObject> Descendants(DependencyObject root)

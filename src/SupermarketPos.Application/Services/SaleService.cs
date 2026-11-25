@@ -35,7 +35,7 @@ public sealed class SaleService : ISaleService
         _locations=locations;
     }
 
-    public Task<Sale> CheckoutAsync(Cart cart, Payment payment, User cashier, CancellationToken ct = default, SaleCustomer? customer = null)
+    public Task<Sale> CheckoutAsync(Cart cart, Payment payment, User cashier, CancellationToken ct = default, SaleCustomer? customer = null, Guid? checkoutId = null)
     {
         if (cart is null || cart.IsEmpty)
             throw new DomainException("Cannot check out an empty cart.");
@@ -43,6 +43,7 @@ public sealed class SaleService : ISaleService
             throw new DomainException("A payment is required.");
         if (cashier is null)
             throw new DomainException("A cashier is required.");
+        if (checkoutId == Guid.Empty) throw new DomainException("Trade_CheckoutConflict");
 
         var summary = PricingService.Summarize(cart);
 
@@ -52,6 +53,18 @@ public sealed class SaleService : ISaleService
 
         return _uow.ExecuteInTransactionAsync(async token =>
         {
+            if (checkoutId is { } checkoutKey && await _sales.GetByCheckoutIdAsync(checkoutKey, token) is { } existing)
+            {
+                var request = summary.LineCharges.Select(c => (c.Line.Product.Id, c.Line.DisplayQuantity, c.Line.UnitCode,
+                    c.Line.VatRate, c.Line.GrossUnitPrice, c.Line.BatchId, c.Line.SerialNumber, c.FinalGross));
+                var saved = existing.Lines.OrderBy(line=>line.Id).Select(l => (l.ProductId, l.Quantity, l.UnitCode,
+                    l.VatRate, l.UnitPrice, l.BatchId, l.SerialNumber, l.LineGross));
+                if (existing.CashierId != cashier.Id || existing.PaymentMethod != payment.Method || existing.AmountPaid != payment.Amount ||
+                    existing.CreditDueDate != (payment as CreditPayment)?.DueDate || existing.CreditNote != ((payment as CreditPayment)?.Note ?? "") ||
+                    existing.CashTendered != (payment as CashPayment)?.Tendered || existing.Customer != customer || !request.SequenceEqual(saved))
+                    throw new DomainException("Trade_CheckoutConflict");
+                return existing;
+            }
             if (_compliance is not null) await _compliance.ValidateCheckoutAsync(cart, token);
             var now = _clock();
             var saleLines = new List<SaleLine>();
@@ -67,7 +80,8 @@ public sealed class SaleService : ISaleService
                 if(product.VatRate!=charge.Line.VatRate)throw new DomainException("Tax_RateMismatch");
                 if(!product.SellingUnitConfigured)throw new DomainException("Pharmacy_MissingUnit");
                 if(product.Unit!=charge.Line.Product.Unit||charge.Line.MedicineUnit is{} medicineUnit&&product.SellingUnitSize(medicineUnit)!=charge.Line.PackageSize||charge.Line.MedicineUnit is null&&charge.Line.IsPackage&&product.UnitsPerPackage!=charge.Line.PackageSize)throw new DomainException("Measure_ChangedUnit");
-                if(charge.Line.MedicineUnit is not null&&(charge.Line.GrossUnitPrice<=0||charge.Line.HasPriceOverride&&!cashier.IsAdmin))throw new DomainException("Pharmacy_ConfirmUnitPrice");
+                if(charge.Line.HasPriceOverride&&!cashier.IsAdmin)throw new DomainException("Trade_PricePermission");
+                if(charge.Line.MedicineUnit is not null&&charge.Line.GrossUnitPrice<=0)throw new DomainException("Pharmacy_ConfirmUnitPrice");
                 if(product.RequiresPrescription&&!charge.Line.PrescriptionChecked||product.RequiresDispensingReference&&string.IsNullOrWhiteSpace(charge.Line.DispensingReference))throw new DomainException("Pharmacy_TraceabilityRequired");
                 if(!product.StockTracked&&(product.TrackExpiry||product.TrackSerial))throw new DomainException("Pharmacy_TraceabilityRequired");
 
@@ -120,7 +134,7 @@ public sealed class SaleService : ISaleService
                 vatTotal: summary.VatTotal,
                 payment: payment,
                 createdAt: now,
-                customer: customer);
+                customer: customer, checkoutId: checkoutId);
 
             await _sales.AddAsync(sale, token);
             await _uow.SaveChangesAsync(token);

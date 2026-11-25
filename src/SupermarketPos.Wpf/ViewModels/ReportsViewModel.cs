@@ -8,6 +8,7 @@ using SupermarketPos.Application.Services;
 using SupermarketPos.Wpf.Common;
 using SupermarketPos.Wpf.Localization;
 using SupermarketPos.Wpf.Views;
+using SupermarketPos.Infrastructure.Business;
 
 namespace SupermarketPos.Wpf.ViewModels;
 
@@ -19,14 +20,22 @@ public sealed partial class ReportsViewModel : ObservableObject
     private readonly PosStorage _storage;
     private readonly BulkRecordService _records;
     private readonly IAuthService _auth;
+    private readonly InvoiceMarginService _margin;
+    private readonly SaleHistory _history;
+    private readonly ITradeLedger _ledger;
     private readonly SupermarketPos.Infrastructure.Business.ReturnsService _returns;
     [ObservableProperty] private string? _returnSummary;
-    private IReadOnlyList<SaleRowViewModel> _loaded = [];
+    private readonly SemaphoreSlim _historyGate = new(1,1);
+    private int _historyPage;
+    private CancellationTokenSource? _searchDelay;
+    [ObservableProperty] private bool _hasNextHistoryPage;
+    [ObservableProperty] private bool _hasPreviousHistoryPage;
 
     private SalesReport? _current;
 
     public ReportsViewModel(IReportService reports, ReceiptPreviewDialog receipts, IReportPdfService reportPdf,
-                            PosStorage storage, BulkRecordService records, IAuthService auth, SupermarketPos.Infrastructure.Business.ReturnsService returns)
+                            PosStorage storage, BulkRecordService records, IAuthService auth, ReturnsService returns, InvoiceMarginService margin,
+                            SaleHistory history, ITradeLedger ledger)
     {
         _reports = reports;
         _receipts = receipts;
@@ -35,6 +44,9 @@ public sealed partial class ReportsViewModel : ObservableObject
         _records = records;
         _auth = auth;
         _returns = returns;
+        _margin = margin;
+        _history = history;
+        _ledger = ledger;
         SelectedDay = DateTime.Today;
         HistoryFrom = DateTime.Today.AddDays(-7);
         HistoryTo = DateTime.Today;
@@ -97,23 +109,45 @@ public sealed partial class ReportsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task LoadHistoryAsync()
+    private Task LoadHistoryAsync() => QueryHistoryAsync(0);
+
+    [RelayCommand]
+    private Task NextHistoryPageAsync() => HasNextHistoryPage ? QueryHistoryAsync(_historyPage + 1) : Task.CompletedTask;
+
+    [RelayCommand]
+    private Task PreviousHistoryPageAsync() => HasPreviousHistoryPage ? QueryHistoryAsync(_historyPage - 1) : Task.CompletedTask;
+
+    private async Task QueryHistoryAsync(int page)
     {
         if (HistoryFrom.Date>HistoryTo.Date || HistoryTo.Date==DateTime.MaxValue.Date)
         { HistoryError=LocalizationManager.Instance["Dash_InvalidRange"]; return; }
         HistoryError=null;
+        await _historyGate.WaitAsync();
         try
         {
-            var sales = await _reports.GetSalesAsync(HistoryFrom.Date, HistoryTo.Date.AddDays(1));
+            var selected = SelectedSale?.Sale.Id;
+            var min = decimal.TryParse(InvoiceMinimum, out var lower) ? lower : 0;
+            var max = decimal.TryParse(InvoiceMaximum, out var upper) ? upper : decimal.MaxValue;
+            var results = await _history.SearchAsync(HistoryFrom.Date, HistoryTo.Date.AddDays(1), InvoiceSearch, InvoicePayment, InvoiceStatus, min, max, page);
+            var sales = results.Take(SaleHistory.InvoicePageSize).ToArray();
             var posted=await _returns.PostedBetweenAsync(HistoryFrom.Date,HistoryTo.Date.AddDays(1));
             ReturnSummary=posted.Count==0?null:LocalizationManager.Instance.Format("Trade_ReturnSummary",posted.Count,
                 MoneyText.Format(posted.Sum(r=>r.Gross)),MoneyText.Format(posted.Sum(r=>r.CashRefund)),
                 MoneyText.Format(posted.Sum(r=>r.CardRefund)),MoneyText.Format(posted.Sum(r=>r.ReceivableReduction)),MoneyText.Format(posted.Sum(r=>r.CustomerCredit)));
             var returns = await _returns.PostedTotalsAsync(sales.Select(s=>s.Id).ToArray());
-            _loaded=sales.Select(s=>new SaleRowViewModel(s,returns.GetValueOrDefault(s.Id))).ToArray();
-            FilterInvoices();
+            History.Clear();
+            foreach (var sale in sales)
+            {
+                var returned = returns.GetValueOrDefault(sale.Id);
+                History.Add(new SaleRowViewModel(sale, returned.Gross, ShowMargin, returned.Quantity));
+            }
+            _historyPage = page;
+            HasPreviousHistoryPage = page > 0;
+            HasNextHistoryPage = results.Count > SaleHistory.InvoicePageSize;
+            SelectedSale = History.FirstOrDefault(row => row.Sale.Id == selected);
         }
         catch(Exception) { HistoryError=LocalizationManager.Instance["Reports_LoadError"]; }
+        finally { _historyGate.Release(); }
     }
 
     [ObservableProperty] private string _invoiceSearch = "";
@@ -126,28 +160,22 @@ public sealed partial class ReportsViewModel : ObservableObject
         new("CASH", LocalizationManager.Instance["Pos_Cash"]), new("CARD", LocalizationManager.Instance["Pos_Card"]), new("CREDIT", LocalizationManager.Instance["Pos_Credit"]) };
     public BusinessFormChoice[] InvoiceStatuses => new[] { new BusinessFormChoice("", LocalizationManager.Instance["Pos_All"]),
         new("open", LocalizationManager.Instance["Trade_Outstanding"]), new("paid", LocalizationManager.Instance["Trade_TotalPaid"]), new("returned", LocalizationManager.Instance["Trade_Returns"]) };
-    partial void OnInvoiceSearchChanged(string value) => FilterInvoices();
-    partial void OnInvoicePaymentChanged(string value) => FilterInvoices();
-    partial void OnInvoiceStatusChanged(string value) => FilterInvoices();
-    partial void OnInvoiceMinimumChanged(string value) => FilterInvoices();
-    partial void OnInvoiceMaximumChanged(string value) => FilterInvoices();
-    private void FilterInvoices()
+    partial void OnInvoiceSearchChanged(string value) => QueueHistory();
+    partial void OnInvoicePaymentChanged(string value) => QueueHistory();
+    partial void OnInvoiceStatusChanged(string value) => QueueHistory();
+    partial void OnInvoiceMinimumChanged(string value) => QueueHistory();
+    partial void OnInvoiceMaximumChanged(string value) => QueueHistory();
+    private async void QueueHistory()
     {
-        var selected = SelectedSale?.Sale.Id;
-        var term = InvoiceSearch.Trim();
-        var min = decimal.TryParse(InvoiceMinimum, out var lower) ? lower : 0;
-        var max = decimal.TryParse(InvoiceMaximum, out var upper) ? upper : decimal.MaxValue;
-        History.Clear();
-        foreach (var row in _loaded)
+        _searchDelay?.Cancel();
+        using var request = _searchDelay = new CancellationTokenSource();
+        try
         {
-            var sale = row.Sale;
-            if (sale.GrossTotal < min || sale.GrossTotal > max || InvoicePayment.Length > 0 && sale.PaymentMethod != InvoicePayment ||
-                InvoiceStatus=="open" && sale.Outstanding<=0 || InvoiceStatus=="paid" && sale.Outstanding>0 ||
-                InvoiceStatus=="returned" && row.ReturnedTotal<=0) continue;
-            if (term.Length==0 || new[]{sale.ReceiptNo,sale.SourceReceiptNo,sale.CustomerName,sale.CustomerPhone,sale.CashierName}
-                .Any(value=>value?.Contains(term,StringComparison.CurrentCultureIgnoreCase)==true)) History.Add(row);
+            await Task.Delay(160, request.Token);
+            await QueryHistoryAsync(0);
         }
-        SelectedSale=History.FirstOrDefault(r=>r.Sale.Id==selected);
+        catch (OperationCanceledException) { }
+        finally { if (ReferenceEquals(_searchDelay, request)) _searchDelay = null; }
     }
 
     [RelayCommand]
@@ -171,6 +199,39 @@ public sealed partial class ReportsViewModel : ObservableObject
     }
 
     public bool ShowMargin => _auth.CurrentUser?.IsAdmin==true;
+
+    [RelayCommand]
+    private async Task ViewInvoiceAuditAsync()
+    {
+        if (!ShowMargin || InAppDialog.IsOpen || SelectedSale is not { } row) return;
+        try
+        {
+            var sale = row.Sale;
+            var events = new List<(DateTime Date, string Action, string Actor, string Details)>
+            {
+                (sale.CreatedAt, "Trade_InvoicePosted", sale.CashierName, MoneyText.Format(sale.GrossTotal)),
+                (sale.CreatedAt, "Reports_Payment", sale.CashierName, MoneyText.Format(sale.AmountPaid))
+            };
+            foreach (var payment in await _ledger.PaymentsAsync(sale.Id, false))
+                events.Add((payment.PaidOn, "Trade_ReceivePayment", payment.Operator, MoneyText.Format(payment.Amount)));
+            foreach (var refund in await _returns.HistoryAsync(sale.Id))
+                events.Add((refund.PostedAt ?? refund.CreatedAt, "Trade_Return" + refund.Status, refund.Operator,
+                    MoneyText.Format(refund.Gross) + " · " + refund.Reason));
+            await HistoryTable.ShowAsync("Trade_InvoiceAudit", events.OrderBy(e => e.Date).Select(e => new
+            {
+                Date = e.Date.ToString("g"), Action = LocalizationManager.Instance[e.Action], e.Actor, e.Details
+            }).ToArray(), ("Reports_Date","Date"), ("Shortcut_Action","Action"), ("Reports_Cashier","Actor"), ("Customer_Details","Details"));
+        }
+        catch (Exception) { HistoryError = LocalizationManager.Instance["Reports_LoadError"]; }
+    }
+
+    [RelayCommand]
+    private async Task ViewMarginAsync()
+    {
+        if (!ShowMargin || InAppDialog.IsOpen || SelectedSale is not { } row) return;
+        try { await InvoiceMarginPanel.ShowAsync(await _margin.ForSaleAsync(row.Sale.Id)); }
+        catch (Exception) { HistoryError = LocalizationManager.Instance["Reports_LoadError"]; }
+    }
 
     public Task RefreshAsync() => LoadHistoryAsync();
 
@@ -232,6 +293,20 @@ public sealed partial class ReportsViewModel : ObservableObject
     [RelayCommand]private Task WhatsAppInvoiceAsync()=>InvoiceActionAsync("whatsapp");
     [RelayCommand]private Task DownloadInvoiceAsync()=>InvoiceActionAsync("download");
     private Task InvoiceActionAsync(string action)=>SelectedSale is{} row?_receipts.ShowAsync(row.Sale,initialAction:action):Task.CompletedTask;
+
+    [RelayCommand]
+    private async Task PrintReportAsync()
+    {
+        if (_current is not { } report || InAppDialog.IsOpen) return;
+        try
+        {
+            var dialog = new System.Windows.Controls.PrintDialog();
+            if (dialog.ShowDialog() != true) return;
+            var pages = await _reportPdf.RenderPagesAsync(report);
+            await new ReceiptPrinter().PrintAsync(pages, dialog.PrintQueue.FullName, "A4", ReportTitle ?? "Sales report");
+        }
+        catch (Exception) { HistoryError = LocalizationManager.Instance["Invoice_PrintFailed"]; }
+    }
 
     [RelayCommand]
     private async Task ExportReportAsync()

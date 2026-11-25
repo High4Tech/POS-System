@@ -32,6 +32,7 @@ public interface ISaleRepository
     Task AddAsync(Sale sale, CancellationToken ct = default);
     Task<Sale?> GetByIdAsync(int id, CancellationToken ct = default);
     Task<Sale?> GetByReceiptNoAsync(string receiptNo, CancellationToken ct = default);
+    Task<Sale?> GetByCheckoutIdAsync(Guid id, CancellationToken ct = default);
     Task<bool> HasSourceReceiptAsync(string reference, CancellationToken ct = default);
     Task<IReadOnlyList<Sale>> GetCustomerSalesAsync(CancellationToken ct = default);
     Task<IReadOnlyList<Sale>> GetByDateRangeAsync(DateTime fromInclusive, DateTime toExclusive, CancellationToken ct = default);

@@ -1,0 +1,3 @@
+Tech Store Scanner incorporates scanner-app by KKacobls (MIT).
+CameraX, AndroidX, Material Components, ZXing-C++, OkHttp, Okio, and Kotlin are distributed under their respective open-source licenses, including Apache License 2.0.
+Dependency notices also accompany their build distributions.

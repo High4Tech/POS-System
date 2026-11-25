@@ -328,9 +328,17 @@
                 <!-- cart -->
                 <Border Grid.Row="2" Style="{StaticResource Card}" Padding="6">
                     <DockPanel>
-                        <TextBlock DockPanel.Dock="Top" FontSize="{DynamicResource RegisterTileTextSize}" Text="{loc:T Pos_Cart}" Style="{StaticResource FormLabel}" Margin="6,4,6,8" />
+                        <WrapPanel DockPanel.Dock="Top" Margin="6,4,6,6">
+                            <TextBlock Text="{loc:T Pos_Cart}" Style="{StaticResource FormLabel}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <Button Content="{loc:T Trade_SaveDraft}" Command="{Binding SaveDraftCommand}" Style="{StaticResource GhostButton}" Padding="7,4" Margin="2"/>
+                            <Button Content="{loc:T Trade_ResumeDraft}" Command="{Binding ResumeDraftCommand}" Style="{StaticResource GhostButton}" Padding="7,4" Margin="2"/>
+                            <Button Content="{loc:T Trade_ProductSales}" Command="{Binding ViewCartProductHistoryCommand}" Style="{StaticResource GhostButton}" Padding="7,4" Margin="2"
+                                    Visibility="{Binding SelectedCartLine.Name, Converter={StaticResource StrToVis}, FallbackValue=Collapsed}"/>
+                            <Button Content="{loc:T Trade_ViewMargin}" Command="{Binding ViewMarginCommand}" Style="{StaticResource GhostButton}" Padding="7,4" Margin="2"
+                                    Visibility="{Binding ShowMargin, Converter={StaticResource BoolToVis}}"/>
+                        </WrapPanel>
                         <Grid Background="White" ClipToBounds="True">
-                        <DataGrid layout:TableLayout.Key="register-cart" x:Name="CartTable" ItemsSource="{Binding Lines}" VerticalAlignment="Stretch" Margin="0">
+                        <DataGrid layout:TableLayout.Key="register-cart" x:Name="CartTable" ItemsSource="{Binding Lines}" SelectedItem="{Binding SelectedCartLine}" VerticalAlignment="Stretch" Margin="0">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="{loc:T Pos_Product}" Width="3.2*" MinWidth="82">
                               <DataGridTemplateColumn.CellTemplate><DataTemplate><Grid>

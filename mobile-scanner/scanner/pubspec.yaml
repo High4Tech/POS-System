@@ -1,0 +1,23 @@
+name: scanner
+description: 手機條碼掃描槍，掃到的條碼送到電腦模擬鍵盤輸入
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 相機與條碼解碼（Android 底層走 ML Kit）
+  mobile_scanner: 5.2.3
+
+  # 記住電腦位址與偏好設定
+  shared_preferences: ^2.2.3
+
+dev_dependencies:
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

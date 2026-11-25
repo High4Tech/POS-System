@@ -1,0 +1,1 @@
+{"name":"pos-publisher","private":true,"type":"module","scripts":{"dev":"wrangler dev --local","test":"node --test --test-concurrency=1 test/*.test.mjs","migrate:local":"wrangler d1 migrations apply pos-publisher --local","deploy":"wrangler deploy"},"devDependencies":{"wrangler":"4.165.0"}}

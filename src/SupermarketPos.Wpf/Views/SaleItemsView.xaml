@@ -12,7 +12,7 @@
             <DataGridTextColumn Header="{loc:T Products_Unit}" Binding="{Binding Unit}" Width=".5*" MinWidth="40"/>
             <DataGridTextColumn Header="{loc:T Pos_SalePrice}" Binding="{Binding UnitPrice}" Width="1.05*" MinWidth="66" ElementStyle="{StaticResource TableMoney}" />
             <DataGridTextColumn Header="{loc:T Products_Vat}" Binding="{Binding VatRate, StringFormat=P2}" Width="0.55*" MinWidth="42" />
-            <DataGridTextColumn Header="{loc:T Purchase_UnitCost}" Binding="{Binding UnitCost}" Width="1.05*" MinWidth="66" ElementStyle="{StaticResource TableMoney}" />
+            <DataGridTextColumn x:Name="UnitCostColumn" Header="{loc:T Purchase_UnitCost}" Binding="{Binding UnitCost}" Width="1.05*" MinWidth="66" ElementStyle="{StaticResource TableMoney}" />
             <DataGridTextColumn Header="{loc:T Pos_LineTotal}" Binding="{Binding LineTotal}" Width="1.1*" MinWidth="66" ElementStyle="{StaticResource TableMoney}" />
             <DataGridTextColumn x:Name="SerialColumn" Header="{loc:T Trade_Serial}" Binding="{Binding Serial}" Width="*" ElementStyle="{StaticResource TableValue}" />
             <DataGridTextColumn x:Name="Imei1Column" Header="{loc:T Trade_Imei1}" Binding="{Binding Imei1}" Width="*" ElementStyle="{StaticResource TableValue}" />

@@ -60,6 +60,7 @@
                     </Grid>
 
                     <Button Content="{loc:T Reports_ExportPdf}" Command="{Binding ExportReportCommand}" Style="{StaticResource GhostButton}" Margin="0,18,0,0" />
+                    <Button Content="{loc:T Trade_PrintReport}" Command="{Binding PrintReportCommand}" Style="{StaticResource GhostButton}" Margin="0,7,0,0" />
                 </StackPanel>
             </Border>
         </DockPanel>
@@ -136,6 +137,7 @@
                         <DataGridTextColumn Header="{loc:T Customer_Name}" Binding="{Binding CustomerLabel}" Width="*" MinWidth="66"
                                             ElementStyle="{StaticResource TableName}" />
                         <DataGridTextColumn Header="{loc:T Trade_Returns}" Binding="{Binding ReturnedText}" Width=".8*" MinWidth="70" ElementStyle="{StaticResource TableMoney}"/>
+                        <DataGridTextColumn Header="{loc:T Products_Status}" Binding="{Binding StatusText}" Width="*" MinWidth="80" ElementStyle="{StaticResource TableName}"/>
                         <DataGridTextColumn Header="{loc:T Pos_Total}" Binding="{Binding TotalText}" Width="*" MinWidth="66"
                                             ElementStyle="{StaticResource TableMoney}" SortMemberPath="Sale.GrossTotal" />
                     </DataGrid.Columns>
@@ -144,6 +146,10 @@
                         <WrapPanel DockPanel.Dock="Right" Visibility="{Binding SelectedSale.ReceiptNo,Converter={StaticResource StrToVis},FallbackValue=Collapsed}">
                          <Button Content="{loc:T Trade_RepeatSale}" Command="{Binding RepeatSelectedSaleCommand}" Style="{StaticResource GhostButton}" Margin="3"/>
                          <Button Content="{loc:T Trade_ReturnItems}" Command="{Binding ReturnItemsCommand}" Style="{StaticResource GhostButton}" Margin="3"/>
+                         <Button Content="{loc:T Trade_ViewMargin}" Command="{Binding ViewMarginCommand}" Style="{StaticResource GhostButton}" Margin="3"
+                                 Visibility="{Binding ShowMargin, Converter={StaticResource BoolToVis}}"/>
+                         <Button Content="{loc:T Trade_InvoiceAudit}" Command="{Binding ViewInvoiceAuditCommand}" Style="{StaticResource GhostButton}" Margin="3"
+                                 Visibility="{Binding ShowMargin, Converter={StaticResource BoolToVis}}"/>
                          <Button Content="{loc:T Invoice_Print}" Command="{Binding PrintInvoiceCommand}" Style="{StaticResource PrimaryButton}" Margin="3"/>
                          <Button Content="{loc:T Invoice_WhatsApp}" Command="{Binding WhatsAppInvoiceCommand}" Style="{StaticResource PrimaryButton}" Margin="3"/>
                          <Button Content="{loc:T Invoice_Download}" Command="{Binding DownloadInvoiceCommand}" Style="{StaticResource PrimaryButton}" Margin="3"/>
@@ -152,7 +158,13 @@
                                 Visibility="{Binding SelectedSale.ReceiptNo, Converter={StaticResource StrToVis}, FallbackValue=Collapsed}"
                                 Style="{StaticResource GhostButton}" Padding="10,6" Margin="0,0,4,0" />
                         <TextBlock Text="{loc:T Dash_InvoiceItems}" Style="{StaticResource FormLabel}" VerticalAlignment="Center" />
-                    </DockPanel></StackPanel>
+                    </DockPanel>
+                    <WrapPanel>
+                        <Button Content="{loc:T Trade_PreviousPage}" Command="{Binding PreviousHistoryPageCommand}" Style="{StaticResource GhostButton}" Padding="7,4"
+                                Visibility="{Binding HasPreviousHistoryPage, Converter={StaticResource BoolToVis}}"/>
+                        <Button Content="{loc:T Common_Next}" Command="{Binding NextHistoryPageCommand}" Style="{StaticResource GhostButton}" Padding="7,4" Margin="5,0,0,0"
+                                Visibility="{Binding HasNextHistoryPage, Converter={StaticResource BoolToVis}}"/>
+                    </WrapPanel></StackPanel>
                     <TextBlock Grid.Row="1" VerticalAlignment="Bottom" Margin="0,0,12,4" Text="{Binding SelectedSale.InvoiceMargin}" ToolTip="{loc:T Dash_Profit}" Visibility="{Binding ShowMargin, Converter={StaticResource BoolToVis}}"/>
                     <views:SaleItemsView Grid.Row="2" layout:TableLayout.Key="sales-items" DataContext="{Binding SelectedSale}" />
                 </Grid>

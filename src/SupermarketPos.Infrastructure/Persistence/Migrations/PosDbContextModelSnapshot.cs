@@ -805,6 +805,9 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.Property<decimal?>("ChangeGiven")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("CheckoutId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
@@ -866,6 +869,13 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CheckoutId")
+                        .IsUnique();
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("CustomerAccountKey");
 
                     b.HasIndex("ReceiptNo")
                         .IsUnique();
@@ -967,6 +977,8 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("SaleId");
+
+                    b.HasIndex("ProductId", "SaleId");
 
                     b.HasIndex("ProductId", "SerialNumber")
                         .IsUnique()

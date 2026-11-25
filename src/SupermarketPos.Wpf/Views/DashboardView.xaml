@@ -103,7 +103,7 @@
                         </Viewbox>
                     </StackPanel>
                 </Border>
-                <Border Style="{StaticResource MetricCard}" Background="#FF132B3C">
+                <Border Style="{StaticResource MetricCard}" Background="#FF132B3C" Visibility="{Binding ShowProfit, Converter={StaticResource BoolToVis}}">
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="{loc:T Dash_GrossProfit}" Style="{StaticResource MetricLabel}" Foreground="White" />
                         <Viewbox StretchDirection="DownOnly" HorizontalAlignment="Left">

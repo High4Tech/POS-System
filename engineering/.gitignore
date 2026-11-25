@@ -1,0 +1,4 @@
+**/bin/
+**/obj/
+qa-data/
+release-staging/

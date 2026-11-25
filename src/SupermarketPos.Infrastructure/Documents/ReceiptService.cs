@@ -77,6 +77,13 @@ public sealed class ReportPdfService : IReportPdfService
         return new ReportDocument(report, settings.StoreName, settings.Language).GeneratePdf();
     }
 
+    public async Task<IReadOnlyList<byte[]>> RenderPagesAsync(SalesReport report, CancellationToken ct = default)
+    {
+        var settings = await _settings.GetAsync(ct);
+        return await Task.Run(() => new ReportDocument(report, settings.StoreName, settings.Language)
+            .GenerateImages(new ImageGenerationSettings { RasterDpi = 144 }).ToArray(), ct);
+    }
+
     public async Task SavePdfAsync(SalesReport report, string path, CancellationToken ct = default)
     {
         var bytes = await RenderPdfAsync(report, ct);

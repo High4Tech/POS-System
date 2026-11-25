@@ -18,10 +18,10 @@ public sealed class Cart
     public decimal ItemCount => _lines.Sum(l => l.Product.Unit == Unit.Piece ? l.Quantity : 1m);
 
     /// <summary>Add a product, merging into an existing line for the same product.</summary>
-    public CartLine AddOrIncrement(Product product, decimal quantity, InventoryBatch? batch = null, string? serial = null,bool packaged=false,string? medicineUnit=null,bool prescriptionChecked=false,string? dispensingReference=null,int? locationId=null)
+    public CartLine AddOrIncrement(Product product, decimal quantity, InventoryBatch? batch = null, string? serial = null,bool packaged=false,string? medicineUnit=null,bool prescriptionChecked=false,string? dispensingReference=null,int? locationId=null,bool merge=true)
     {
         if (product is null) throw new DomainException("Product is required.");
-        var existing = _lines.FirstOrDefault(l => l.LocationId==locationId && l.MedicineUnit==medicineUnit && l.PrescriptionChecked==prescriptionChecked && l.DispensingReference==dispensingReference && (medicineUnit is not null||l.IsPackage==packaged) && l.BatchId == batch?.Id && l.SerialNumber == serial &&
+        var existing = !merge ? null : _lines.FirstOrDefault(l => l.LocationId==locationId && l.MedicineUnit==medicineUnit && l.PrescriptionChecked==prescriptionChecked && l.DispensingReference==dispensingReference && (medicineUnit is not null||l.IsPackage==packaged) && l.BatchId == batch?.Id && l.SerialNumber == serial &&
             (ReferenceEquals(l.Product, product) || product.Id != 0 && l.Product.Id == product.Id));
         if (existing is not null)
         {

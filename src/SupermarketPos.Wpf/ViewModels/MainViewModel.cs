@@ -62,6 +62,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     public LoginViewModel Login { get; }
     public StoreProfile StoreProfile { get; }
+    public bool CanManageStock => _auth.CurrentUser?.IsAdmin == true;
     public ScannerController Scanner { get; }
     public StockAlertsViewModel StockAlerts { get; }
     public bool IsReadOnly { get { try { return _license.Options.Commercial && _license.Current is null; } catch { return true; } } }
@@ -80,6 +81,7 @@ public sealed partial class MainViewModel : ObservableObject
     public async Task EnterConfiguredStoreAsync()
     {
         if (!_auth.IsLoggedIn) return;
+        OnPropertyChanged(nameof(CanManageStock));
         IsLoggedIn = true;
         await ShowDashboardAsync();
         await StockAlerts.StartAsync();
@@ -108,6 +110,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     private async void OnLoggedIn(User user)
     {
+        OnPropertyChanged(nameof(CanManageStock));
         IsLoggedIn = true;
         if (IsReadOnly) await ShowDashboardAsync(); else await ShowPosAsync();
         if (_auth.IsLoggedIn) await StockAlerts.StartAsync();
@@ -163,7 +166,7 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task ShowPurchasesAsync()
     {
-        if (!_auth.IsLoggedIn) return;
+        if (!CanManageStock) return;
         _purchases ??= _provider.GetRequiredService<PurchasesViewModel>();
         await _purchases.RefreshAsync();
         CurrentViewModel = _purchases;
@@ -219,6 +222,7 @@ public sealed partial class MainViewModel : ObservableObject
     private void Logout()
     {
         _auth.Logout();
+        OnPropertyChanged(nameof(CanManageStock));
         IsLoggedIn = false;
         _dashboard = null;
         _pos = null;

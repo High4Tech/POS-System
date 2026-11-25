@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0A0D12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>條碼掃描器</title>
+<style>
+  :root{
+    --ink:#0A0D12; --panel:#141922; --raise:#1B2230; --line:#28313F;
+    --text:#E8ECF2; --muted:#79849A;
+    --signal:#FFB020; --ok:#35D399; --bad:#FF6B6B;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Roboto Mono",monospace;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--ink); color:var(--text);
+    font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC",sans-serif;
+    display:flex; flex-direction:column;
+    padding-bottom:env(safe-area-inset-bottom);
+    overscroll-behavior:none;
+  }
+
+  /* ---- 狀態列 ---- */
+  .bar{
+    display:flex; align-items:center; gap:10px;
+    padding:12px 14px calc(12px); border-bottom:1px solid var(--line);
+    padding-top:calc(12px + env(safe-area-inset-top));
+    background:var(--panel);
+  }
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none;
+       box-shadow:0 0 0 0 rgba(53,211,153,.5)}
+  .dot.live{background:var(--ok);animation:pulse 2s infinite}
+  .dot.down{background:var(--bad)}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(53,211,153,.45)}
+    70%{box-shadow:0 0 0 7px rgba(53,211,153,0)}
+    100%{box-shadow:0 0 0 0 rgba(53,211,153,0)}
+  }
+  .bar .label{font-size:13px;letter-spacing:.02em}
+  .bar .spacer{flex:1}
+  .chip{
+    font:600 11px/1 var(--mono); letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); border:1px solid var(--line); border-radius:99px;
+    padding:6px 10px; background:transparent;
+  }
+  .chip[aria-pressed="true"]{color:var(--ink);background:var(--signal);border-color:var(--signal)}
+
+  /* ---- 觀景窗（招牌） ---- */
+  .view{position:relative;flex:1;min-height:0;background:#000;overflow:hidden}
+  video{width:100%;height:100%;object-fit:cover;display:block}
+  .frame{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+  .box{
+    position:relative;width:min(78vw,320px);aspect-ratio:1/.72;
+    transition:transform .12s ease;
+  }
+  .box::before,.box::after,.box>i::before,.box>i::after{
+    content:"";position:absolute;width:30px;height:30px;
+    border:2px solid var(--signal);
+  }
+  .box::before{top:0;left:0;border-right:0;border-bottom:0}
+  .box::after{top:0;right:0;border-left:0;border-bottom:0}
+  .box>i::before{bottom:0;left:0;border-right:0;border-top:0}
+  .box>i::after{bottom:0;right:0;border-left:0;border-top:0}
+  .laser{
+    position:absolute;left:6px;right:6px;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,transparent,var(--signal),transparent);
+    box-shadow:0 0 12px rgba(255,176,32,.7);
+    animation:sweep 2.4s ease-in-out infinite;
+  }
+  @keyframes sweep{0%,100%{top:8%}50%{top:92%}}
+  @media (prefers-reduced-motion:reduce){
+    .laser{animation:none;top:50%}
+    .dot.live{animation:none}
+  }
+  .view.hit .box{transform:scale(1.04)}
+  .view.hit .box::before,.view.hit .box::after,
+  .view.hit .box>i::before,.view.hit .box>i::after{border-color:var(--ok)}
+  .view.hit .laser{opacity:0}
+
+  .notice{
+    position:absolute;inset:0;display:none;place-content:center;
+    padding:28px;background:var(--ink);text-align:left;overflow:auto;
+  }
+  .notice.on{display:grid}
+  .notice h2{margin:0 0 10px;font-size:17px}
+  .notice p{margin:0 0 12px;color:var(--muted);font-size:14px;line-height:1.6}
+  .notice code{font-family:var(--mono);font-size:12.5px;color:var(--signal);
+    background:var(--raise);padding:2px 6px;border-radius:5px;display:inline-block}
+
+  /* ---- 讀取結果 ---- */
+  .readout{
+    padding:16px 14px;border-top:1px solid var(--line);background:var(--panel);
+  }
+  .eyebrow{
+    font:600 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:8px;display:flex;gap:8px;align-items:center;
+  }
+  .code{
+    font-family:var(--mono);font-size:clamp(19px,6.2vw,26px);font-weight:600;
+    word-break:break-all;line-height:1.3;min-height:1.3em;
+  }
+  .code.idle{color:var(--muted);font-weight:400;font-size:15px}
+  .meta{margin-top:6px;font:400 12px/1 var(--mono);color:var(--muted)}
+
+  /* ---- 控制 ---- */
+  .controls{display:flex;gap:8px;padding:0 14px 12px;background:var(--panel);flex-wrap:wrap}
+  button{font-family:inherit}
+  .btn{
+    flex:1;min-width:88px;padding:13px 10px;border-radius:12px;border:1px solid var(--line);
+    background:var(--raise);color:var(--text);font-size:14px;font-weight:600;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--signal);color:#1A1204;border-color:var(--signal)}
+  .btn.ghost{background:transparent}
+  .btn:disabled{opacity:.4}
+
+  /* ---- 紙帶紀錄 ---- */
+  .tape{background:var(--ink);border-top:1px solid var(--line);max-height:34vh;overflow:auto}
+  .tape .head{
+    position:sticky;top:0;background:var(--ink);padding:10px 14px 8px;
+    display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);
+  }
+  .tape .head .eyebrow{margin:0}
+  .row{
+    display:flex;gap:10px;align-items:baseline;padding:9px 14px;
+    border-bottom:1px solid rgba(40,49,63,.5);
+  }
+  .row .n{font:600 11px/1 var(--mono);color:var(--muted);min-width:26px}
+  .row .v{font-family:var(--mono);font-size:13.5px;word-break:break-all;flex:1}
+  .row .t{font:400 11px/1 var(--mono);color:var(--muted)}
+  .row.fail .v{color:var(--bad);text-decoration:line-through}
+  .empty{padding:18px 14px;color:var(--muted);font-size:13px}
+
+  .manual{display:flex;gap:8px;padding:10px 14px;background:var(--panel);border-top:1px solid var(--line)}
+  .manual input{
+    flex:1;background:var(--ink);border:1px solid var(--line);border-radius:10px;
+    color:var(--text);font-family:var(--mono);font-size:15px;padding:11px 12px;
+  }
+  .manual input:focus{outline:2px solid var(--signal);outline-offset:-1px}
+  .manual button{padding:0 16px;border-radius:10px;border:1px solid var(--line);
+    background:var(--raise);color:var(--text);font-weight:600}
+  :focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <span class="dot" id="dot"></span>
+  <span class="label" id="status">連線中…</span>
+  <span class="spacer"></span>
+  <button class="chip" id="soundBtn" aria-pressed="true">嗶聲</button>
+  <button class="chip" id="torchBtn" aria-pressed="false" hidden>閃燈</button>
+</div>
+
+<div class="view" id="view">
+  <video id="video" playsinline muted autoplay></video>
+  <div class="frame"><div class="box"><i></i><div class="laser"></div></div></div>
+  <div class="notice" id="notice"></div>
+</div>
+
+<div class="readout">
+  <div class="eyebrow">最新讀取 <span id="fmt"></span></div>
+  <div class="code idle" id="code">對準條碼，會自動讀取</div>
+  <div class="meta" id="meta"></div>
+</div>
+
+<div class="controls">
+  <button class="btn primary" id="camBtn">開啟相機</button>
+  <button class="btn" id="modeBtn" aria-pressed="true">連續掃描</button>
+  <button class="btn ghost" id="clearBtn">清空紀錄</button>
+</div>
+
+<div class="manual">
+  <input id="manualInput" inputmode="text" placeholder="手動輸入條碼" autocomplete="off">
+  <button id="manualBtn">送出</button>
+</div>
+
+<div class="tape">
+  <div class="head"><span class="eyebrow" style="margin:0">已送出 <span id="count">0</span> 筆</span></div>
+  <div id="list"><div class="empty">還沒有掃描紀錄</div></div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const view=$('view'), video=$('video'), notice=$('notice');
+  const dot=$('dot'), status=$('status'), codeEl=$('code'), metaEl=$('meta'), fmtEl=$('fmt');
+  const camBtn=$('camBtn'), modeBtn=$('modeBtn'), torchBtn=$('torchBtn'), soundBtn=$('soundBtn');
+  const listEl=$('list'), countEl=$('count');
+
+  const FORMATS = ['qr_code','ean_13','ean_8','code_128','code_39','code_93','codabar',
+                   'itf','upc_a','upc_e','data_matrix','pdf417','aztec'];
+  const DEDUPE_MS = 1500;
+
+  let stream=null, track=null, detector=null, zxing=null;
+  let running=false, continuous=true, sound=true;
+  let lastCode='', lastAt=0, sent=0, pending=[];
+
+  // ---------- 送出 ----------
+  async function post(code, format){
+    const res = await fetch('scan', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({code, format})
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    return res.json();
+  }
+
+  async function submit(code, format='manual'){
+    code = (code||'').trim();
+    if(!code) return;
+    show(code, format);
+    feedback();
+    const row = addRow(code);
+    try{
+      const data = await post(code, format);
+      if(!data.ok) throw new Error(data.detail||'電腦端拒絕');
+      sent++; countEl.textContent = sent;
+      setStatus(true, '已送出');
+    }catch(err){
+      row.classList.add('fail');
+      pending.push({code, format, row});
+      setStatus(false, '送出失敗，已排隊 '+pending.length+' 筆');
+    }
+    if(!continuous) stopCamera();
+  }
+
+  async function flush(){
+    if(!pending.length) return;
+    const queue = pending.slice();
+    for(const item of queue){
+      try{
+        const data = await post(item.code, item.format);
+        if(!data.ok) throw new Error();
+        pending = pending.filter(p => p !== item);
+        item.row.classList.remove('fail');
+        sent++; countEl.textContent = sent;
+      }catch(e){ return; }
+    }
+    setStatus(true, '補送完成');
+  }
+
+  // ---------- 畫面 ----------
+  function show(code, format){
+    codeEl.textContent = code;
+    codeEl.classList.remove('idle');
+    fmtEl.textContent = format && format!=='manual' ? '· '+format.replace(/_/g,' ') : '';
+    metaEl.textContent = new Date().toLocaleTimeString('zh-TW',{hour12:false});
+  }
+
+  function addRow(code){
+    if(listEl.querySelector('.empty')) listEl.innerHTML='';
+    const row = document.createElement('div');
+    row.className='row';
+    row.innerHTML = `<span class="n"></span><span class="v"></span><span class="t"></span>`;
+    row.querySelector('.n').textContent = String(listEl.children.length+1).padStart(2,'0');
+    row.querySelector('.v').textContent = code;
+    row.querySelector('.t').textContent = new Date().toLocaleTimeString('zh-TW',{hour12:false}).slice(0,5);
+    listEl.prepend(row);
+    return row;
+  }
+
+  function setStatus(ok, text){
+    dot.className = 'dot ' + (ok ? 'live' : 'down');
+    status.textContent = text;
+  }
+
+  let audioCtx=null;
+  function feedback(){
+    view.classList.add('hit');
+    setTimeout(()=>view.classList.remove('hit'), 220);
+    if(navigator.vibrate) navigator.vibrate(35);
+    if(!sound) return;
+    try{
+      audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+      osc.type='square'; osc.frequency.value=2100;
+      gain.gain.setValueAtTime(.14, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime+.09);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime+.1);
+    }catch(e){}
+  }
+
+  function blocked(title, html){
+    notice.innerHTML = `<div><h2>${title}</h2>${html}</div>`;
+    notice.classList.add('on');
+  }
+
+  // ---------- 掃描 ----------
+  function handle(code, format){
+    const now = Date.now();
+    if(code === lastCode && now - lastAt < DEDUPE_MS) return;
+    lastCode = code; lastAt = now;
+    submit(code, format);
+  }
+
+  async function loadZXing(){
+    const sources = ['vendor/zxing.js',
+      'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js'];
+    for(const src of sources){
+      try{
+        await new Promise((ok, fail) => {
+          const s = document.createElement('script');
+          s.src = src; s.onload = ok; s.onerror = fail;
+          document.head.appendChild(s);
+        });
+        if(window.ZXing) return true;
+      }catch(e){}
+    }
+    return false;
+  }
+
+  async function startCamera(){
+    if(running) return stopCamera();
+    if(!window.isSecureContext){
+      blocked('相機需要安全連線', `
+        <p>瀏覽器只在 HTTPS 或 localhost 底下開放相機。挑一個做法：</p>
+        <p><b>USB 線</b>（Android）：電腦執行
+          <code>adb reverse tcp:8765 tcp:8765</code>，手機改開
+          <code>http://localhost:8765</code></p>
+        <p><b>Wi-Fi</b>：電腦改用 <code>python server.py --https</code>，
+          手機開 https 網址並接受憑證警告</p>
+        <p>下面的手動輸入欄位現在就能用。</p>`);
+      return;
+    }
+    try{
+      stream = await navigator.mediaDevices.getUserMedia({
+        video:{ facingMode:{ideal:'environment'}, width:{ideal:1280}, height:{ideal:720} },
+        audio:false
+      });
+    }catch(err){
+      blocked('相機打不開', `<p>${err.name === 'NotAllowedError'
+        ? '相機權限被拒絕。到瀏覽器網址列旁的權限設定允許相機後重新整理。'
+        : '錯誤：'+err.message}</p>`);
+      return;
+    }
+    notice.classList.remove('on');
+    video.srcObject = stream;
+    await video.play().catch(()=>{});
+    track = stream.getVideoTracks()[0];
+    running = true;
+    camBtn.textContent = '停止相機';
+    camBtn.classList.remove('primary');
+    setStatus(true, '掃描中');
+    keepAwake();
+
+    const caps = track.getCapabilities ? track.getCapabilities() : {};
+    if(caps.torch) torchBtn.hidden = false;
+
+    if('BarcodeDetector' in window){
+      const supported = await BarcodeDetector.getSupportedFormats();
+      detector = new BarcodeDetector({formats: FORMATS.filter(f=>supported.includes(f))});
+      loop();
+    }else{
+      const ready = await loadZXing();
+      if(!ready){
+        blocked('缺少解碼函式庫', `
+          <p>這台手機的瀏覽器沒有內建條碼解碼（iPhone 常見），需要載入 ZXing。</p>
+          <p>讓手機連得到網際網路後重新整理，或把 ZXing 的
+          <code>index.min.js</code> 放到電腦端的
+          <code>vendor/zxing.js</code>，就能離線使用。</p>`);
+        return;
+      }
+      zxing = new ZXing.BrowserMultiFormatReader();
+      try{
+        zxing.decodeFromStream(stream, video, (result) => {
+          if(result) handle(result.getText(), (result.getBarcodeFormat!==undefined
+            ? String(result.getBarcodeFormat()).toLowerCase() : 'zxing'));
+        });
+      }catch(e){
+        zxing.decodeFromVideoDevice(null, video, r => { if(r) handle(r.getText(),'zxing'); });
+      }
+    }
+  }
+
+  async function loop(){
+    if(!running || !detector) return;
+    try{
+      const hits = await detector.detect(video);
+      if(hits.length) handle(hits[0].rawValue, hits[0].format);
+    }catch(e){}
+    setTimeout(()=>requestAnimationFrame(loop), 120);
+  }
+
+  function stopCamera(){
+    running = false;
+    if(zxing){ try{ zxing.reset(); }catch(e){} zxing=null; }
+    if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; track=null; }
+    video.srcObject = null;
+    camBtn.textContent = '開啟相機';
+    camBtn.classList.add('primary');
+    torchBtn.hidden = true;
+    setStatus(true, '相機已停止');
+  }
+
+  let wakeLock=null;
+  async function keepAwake(){
+    try{ wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
+  }
+
+  // ---------- 事件 ----------
+  camBtn.onclick = startCamera;
+
+  modeBtn.onclick = () => {
+    continuous = !continuous;
+    modeBtn.setAttribute('aria-pressed', continuous);
+    modeBtn.textContent = continuous ? '連續掃描' : '掃一次就停';
+  };
+
+  soundBtn.onclick = () => {
+    sound = !sound;
+    soundBtn.setAttribute('aria-pressed', sound);
+  };
+
+  torchBtn.onclick = async () => {
+    const on = torchBtn.getAttribute('aria-pressed') === 'true';
+    try{
+      await track.applyConstraints({advanced:[{torch:!on}]});
+      torchBtn.setAttribute('aria-pressed', String(!on));
+    }catch(e){}
+  };
+
+  $('clearBtn').onclick = () => {
+    listEl.innerHTML = '<div class="empty">還沒有掃描紀錄</div>';
+    sent = 0; countEl.textContent = '0'; pending = [];
+  };
+
+  $('manualBtn').onclick = () => {
+    const input = $('manualInput');
+    submit(input.value); input.value=''; input.focus();
+  };
+  $('manualInput').addEventListener('keydown', e => {
+    if(e.key === 'Enter') $('manualBtn').click();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){
+      if(running && wakeLock === null) keepAwake();
+      flush();
+    }
+  });
+
+  // 開場：確認電腦端還在
+  (async () => {
+    try{
+      const r = await (await fetch('ping')).json();
+      const how = {keyboard:'鍵盤輸入', clip:'剪貼簿', none:'僅顯示'}[r.output] || r.output;
+      setStatus(true, '已連上電腦 · ' + how);
+    }catch(e){
+      setStatus(false, '連不到電腦端');
+    }
+  })();
+  setInterval(flush, 4000);
+})();
+</script>
+</body>
+</html>

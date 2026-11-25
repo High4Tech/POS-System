@@ -83,7 +83,8 @@ public class SaleServiceTests
     public async Task Checkout_PersistsAnIncreasedOrDecreasedPriceForThisSaleOnly(int unitPrice)
     {
         using var db = new TestDb();
-        var (service, _, cashier) = Build(db);
+        var (service, _, _) = Build(db);
+        var cashier = new User("owner", "hash", "Owner", UserRole.Admin);
         var product = SeedProduct(db, 10m, 5m);
         var cart = new Cart();
         cart.AddOrIncrement(product, 2).SetUnitPrice(unitPrice);
@@ -97,6 +98,39 @@ public class SaleServiceTests
         Assert.Equal(5m, sale.ChangeGiven);
         Assert.Equal(amount, sale.GrossTotal);
         Assert.Equal(10m, new Cart().AddOrIncrement(product, 1).GrossUnitPrice);
+    }
+
+    [Fact]
+    public async Task CheckoutIdReplaysOnlyTheMatchingSaleWithoutChangingStockTwice()
+    {
+        using var db = new TestDb();
+        var (service, _, cashier) = Build(db);
+        var product = SeedProduct(db, 10m, 5m);
+        var cart = new Cart();
+        cart.AddOrIncrement(product, 2);
+        var key = Guid.NewGuid();
+        var sale = await service.CheckoutAsync(cart, new CashPayment(20, 25), cashier, checkoutId: key);
+        var replay = await service.CheckoutAsync(cart, new CashPayment(20, 25), cashier, checkoutId: key);
+        Assert.Equal(sale.Id, replay.Id);
+        Assert.Equal(3, product.StockQuantity);
+        await Assert.ThrowsAsync<DomainException>(() => service.CheckoutAsync(cart, new CardPayment(20), cashier, checkoutId: key));
+        using var persisted = db.NewContext();
+        Assert.Single(persisted.Sales);
+        Assert.Single(persisted.StockMovements);
+    }
+
+    [Fact]
+    public async Task CashierCannotOverrideSellingPriceThroughCheckoutService()
+    {
+        using var db = new TestDb();
+        var (service, _, cashier) = Build(db);
+        var product = SeedProduct(db, 10m, 5m);
+        var cart = new Cart();
+        cart.AddOrIncrement(product, 1).SetUnitPrice(5);
+        var error = await Assert.ThrowsAsync<DomainException>(() => service.CheckoutAsync(cart, new CashPayment(5, 5), cashier));
+        Assert.Equal("Trade_PricePermission", error.Message);
+        Assert.Empty(db.Context.Sales);
+        Assert.Equal(5, product.StockQuantity);
     }
 
     [Fact]

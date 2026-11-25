@@ -51,7 +51,7 @@ public sealed partial class PosViewModel
         var line=_cart.AddOrIncrement(p,1,medicineUnit:p.SellingUnit);Lines.Add(CreateCartLine(line));Recalculate();Status=Text["Pharmacy_EnterCartDetails"];
     }
     [RelayCommand]private void UseMedicineName(){if(IsPharmacy&&CanReadBarcode()&&!string.IsNullOrWhiteSpace(SearchText))AddProvisionalMedicine(null,SearchText,"");}
-    private CartLineViewModel CreateCartLine(CartLine line)=>new(line,Recalculate,ApproveCartQuantity,!IsPharmacy||_auth.CurrentUser?.IsAdmin==true,_business.SalesTaxRegistered);
+    private CartLineViewModel CreateCartLine(CartLine line)=>new(line,Recalculate,ApproveCartQuantity,_auth.CurrentUser?.IsAdmin==true,_business.SalesTaxRegistered);
     private async Task CompletePendingMedicineSetupAsync()
     {
         foreach(var line in Lines.Where(l=>l.PendingSetup).ToArray())

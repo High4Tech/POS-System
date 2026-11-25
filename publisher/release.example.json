@@ -1,0 +1,7 @@
+{
+ "schema":1,"product":"supermarketpos","edition":"retail","channel":"testing",
+ "version":"1.0.1","minimumVersion":"1.0.0","minimumSchema":1,"maximumSchema":14,
+ "kind":"bugfix","publishedAt":"2026-11-19T00:00:00Z",
+ "publisherThumbprint":"REPLACE_WITH_TRUSTED_AUTHENTICODE_CERTIFICATE_THUMBPRINT",
+ "notes":"Describe the reviewed change and any migration requirements."
+}

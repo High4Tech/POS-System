@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ink">#0F172A</color>
+    <color name="panel">#17233A</color>
+    <color name="raise">#1E2D46</color>
+    <color name="line">#435776</color>
+    <color name="text_main">#F1F5F9</color>
+    <color name="muted">#B3C1D6</color>
+    <color name="signal">#2563EB</color>
+    <color name="blue_pressed">#1D4ED8</color>
+    <color name="blue_light">#93C5FD</color>
+    <color name="action_white">#FFFFFF</color>
+    <color name="action_ripple">#22FFFFFF</color>
+    <color name="ok">#35D399</color>
+    <color name="bad">#FF6B6B</color>
+    <color name="ic_launcher_background">#2563EB</color>
+</resources>

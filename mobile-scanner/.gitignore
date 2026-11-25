@@ -1,0 +1,32 @@
+# Android / Gradle build output
+.gradle/
+build/
+app/build/
+local.properties
+
+# Flutter generated files and build output
+scanner/.dart_tool/
+scanner/.idea/
+scanner/build/
+scanner/.flutter-plugins
+scanner/.flutter-plugins-dependencies
+scanner/.packages
+scanner/android/local.properties
+scanner/**/*.iml
+
+# Python runtime files and generated TLS certificate
+__pycache__/
+*.py[cod]
+server/cert/
+
+# IDE and operating-system files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example

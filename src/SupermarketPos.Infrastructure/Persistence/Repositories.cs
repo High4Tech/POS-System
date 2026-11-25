@@ -91,6 +91,9 @@ public sealed class SaleRepository : ISaleRepository
     public Task<Sale?> GetByReceiptNoAsync(string receiptNo, CancellationToken ct = default) =>
         _db.Sales.Include(s => s.Lines).FirstOrDefaultAsync(s => s.ReceiptNo == receiptNo, ct);
 
+    public Task<Sale?> GetByCheckoutIdAsync(Guid id, CancellationToken ct = default) =>
+        _db.Sales.Include(s => s.Lines).FirstOrDefaultAsync(s => s.CheckoutId == id, ct);
+
     public Task<bool> HasSourceReceiptAsync(string reference, CancellationToken ct = default) =>
         _db.Sales.AnyAsync(s => s.SourceReceiptNo == reference || s.ReceiptNo == reference, ct);
 

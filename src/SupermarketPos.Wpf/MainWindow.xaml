@@ -33,6 +33,9 @@
                     </Style></Button.Style>
                   </Button>
                 </StackPanel>
+                <TextBlock Foreground="White" FontWeight="Bold" VerticalAlignment="Center"
+                           Text="{Binding StoreProfile.Name}" TextTrimming="CharacterEllipsis" Margin="4,0,10,0"
+                           MaxWidth="120" x:Name="NavigationStoreName"/>
                 <StackPanel x:Name="Destinations" Orientation="Horizontal">
 <Button Command="{Binding ShowDashboardCommand}" Content="{loc:T Nav_Dashboard}" Tag="dashboard">
     <Button.Style><Style TargetType="Button" BasedOn="{StaticResource TopButton}"><Style.Triggers>

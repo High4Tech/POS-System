@@ -8,17 +8,21 @@ public sealed class SaleRowViewModel
 {
     public Sale Sale { get; }
     public decimal ReturnedTotal { get; }
+    private decimal ReturnedQuantity { get; }
+    private readonly bool _includeCosts;
     public string ReturnedText => MoneyText.Format(ReturnedTotal);
-    public string InvoiceMargin => Sale.GrossProfit is decimal profit && Sale.NetTotal>0
+    public string InvoiceMargin => _includeCosts && Sale.GrossProfit is decimal profit && Sale.NetTotal>0
         ? $"{MoneyText.Format(profit)} · {profit/Sale.NetTotal:P2}" : "—";
-    public SaleRowViewModel(Sale sale, decimal returnedTotal = 0)
+    public SaleRowViewModel(Sale sale, decimal returnedTotal = 0, bool includeCosts = false, decimal returnedQuantity = 0)
     {
         Sale = sale;
+        _includeCosts = includeCosts;
         ReturnedTotal = returnedTotal;
+        ReturnedQuantity = returnedQuantity;
         Items = sale.Lines.Select(line => new SaleItemRow(
             line.BatchLot is { } lot ? $"{line.Name} · {lot} · {line.BatchExpiry:yyyy-MM-dd} {line.SerialNumber}".TrimEnd() : line.Name, line.Quantity,
             MoneyText.Format(line.UnitPrice), MoneyText.Format(line.LineGross), line.Barcode,
-            line.UnitCost is { } cost ? MoneyText.Format(cost) : "—", line.VatRate,
+            includeCosts && line.UnitCost is { } cost ? MoneyText.Format(cost) : "—", line.VatRate,
             line.SerialNumber, line.Imei1, line.Imei2, line.WarrantyUntil,line.UnitCode.Length>0?Localization.LocalizationManager.Instance["Measure_"+line.UnitCode]:"")).ToArray();
     }
 
@@ -32,6 +36,9 @@ public sealed class SaleRowViewModel
     public string PaymentText => Localization.LocalizationManager.Instance[Payment.LabelKey(Sale.PaymentMethod)];
     public string TotalText => MoneyText.Format(Sale.GrossTotal);
     public string BalanceText => MoneyText.Format(Sale.Outstanding);
+    public string StatusText => Localization.LocalizationManager.Instance[ReturnedQuantity > 0
+        ? ReturnedQuantity >= Sale.Lines.Sum(line => line.Quantity) ? "Trade_FullyReturned" : "Trade_PartiallyReturned"
+        : "Trade_InvoicePosted"];
     public IReadOnlyList<SaleItemRow> Items { get; }
 }
 

@@ -44,7 +44,18 @@ internal static class ReturnInvoicePanel
             finally{panel.IsEnabled=true;}
         }
         foreach(var record in history)
-            form.Add("",new TextBlock{Text=$"{record.CreatedAt:g} · {LocalizationManager.Instance["Trade_Return"+record.Status]} · {MoneyText.Format(record.Gross)} · {record.Reason}",TextWrapping=TextWrapping.Wrap},true);
+        {
+            form.Add("",new TextBlock{Text=$"{record.CreatedAt:g} · {LocalizationManager.Instance["Trade_Return"+record.Status]} · {MoneyText.Format(record.Gross)} · {record.Operator} · {record.Reason}",TextWrapping=TextWrapping.Wrap},true);
+            foreach (var item in ReturnsService.Items(record))
+            {
+                var disposition = item.Disposition ?? (item.Restock ? "Restocked" : "NotRestocked");
+                form.Add("", new TextBlock
+                {
+                    Text = $"{item.Name} · {item.Quantity:0.###} · {item.Lot ?? item.VerifiedIdentity} · {item.Expiry:yyyy-MM-dd} · {LocalizationManager.Instance["Trade_Disposition"+disposition]}",
+                    TextWrapping = TextWrapping.Wrap
+                }, true);
+            }
+        }
         if(pending is not null)
         {
             form.Add("Trade_RefundReference",external,true);

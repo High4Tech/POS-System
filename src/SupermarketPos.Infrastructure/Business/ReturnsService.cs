@@ -17,11 +17,11 @@ public sealed class ReturnsService(PosDbContext db, IUnitOfWork work, IAuthServi
     public async Task<IReadOnlyList<SaleReturn>> PostedBetweenAsync(DateTime from,DateTime to,CancellationToken ct=default) =>
         await db.SaleReturns.AsNoTracking().Where(r=>r.Status=="Posted" && r.PostedAt>=from && r.PostedAt<to).ToListAsync(ct);
 
-    public async Task<Dictionary<int,decimal>> PostedTotalsAsync(int[] ids, CancellationToken ct = default)
+    public async Task<Dictionary<int,(decimal Gross, decimal Quantity)>> PostedTotalsAsync(int[] ids, CancellationToken ct = default)
     {
         var rows = await db.SaleReturns.AsNoTracking().Where(r=>r.Status=="Posted" && ids.Contains(r.SaleId))
-            .Select(r=>new {r.SaleId,r.Gross}).ToListAsync(ct);
-        return rows.GroupBy(r=>r.SaleId).ToDictionary(g=>g.Key,g=>g.Sum(r=>r.Gross));
+            .ToListAsync(ct);
+        return rows.GroupBy(r=>r.SaleId).ToDictionary(g=>g.Key,g=>(g.Sum(r=>r.Gross),g.SelectMany(Items).Sum(line=>line.Quantity)));
     }
 
     public static ReturnedLine[] Items(SaleReturn record) => JsonSerializer.Deserialize<ReturnedLine[]>(record.ItemsJson) ?? [];
@@ -35,8 +35,11 @@ public sealed class ReturnsService(PosDbContext db, IUnitOfWork work, IAuthServi
             throw new DomainException("Trade_ReturnInvalid");
         if (await db.SaleReturns.SingleOrDefaultAsync(r => r.ConfirmationId == confirmationId, token) is { } saved)
         {
+            var savedItems = Items(saved);
             if (saved.SaleId != saleId || saved.Reason != reason ||
-                !Items(saved).Select(l=>new ReturnSelection(l.SaleLineId,l.Quantity,l.Restock)).SequenceEqual(selection.Select(l=>l with {Identity=null})))
+                !savedItems.Select(l=>new ReturnSelection(l.SaleLineId,l.Quantity,l.Restock)).SequenceEqual(selection.Select(l=>l with {Identity=null})) ||
+                savedItems.Zip(selection).Any(pair => pair.First.VerifiedIdentity is { } identity &&
+                    !string.Equals(identity, pair.Second.Identity?.Trim(), StringComparison.OrdinalIgnoreCase)))
                 throw new DomainException("Trade_ReturnInvalid");
             return saved;
         }
@@ -70,8 +73,10 @@ public sealed class ReturnsService(PosDbContext db, IUnitOfWork work, IAuthServi
                 throw new DomainException("Trade_ReturnInvalid");
             var gross = Money.Round2(original.LineGross*(already+selected.Quantity)/original.Quantity)-Money.Round2(original.LineGross*already/original.Quantity);
             var tax = Money.Round2(original.VatAmount*(already+selected.Quantity)/original.Quantity)-Money.Round2(original.VatAmount*already/original.Quantity);
+            var disposition = selected.Restock ? "Restocked" : profile.IsPharmacy ? "Quarantined" : "NotRestocked";
             lines.Add(new(original.Id,original.ProductId,original.Name,original.UnitCode,selected.Quantity,(long)baseQuantity,gross,tax,
-                selected.Restock,original.BatchId,original.BatchLot,original.BatchExpiry,original.SerialNumber,original.StockLocation));
+                selected.Restock,original.BatchId,original.BatchLot,original.BatchExpiry,original.SerialNumber,original.StockLocation,
+                disposition, string.IsNullOrWhiteSpace(selected.Identity) ? null : selected.Identity.Trim()));
         }
         var result = new SaleReturn
         {

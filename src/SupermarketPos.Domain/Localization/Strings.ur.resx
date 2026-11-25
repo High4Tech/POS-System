@@ -1120,4 +1120,37 @@
 <data name="Trade_ReturnIdentityField"><value>بیچ یا ڈیوائس نمبر</value></data>
 <data name="Trade_RefundPaid"><value>واپس ادا کی گئی رقم</value></data>
 <data name="Trade_ReturnSummary"><value>واپسی: {0} · کل {1} · نقد {2} · کارڈ {3} · بقایا میں کمی {4} · گاہک کا کریڈٹ {5}</value></data>
+  <data name="Trade_ViewMargin" xml:space="preserve"><value>منافع دیکھیں</value></data>
+  <data name="Trade_InvoiceCost" xml:space="preserve"><value>فروخت شدہ مال کی لاگت</value></data>
+  <data name="Trade_MarginPercent" xml:space="preserve"><value>مجموعی شرح منافع</value></data>
+  <data name="Trade_MissingMarginCosts" xml:space="preserve"><value>منافع نامکمل ہے۔ {0} آئٹمز کی خریداری لاگت موجود نہیں۔</value></data>
+  <data name="Trade_RepeatCartChoice" xml:space="preserve"><value>کارٹ میں آئٹمز موجود ہیں۔ فروخت کیسے دہرائیں؟</value></data>
+  <data name="Trade_RepeatAdd" xml:space="preserve"><value>کارٹ میں شامل کریں</value></data>
+  <data name="Trade_RepeatReplace" xml:space="preserve"><value>کارٹ بدلیں</value></data>
+  <data name="Trade_FrequentLine" xml:space="preserve"><value>{0} {1} · {2} خریداریاں · آخری {3} · {4} · اسٹاک {5}</value></data>
+  <data name="Trade_SaveDraft" xml:space="preserve"><value>کارٹ ڈرافٹ محفوظ کریں</value></data>
+  <data name="Trade_ResumeDraft" xml:space="preserve"><value>محفوظ کارٹ کھولیں</value></data>
+  <data name="Trade_DraftEmptyCart" xml:space="preserve"><value>خالی کارٹ ضروری ہے</value></data>
+  <data name="Trade_DraftUnsupported" xml:space="preserve"><value>اس کارٹ کے آئٹمز کے لیے بیچ، مقام، ڈیوائس یا ڈسپنسنگ کی نئی تصدیق ضروری ہے۔</value></data>
+  <data name="Trade_DraftSaved" xml:space="preserve"><value>اس آپریٹر کا کارٹ ڈرافٹ محفوظ ہو گیا۔</value></data>
+  <data name="Trade_DraftResumed" xml:space="preserve"><value>موجودہ اسٹاک اور قیمتوں کے ساتھ کارٹ بحال کر دیا گیا۔</value></data>
+  <data name="Trade_NoDraft" xml:space="preserve"><value>اس آپریٹر کا کوئی غیر مکمل محفوظ کارٹ موجود نہیں۔</value></data>
+  <data name="Trade_DraftError" xml:space="preserve"><value>محفوظ کارٹ پڑھا یا لکھا نہیں جا سکا۔</value></data>
+  <data name="Trade_DraftChanged" xml:space="preserve"><value>محفوظ کارٹ میں کسی پروڈکٹ، قیمت، اکائی یا اسٹاک کی دوبارہ جانچ درکار ہے۔</value></data>
+  <data name="Trade_CheckoutConflict" xml:space="preserve"><value>یہ چیک آؤٹ حوالہ دوسری فروخت کے لیے استعمال ہو چکا ہے۔ دوبارہ کوشش سے پہلے فروخت ریکارڈ دیکھیں۔</value></data>
+  <data name="Trade_ToggleRegisterView" xml:space="preserve"><value>کارڈز اور فہرست بدلیں</value></data>
+  <data name="Trade_ProductInfo" xml:space="preserve"><value>پروڈکٹ کی معلومات</value></data>
+  <data name="Trade_RemoveCartLine" xml:space="preserve"><value>منتخب آئٹم کارٹ سے ہٹائیں</value></data>
+  <data name="Trade_PricePermission" xml:space="preserve"><value>صرف مالک فروخت کی قیمت بدل سکتا ہے۔</value></data>
+  <data name="Trade_InvoiceAudit" xml:space="preserve"><value>انوائس آڈٹ</value></data>
+  <data name="Trade_InvoicePosted" xml:space="preserve"><value>فروخت مکمل</value></data>
+  <data name="Trade_FullyReturned" xml:space="preserve"><value>مکمل واپسی</value></data>
+  <data name="Trade_PartiallyReturned" xml:space="preserve"><value>جزوی واپسی</value></data>
+  <data name="Trade_DispositionRestocked" xml:space="preserve"><value>تصدیق کے بعد اسٹاک میں واپس</value></data>
+  <data name="Trade_DispositionNotRestocked" xml:space="preserve"><value>قابل فروخت اسٹاک سے الگ</value></data>
+  <data name="Trade_DispositionQuarantined" xml:space="preserve"><value>قابل فروخت اسٹاک سے باہر قرنطینہ</value></data>
+  <data name="Trade_PreviousPage" xml:space="preserve"><value>پچھلا صفحہ</value></data>
+  <data name="Trade_PrintReport" xml:space="preserve"><value>رپورٹ پرنٹ کریں</value></data>
+  <data name="Trade_PrintReportRequired" xml:space="preserve"><value>رپورٹ بنائیں اور انوائس کا انتخاب ہٹا دیں</value></data>
+  <data name="Trade_LedgerFilter" xml:space="preserve"><value>تاریخ، رسید یا لین دین سے تلاش کریں</value></data>
 </root>

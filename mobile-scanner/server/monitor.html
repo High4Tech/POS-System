@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>掃描監看 · 電腦端</title>
+<style>
+  :root{
+    --ink:#0A0D12; --panel:#141922; --raise:#1B2230; --line:#28313F;
+    --text:#E8ECF2; --muted:#79849A; --signal:#FFB020; --ok:#35D399; --bad:#FF6B6B;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Roboto Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;min-height:100vh;background:var(--ink);color:var(--text);
+    font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC",sans-serif;
+    display:grid;grid-template-rows:auto 1fr;
+  }
+  header{
+    display:flex;align-items:center;gap:14px;padding:16px 22px;
+    border-bottom:1px solid var(--line);background:var(--panel);
+  }
+  h1{margin:0;font-size:15px;font-weight:600;letter-spacing:.01em}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+  .dot.live{background:var(--ok)}
+  .dot.down{background:var(--bad)}
+  .spacer{flex:1}
+  .n{font:600 12px/1 var(--mono);color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+  button{
+    font-family:inherit;font-size:13px;font-weight:600;padding:9px 14px;border-radius:9px;
+    border:1px solid var(--line);background:var(--raise);color:var(--text);cursor:pointer;
+  }
+  button:hover{border-color:var(--signal)}
+  button.primary{background:var(--signal);color:#1A1204;border-color:var(--signal)}
+  main{display:grid;grid-template-columns:1fr 320px;min-height:0}
+  @media (max-width:760px){main{grid-template-columns:1fr}}
+  .feed{overflow:auto;padding:6px 0}
+  .row{
+    display:flex;gap:16px;align-items:baseline;padding:12px 22px;
+    border-bottom:1px solid rgba(40,49,63,.55);animation:in .18s ease-out;
+  }
+  @keyframes in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.row{animation:none}}
+  .row .idx{font:600 12px/1 var(--mono);color:var(--muted);min-width:34px}
+  .row .code{font-family:var(--mono);font-size:16px;flex:1;word-break:break-all}
+  .row .fmt{font:400 11px/1 var(--mono);color:var(--muted);text-transform:uppercase}
+  .row .t{font:400 12px/1 var(--mono);color:var(--muted)}
+  .row.fail .code{color:var(--bad)}
+  .empty{padding:60px 22px;color:var(--muted);font-size:14px;line-height:1.7}
+  .empty code{font-family:var(--mono);color:var(--signal);background:var(--raise);
+    padding:2px 6px;border-radius:5px}
+  aside{border-left:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--panel)}
+  textarea{
+    flex:1;min-height:220px;resize:none;background:var(--ink);color:var(--text);
+    border:1px solid var(--line);border-radius:10px;padding:12px;
+    font-family:var(--mono);font-size:13px;line-height:1.6;
+  }
+  textarea:focus{outline:2px solid var(--signal);outline-offset:-1px}
+  .aside-actions{display:flex;gap:8px}
+  .aside-actions button{flex:1}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="dot" id="dot"></span>
+  <h1>掃描監看</h1>
+  <span class="n" id="count">0 筆</span>
+  <span class="spacer"></span>
+  <button id="clear">清空</button>
+</header>
+
+<main>
+  <div class="feed" id="feed">
+    <div class="empty">
+      等待手機送出條碼。<br>
+      手機端開 <code>/</code>（USB 模式為 <code>http://localhost:8765</code>），對準條碼即可。
+    </div>
+  </div>
+  <aside>
+    <span class="n">純文字清單</span>
+    <textarea id="text" spellcheck="false" placeholder="掃到的條碼會累積在這裡"></textarea>
+    <div class="aside-actions">
+      <button class="primary" id="copy">複製全部</button>
+      <button id="download">存成 CSV</button>
+    </div>
+  </aside>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const feed=$('feed'), dot=$('dot'), countEl=$('count'), text=$('text');
+  let items = [];
+
+  function render(item){
+    if(feed.querySelector('.empty')) feed.innerHTML = '';
+    const row = document.createElement('div');
+    row.className = 'row' + (item.ok ? '' : ' fail');
+    row.innerHTML = '<span class="idx"></span><span class="code"></span>' +
+                    '<span class="fmt"></span><span class="t"></span>';
+    row.querySelector('.idx').textContent = String(items.length).padStart(3,'0');
+    row.querySelector('.code').textContent = item.code;
+    row.querySelector('.fmt').textContent = (item.format||'').replace(/_/g,' ');
+    row.querySelector('.t').textContent = item.time;
+    feed.prepend(row);
+  }
+
+  function add(item){
+    items.push(item);
+    render(item);
+    countEl.textContent = items.length + ' 筆';
+    text.value = items.map(i => i.code).join('\n');
+    text.scrollTop = text.scrollHeight;
+  }
+
+  fetch('history').then(r=>r.json()).then(d => (d.items||[]).forEach(add)).catch(()=>{});
+
+  const es = new EventSource('events');
+  es.onopen = () => dot.className = 'dot live';
+  es.onerror = () => dot.className = 'dot down';
+  es.onmessage = e => { try{ add(JSON.parse(e.data)); }catch(err){} };
+
+  $('clear').onclick = () => {
+    items = [];
+    feed.innerHTML = '<div class="empty">已清空，繼續掃描就會再出現。</div>';
+    countEl.textContent = '0 筆';
+    text.value = '';
+  };
+
+  $('copy').onclick = async () => {
+    try{
+      await navigator.clipboard.writeText(text.value);
+      $('copy').textContent = '已複製';
+      setTimeout(()=>$('copy').textContent='複製全部', 1400);
+    }catch(e){ text.select(); }
+  };
+
+  $('download').onclick = () => {
+    const rows = [['time','code','format']].concat(
+      items.map(i => [i.time, i.code, i.format]));
+    const csv = '\ufeff' + rows.map(r =>
+      r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
+    const url = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+    const a = document.createElement('a');
+    a.href = url; a.download = 'scans.csv'; a.click();
+    URL.revokeObjectURL(url);
+  };
+})();
+</script>
+</body>
+</html>

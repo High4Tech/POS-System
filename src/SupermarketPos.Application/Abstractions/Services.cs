@@ -46,7 +46,7 @@ public interface ISaleService
     /// Validates stock, decrements it, assigns a receipt number and persists the sale — all inside a
     /// single transaction. Throws <c>InsufficientStockException</c> (rolling back) if stock is short.
     /// </summary>
-    Task<Sale> CheckoutAsync(Cart cart, Payment payment, User cashier, CancellationToken ct = default, SaleCustomer? customer = null);
+    Task<Sale> CheckoutAsync(Cart cart, Payment payment, User cashier, CancellationToken ct = default, SaleCustomer? customer = null, Guid? checkoutId = null);
 }
 
 public interface IInventoryService
@@ -91,6 +91,7 @@ public interface IShelfLabelService
 public interface IReportPdfService
 {
     Task<byte[]> RenderPdfAsync(SalesReport report, CancellationToken ct = default);
+    Task<IReadOnlyList<byte[]>> RenderPagesAsync(SalesReport report, CancellationToken ct = default);
     Task SavePdfAsync(SalesReport report, string path, CancellationToken ct = default);
 }
 

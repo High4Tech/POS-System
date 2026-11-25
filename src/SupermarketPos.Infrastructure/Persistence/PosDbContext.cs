@@ -156,6 +156,9 @@ public sealed class PosDbContext : DbContext
             e.HasKey(s => s.Id);
             e.Property(s => s.ReceiptNo).IsRequired().HasMaxLength(32);
             e.HasIndex(s => s.ReceiptNo).IsUnique();
+            e.HasIndex(s => s.CheckoutId).IsUnique();
+            e.HasIndex(s => s.CreatedAt);
+            e.HasIndex(s => s.CustomerAccountKey);
             e.Property(s => s.SourceReceiptNo).HasMaxLength(80).UseCollation("NOCASE");
             e.HasIndex(s => s.SourceReceiptNo).IsUnique();
             e.Property(s => s.CashierName).HasMaxLength(100);
@@ -184,6 +187,7 @@ public sealed class PosDbContext : DbContext
 
         b.Entity<SaleLine>(e =>
         {
+            e.HasIndex(s => new { s.ProductId, s.SaleId });
             e.Property(l => l.BatchLot).HasMaxLength(20);
             e.Property(l => l.SerialNumber).HasMaxLength(64);
             e.Property(l => l.Imei1).HasMaxLength(15);

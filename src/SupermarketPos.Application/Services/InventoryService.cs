@@ -10,17 +10,20 @@ public sealed class InventoryService : IInventoryService
     private readonly ISettingsRepository _settings;
     private readonly IUnitOfWork _uow;
     private readonly ITradeLedger? _ledger;
+    private readonly IAuthService? _auth;
 
-    public InventoryService(IProductRepository products, ISettingsRepository settings, IUnitOfWork uow, ITradeLedger? ledger = null)
+    public InventoryService(IProductRepository products, ISettingsRepository settings, IUnitOfWork uow, ITradeLedger? ledger = null, IAuthService? auth = null)
     {
         _products = products;
         _settings = settings;
         _uow = uow;
         _ledger = ledger;
+        _auth = auth;
     }
 
     public async Task RestockAsync(int productId, decimal quantity, CancellationToken ct = default)
     {
+        _auth?.RequireAdmin();
         var product = await _products.GetByIdAsync(productId, ct)
                       ?? throw new DomainException("Product not found.");
         if (product.Unit == Unit.Piece ? quantity != decimal.Truncate(quantity) : quantity != Math.Round(quantity, 3))
@@ -33,6 +36,7 @@ public sealed class InventoryService : IInventoryService
     public Task AdjustStockAsync(int productId, decimal newQuantity, CancellationToken ct = default) =>
         _uow.ExecuteInTransactionAsync(async token =>
         {
+            _auth?.RequireAdmin();
             var product = await _products.GetByIdAsync(productId, token)
                           ?? throw new DomainException("Product not found.");
             var delta = newQuantity - product.StockQuantity;
@@ -75,6 +79,7 @@ public sealed class InventoryService : IInventoryService
     private Task ApplyToProductsAsync(IReadOnlyList<int> ids, Action<Product> change, CancellationToken ct) =>
         _uow.ExecuteInTransactionAsync(async token =>
         {
+            _auth?.RequireAdmin();
             foreach (var id in ids.Distinct())
             {
                 var product = await _products.GetByIdAsync(id, token)

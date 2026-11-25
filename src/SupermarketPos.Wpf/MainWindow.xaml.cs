@@ -24,6 +24,7 @@ public partial class MainWindow : Window
         };
         Loaded += (_, _) => QueueFit();
         TopActions.SizeChanged += (_, _) => QueueFit();
+        NavigationStoreName.SizeChanged += (_, _) => QueueFit();
         MoreButton.SizeChanged += (_, _) => QueueFit();
         LocalizationManager.Instance.PropertyChanged += LanguageChanged;
         Closed += (_, _) => LocalizationManager.Instance.PropertyChanged -= LanguageChanged;
@@ -32,7 +33,7 @@ public partial class MainWindow : Window
 
     private void ModelChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(MainViewModel.DigitalServicesVisible) or nameof(MainViewModel.IsLoggedIn) or nameof(MainViewModel.ActiveScreen)) QueueFit();
+        if (e.PropertyName is nameof(MainViewModel.DigitalServicesVisible) or nameof(MainViewModel.IsLoggedIn) or nameof(MainViewModel.ActiveScreen) or nameof(MainViewModel.CanManageStock)) QueueFit();
     }
 
     private void LanguageChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) => QueueFit();
@@ -45,12 +46,12 @@ public partial class MainWindow : Window
         {
             _fitQueued = false;
             if (!IsLoaded || NavigationBar.ActualWidth <= 0) return;
-            var available = NavigationBar.ActualWidth - MoreButton.ActualWidth - TopActions.ActualWidth - 14;
+            var available = NavigationBar.ActualWidth - MoreButton.ActualWidth - TopActions.ActualWidth - NavigationStoreName.ActualWidth - 28;
             var active = (DataContext as MainViewModel)?.ActiveScreen;
             MoreButton.FontWeight = FontWeights.SemiBold;
             foreach (var button in Destinations.Children.OfType<Button>())
             {
-                var eligible = button != DigitalDestination || (DataContext as MainViewModel)?.DigitalServicesVisible == true;
+                var eligible = CanShowDestination(button, DataContext as MainViewModel);
                 button.Visibility = eligible ? Visibility.Visible : Visibility.Collapsed;
                 if (!eligible) continue;
                 button.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -64,13 +65,16 @@ public partial class MainWindow : Window
         }));
     }
 
+    private bool CanShowDestination(Button button, MainViewModel? model) => button == DigitalDestination
+        ? model?.DigitalServicesVisible == true : !Equals(button.Tag, "purchases") || model?.CanManageStock == true;
+
     private void OpenMore(object sender, RoutedEventArgs e)
     {
         if (DataContext is not MainViewModel model) return;
         var menu = new ContextMenu { PlacementTarget = MoreButton, Placement = PlacementMode.Bottom, FlowDirection = LocalizationManager.Instance.FlowDirection };
         foreach (var destination in Destinations.Children.OfType<Button>().Where(b => b.Visibility == Visibility.Collapsed))
         {
-            if (destination == DigitalDestination && !model.DigitalServicesVisible) continue;
+            if (!CanShowDestination(destination, model)) continue;
             menu.Items.Add(new MenuItem { Header = destination.Content, Command = destination.Command, IsCheckable = destination.Tag is string, IsChecked = Equals(destination.Tag, model.ActiveScreen) });
         }
         var help = new MenuItem { Header = LocalizationManager.Instance["Nav_Shortcuts"] };

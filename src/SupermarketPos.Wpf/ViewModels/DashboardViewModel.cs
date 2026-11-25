@@ -43,6 +43,7 @@ public sealed partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private string? _salesError;
     public bool IsHistoryEmpty => History.Count == 0;
     public bool ShowEmptyHistory => IsHistoryEmpty && SalesError is null;
+    public bool ShowProfit => _auth.CurrentUser?.IsAdmin == true;
 
     [ObservableProperty] private string _revenueText = MoneyText.Format(0m);
     [ObservableProperty] private string _saleCountText = "0";
@@ -117,15 +118,16 @@ public sealed partial class DashboardViewModel : ObservableObject
             var sales = await _reports.GetSalesAsync(from.Date, end);
             SalesError = null;
             var receipt = SelectedSale?.ReceiptNo;
-            History = sales.Select(sale => new SaleRowViewModel(sale)).ToArray();
+            History = sales.Select(sale => new SaleRowViewModel(sale, includeCosts: ShowProfit)).ToArray();
             SelectedSale = History.FirstOrDefault(sale => sale.ReceiptNo == receipt) ?? History.FirstOrDefault();
 
             RevenueText = MoneyText.Format(sales.Sum(sale => sale.GrossTotal));
             SaleCountText = sales.Count.ToString();
             VatText = MoneyText.Format(sales.Sum(sale => sale.VatTotal));
-            var profits = sales.Select(sale => sale.GrossProfit).ToArray();
+            OnPropertyChanged(nameof(ShowProfit));
+            var profits = ShowProfit ? sales.Select(sale => sale.GrossProfit).ToArray() : [];
             var missing = profits.Count(value => !value.HasValue);
-            ProfitText = profits.Length > 0 && missing == profits.Length ? "—" : MoneyText.Format(profits.Sum() ?? 0m);
+            ProfitText = !ShowProfit || profits.Length > 0 && missing == profits.Length ? "—" : MoneyText.Format(profits.Sum() ?? 0m);
             ProfitNote = missing > 0 ? text.Format("Dash_ProfitMissing", missing) : null;
         }
         catch (Exception)

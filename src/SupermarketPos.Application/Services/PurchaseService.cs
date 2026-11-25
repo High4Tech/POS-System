@@ -5,18 +5,27 @@ using SupermarketPos.Domain.Entities;
 namespace SupermarketPos.Application.Services;
 
 public sealed class PurchaseService(IProductRepository products, IPurchaseRepository purchases, IUnitOfWork unitOfWork,
-    ITradeLedger? ledger = null,IStockLocations? locations=null) : IPurchaseService
+    ITradeLedger? ledger = null,IStockLocations? locations=null,IAuthService? auth=null) : IPurchaseService
 {
-    public Task<IReadOnlyList<Purchase>> GetHistoryAsync(CancellationToken ct = default) => purchases.GetRecentAsync(ct);
+    public Task<IReadOnlyList<Purchase>> GetHistoryAsync(CancellationToken ct = default)
+    {
+        auth?.RequireAdmin();
+        return purchases.GetRecentAsync(ct);
+    }
 
     public Task<IReadOnlyList<Supplier>> GetSuppliersAsync(CancellationToken ct = default) => purchases.GetSuppliersAsync(ct);
 
     public Task<Supplier> AddSupplierAsync(string name, CancellationToken ct = default) =>
-        unitOfWork.ExecuteInTransactionAsync(token => GetOrAddSupplierAsync(name, token), ct);
+        unitOfWork.ExecuteInTransactionAsync(token =>
+        {
+            auth?.RequireAdmin();
+            return GetOrAddSupplierAsync(name, token);
+        }, ct);
 
     public Task<Supplier> SaveSupplierAsync(int? id, SupplierDetails details, CancellationToken ct = default) =>
         unitOfWork.ExecuteInTransactionAsync(async token =>
         {
+            auth?.RequireAdmin();
             var name = details.Name.Trim();
             if (await purchases.FindSupplierAsync(name, token) is { } duplicate && duplicate.Id != id)
                 throw new DomainException("A supplier with this name already exists.");
@@ -33,6 +42,7 @@ public sealed class PurchaseService(IProductRepository products, IPurchaseReposi
         User receivedBy, CancellationToken ct = default) =>
         unitOfWork.ExecuteInTransactionAsync(async token =>
         {
+            auth?.RequireAdmin();
             var selected = await GetOrAddSupplierAsync(supplier, token);
             return await ReceiveCoreAsync(selected, reference, DateTime.Today, null, items, receivedBy, null, token);
         }, ct);
@@ -41,6 +51,7 @@ public sealed class PurchaseService(IProductRepository products, IPurchaseReposi
         IReadOnlyList<PurchaseItem> items, User receivedBy, Guid confirmationId, CancellationToken ct = default,
         decimal? initialAmountPaid = null, string paymentMethod = "CASH")
     {
+        auth?.RequireAdmin();
         if (confirmationId == Guid.Empty) throw new DomainException("A purchase confirmation ID is required.");
         return unitOfWork.ExecuteInTransactionAsync(async token =>
         {

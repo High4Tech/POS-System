@@ -42,10 +42,13 @@ public sealed partial class PosViewModel : ObservableObject
     public PosViewModel(IProductRepository products, ICategoryRepository categoryRepo, IBarcodeService barcode,
                         ISaleService sales, ReceiptPreviewDialog receipts, IAuthService auth, RegisterBarcodeLookup lookup,
                         ScannerController scanner, ProductsViewModel productEditor, ScannerFeedback sound, PosStorage storage,
-                        StockAlertsViewModel alerts, StoreProfile profile, ISaleRepository saleHistory, ITradeLedger ledger,IBusinessSetup businessSetup,MedicineCatalogService medicineCatalog,PharmacyInventory pharmacyInventory,StockLocationService stockLocations, SaleHistory history)
+                        StockAlertsViewModel alerts, StoreProfile profile, ISaleRepository saleHistory, ITradeLedger ledger,IBusinessSetup businessSetup,MedicineCatalogService medicineCatalog,PharmacyInventory pharmacyInventory,StockLocationService stockLocations, SaleHistory history, InvoiceMarginService margin,
+                        SupermarketPos.Infrastructure.Commercial.ProtectedLocalStore draftStorage)
     {
         _products = products;
         _customerHistory = history;
+        _margin = margin;
+        _draftStorage = draftStorage;
         Customer.PropertyChanged += (_, _) => RefreshCustomerSummary();
         _categoryRepo = categoryRepo;
         _barcode = barcode;
@@ -317,7 +320,7 @@ public sealed partial class PosViewModel : ObservableObject
         if (line is null) return;
         _cart.Remove(line.Line);
         Lines.Remove(line);
-        if (_cart.IsEmpty) Customer.Load(null);
+          if (_cart.IsEmpty) { Customer.Load(null); _checkoutId = Guid.NewGuid(); }
         StockWarning = null;
         Recalculate();
     }
@@ -356,6 +359,7 @@ public sealed partial class PosViewModel : ObservableObject
 
     private void ResetCart()
     {
+        _checkoutId = Guid.NewGuid();
         _cart.Clear();
         Lines.Clear();
         Customer.Load(null);
@@ -368,7 +372,8 @@ public sealed partial class PosViewModel : ObservableObject
 
     // ---------- payment ----------
 
-    private bool CanOpenPayment() => !InAppDialog.IsOpen&&PharmacyWorkspace?.HasPendingEntry!=true&&!_clearConfirmation&&!_cart.IsEmpty && !_readingBarcode && !IsAddingScannedProduct && BatchPrompt is null &&
+    private bool CanOpenPayment() => System.Windows.Application.Current.MainWindow?.DataContext is not MainViewModel { IsReadOnly: true } &&
+        !InAppDialog.IsOpen&&PharmacyWorkspace?.HasPendingEntry!=true&&!_clearConfirmation&&!_cart.IsEmpty && !_readingBarcode && !IsAddingScannedProduct && BatchPrompt is null &&
         !_checkoutBusy && !Lines.Any(line => line.HasInvalidPrice||line.HasInvalidTax||line.HasInvalidName);
     private bool CanStartPayment()=>!IsPaymentOpen&&CanOpenPayment();
 
@@ -430,7 +435,7 @@ public sealed partial class PosViewModel : ObservableObject
                 ? new CashPayment(total, ParseOrThrow(Tendered))
                 : new CardPayment(total);
 
-            var sale = await _sales.CheckoutAsync(_cart, payment, _auth.CurrentUser, customer: Customer.Build());
+            var sale = await _sales.CheckoutAsync(_cart, payment, _auth.CurrentUser, customer: Customer.Build(), checkoutId: _checkoutId);
             IsPaymentOpen = false;
             Status = LocalizationManager.Instance.Format("Msg_SaleComplete", sale.ReceiptNo);
             ResetCart();
@@ -442,7 +447,7 @@ public sealed partial class PosViewModel : ObservableObject
         catch (Exception ex)
         {
             _sound.PlayWarning();
-            NoticeDialog.Show(ex is Domain.Business.BusinessValidationException or Infrastructure.Commercial.CommercialException ? Text[ex.Message] : ex.Message, Text["Common_Error"]);
+            NoticeDialog.Show(ex is Domain.Common.DomainException or Infrastructure.Commercial.CommercialException ? Text[ex.Message] : ex.Message, Text["Common_Error"]);
         }
         finally
         {

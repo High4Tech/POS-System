@@ -58,12 +58,18 @@ public sealed partial class PosViewModel
                     .GroupBy(l=>l.Line.ProductId)
                     .OrderByDescending(g=>g.Select(l=>l.Sale).Distinct().Count()).ThenByDescending(g=>g.Max(l=>l.CreatedAt))
                     .ThenByDescending(g=>g.Sum(l=>l.Line.BaseQuantity)).Take(20);
-                var choices=new ListBox{MaxHeight=350,DisplayMemberPath="Name"};
-                choices.ItemsSource=top.Select(g=>g.Key).Select(id=>_registerProducts.FirstOrDefault(p=>p.Id==id)).OfType<Product>().ToArray();
+                var choices=new ListBox{MaxHeight=350,DisplayMemberPath="Label"};
+                choices.ItemsSource=top.Join(_registerProducts, group=>group.Key, product=>product.Id, (group,product)=>
+                {
+                    var tile=new RegisterProductTile(product,0,_registerMetadata.GetValueOrDefault(product.Id),IsPharmacy);
+                    return new FrequentOption(product, Text.Format("Trade_FrequentLine", product.Name, tile.Details,
+                        group.Select(row=>row.Sale).Distinct().Count(), group.Max(row=>row.CreatedAt).ToString("d"),
+                        tile.PriceText, tile.StockText));
+                }).ToArray();
                 panel.Children.Add(BusinessForm.Label("Trade_Frequent"));
                 panel.Children.Add(choices);
                 Product? chosen=null;
-                panel.Children.Add(BusinessForm.Button("Common_Add",(_,_)=>{chosen=choices.SelectedItem as Product;if(chosen is not null)close();}));
+                panel.Children.Add(BusinessForm.Button("Common_Add",(_,_)=>{chosen=(choices.SelectedItem as FrequentOption)?.Product;if(chosen is not null)close();}));
                 panel.Children.Add(BusinessForm.Button("Common_Close",(_,_)=>close(),"GhostButton"));
                 await InAppDialog.ShowAsync(panel,callback=>close=callback,contentWidth:620);
                 if(chosen is not null)await AddFromResultsAsync(chosen);
@@ -99,4 +105,6 @@ public sealed partial class PosViewModel
     {
         public string Label => $"{Sale.ReceiptNo} · {Sale.CreatedAt:g} · {MoneyText.Format(Sale.GrossTotal)}";
     }
+
+    private sealed record FrequentOption(Product Product, string Label);
 }

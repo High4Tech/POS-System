@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PhoneScanner" parent="Theme.PhoneScanner.Base">
+        <item name="fontFamily">@font/noto_nastaliq_urdu</item>
+        <item name="android:fontFamily">@font/noto_nastaliq_urdu</item>
+    </style>
+</resources>

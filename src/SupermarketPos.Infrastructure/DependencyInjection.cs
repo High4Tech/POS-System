@@ -45,6 +45,7 @@ public static class DependencyInjection
         services.AddScoped<RegisterBarcodeLookup>();
         services.AddScoped<BulkRecordService>();
         services.AddScoped<IPurchaseService, PurchaseService>();
+        services.AddScoped<InvoiceMarginService>();
         services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IBarcodeService, BarcodeService>();

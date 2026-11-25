@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pos-publisher-development",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-11-19",
+  "workers_dev": true,
+  "vars": {"ENVIRONMENT":"development"},
+  "d1_databases": [{"binding":"DB","database_name":"pos-publisher","database_id":"local-placeholder","migrations_dir":"migrations"}],
+  "r2_buckets": [{"binding":"RELEASES","bucket_name":"pos-publisher-local-releases"}],
+  "observability": {"enabled": false},
+  "env": {
+    "staging": {
+      "name":"pos-publisher-staging", "vars":{"ENVIRONMENT":"staging"},
+      "d1_databases":[{"binding":"DB","database_name":"pos-publisher-staging","database_id":"REPLACE_WITH_STAGING_D1_ID","migrations_dir":"migrations"}]
+    },
+    "production": {
+      "name":"pos-publisher-production", "vars":{"ENVIRONMENT":"production"},
+      "d1_databases":[{"binding":"DB","database_name":"pos-publisher-production","database_id":"REPLACE_WITH_PRODUCTION_D1_ID","migrations_dir":"migrations"}]
+    }
+  }
+  // Add a real D1 ID after free-account setup. R2 is optional: binding name RELEASES.
+}

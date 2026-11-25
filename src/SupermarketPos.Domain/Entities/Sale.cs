@@ -13,6 +13,7 @@ public sealed class Sale
     private readonly List<SaleLine> _lines = new();
 
     public int Id { get; private set; }
+    public Guid? CheckoutId { get; private set; }
     public string ReceiptNo { get; private set; } = string.Empty;  // e.g. 2026-000123
     public string? SourceReceiptNo { get; private set; }
     public string? InvoiceProfileJson{get;private set;}
@@ -59,11 +60,12 @@ public sealed class Sale
 
     public Sale(string receiptNo, int cashierId, string cashierName,
                 IEnumerable<SaleLine> lines, decimal grossTotal, decimal netTotal, decimal vatTotal,
-                Payment payment, DateTime createdAt, SaleCustomer? customer = null, string? sourceReceiptNo = null)
+                Payment payment, DateTime createdAt, SaleCustomer? customer = null, string? sourceReceiptNo = null, Guid? checkoutId = null)
     {
         if (string.IsNullOrWhiteSpace(receiptNo))
             throw new DomainException("Receipt number is required.");
         ReceiptNo = receiptNo;
+        CheckoutId = checkoutId;
         SourceReceiptNo = sourceReceiptNo;
         CashierId = cashierId;
         CashierName = cashierName;

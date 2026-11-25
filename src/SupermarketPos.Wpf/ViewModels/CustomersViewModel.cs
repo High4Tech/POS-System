@@ -62,30 +62,40 @@ public sealed partial class CustomersViewModel(ISaleRepository sales, BulkRecord
         if (Selected is not { } customer || InAppDialog.IsOpen) return;
         try
         {
-            var events = new List<(DateTime Date, string Reference, string Kind, decimal Debit, decimal Credit)>();
+            var events = new List<(int SaleId, DateTime Date, string Reference, string Kind, decimal Debit, decimal Credit)>();
             foreach (var row in customer.Sales)
             {
                 var sale = row.Sale;
-                events.Add((sale.CreatedAt, sale.ReceiptNo, "Reports_History", sale.GrossTotal, 0));
-                if (sale.AmountPaid > 0) events.Add((sale.CreatedAt, sale.ReceiptNo, "Reports_Payment", 0, sale.AmountPaid));
+                events.Add((sale.Id, sale.CreatedAt, sale.ReceiptNo, "Reports_History", sale.GrossTotal, 0));
+                if (sale.AmountPaid > 0) events.Add((sale.Id, sale.CreatedAt, sale.ReceiptNo, "Reports_Payment", 0, sale.AmountPaid));
                 foreach (var payment in await ledger.PaymentsAsync(sale.Id, false))
-                    events.Add((payment.PaidOn, sale.ReceiptNo, "Reports_Payment", 0, payment.Amount));
+                    events.Add((sale.Id, payment.PaidOn, sale.ReceiptNo, "Reports_Payment", 0, payment.Amount));
                 foreach (var refund in (await returns.HistoryAsync(sale.Id)).Where(r=>r.Status=="Posted"))
                 {
                     var refunded=refund.CashRefund+refund.CardRefund;
-                    events.Add((refund.PostedAt??refund.CreatedAt,sale.ReceiptNo,"Trade_Returns",0,refund.Gross));
-                    if(refunded>0)events.Add((refund.PostedAt??refund.CreatedAt,sale.ReceiptNo,"Trade_RefundPaid",refunded,0));
+                    events.Add((sale.Id,refund.PostedAt??refund.CreatedAt,sale.ReceiptNo,"Trade_Returns",0,refund.Gross));
+                    if(refunded>0)events.Add((sale.Id,refund.PostedAt??refund.CreatedAt,sale.ReceiptNo,"Trade_RefundPaid",refunded,0));
                 }
             }
             decimal balance = 0;
             var rows = events.OrderBy(e=>e.Date.Date).ThenBy(e=>e.Date).ThenByDescending(e=>e.Debit).Select(e =>
             {
                 balance += e.Debit - e.Credit;
-                return new { Date=e.Date.ToString("g"), e.Reference, Type=LocalizationManager.Instance[e.Kind], Debit=MoneyText.Format(e.Debit), Credit=MoneyText.Format(e.Credit), Balance=MoneyText.Format(balance) };
+                return new LedgerRow(e.SaleId,e.Date.ToString("g"),e.Reference,LocalizationManager.Instance[e.Kind],
+                    MoneyText.Format(e.Debit),MoneyText.Format(e.Credit),MoneyText.Format(balance));
             }).ToArray();
-            await HistoryTable.ShowAsync("Trade_CustomerLedger",rows,("Reports_Date","Date"),("Reports_ReceiptNo","Reference"),("Reports_Payment","Type"),("Trade_Debit","Debit"),("Trade_CreditAmount","Credit"),("Trade_Balance","Balance"));
+            await HistoryTable.ShowLedgerAsync("Trade_CustomerLedger",rows,(row,term)=>((LedgerRow)row).Matches(term),async row=>
+            {
+                if (await sales.GetByIdAsync(((LedgerRow)row).SaleId) is { } invoice) await receipts.ShowAsync(invoice);
+            },("Reports_Date","Date"),("Reports_ReceiptNo","Reference"),("Reports_Payment","Type"),("Trade_Debit","Debit"),("Trade_CreditAmount","Credit"),("Trade_Balance","Balance"));
         }
         catch (Exception) { Error = LocalizationManager.Instance["Customers_LoadError"]; }
+    }
+
+    private sealed record LedgerRow(int SaleId, string Date, string Reference, string Type, string Debit, string Credit, string Balance)
+    {
+        internal bool Matches(string term) => Reference.Contains(term, StringComparison.CurrentCultureIgnoreCase) ||
+            Type.Contains(term, StringComparison.CurrentCultureIgnoreCase) || Date.Contains(term, StringComparison.CurrentCultureIgnoreCase);
     }
 
     [RelayCommand]

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PhoneScanner" parent="Theme.PhoneScanner.Base" />
+    <style name="Theme.PhoneScanner.Base" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/signal</item>
+        <item name="colorPrimaryVariant">@color/blue_pressed</item>
+        <item name="colorOnPrimary">@color/action_white</item>
+        <item name="colorSecondary">@color/blue_light</item>
+        <item name="colorOnSecondary">@color/ink</item>
+        <item name="colorSurface">@color/panel</item>
+        <item name="colorOnSurface">@color/text_main</item>
+        <item name="android:colorBackground">@color/ink</item>
+        <item name="android:windowBackground">@color/ink</item>
+        <item name="android:statusBarColor">@color/panel</item>
+        <item name="android:navigationBarColor">@color/panel</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:textColorPrimary">@color/text_main</item>
+        <item name="android:textColorSecondary">@color/muted</item>
+    </style>
+
+    <style name="Widget.PhoneScanner.Action" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/primary_button</item>
+        <item name="android:textColor">@color/button_label</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">9dp</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="rippleColor">@color/action_ripple</item>
+    </style>
+
+    <style name="Widget.PhoneScanner.SecondaryAction" parent="Widget.PhoneScanner.Action">
+        <item name="backgroundTint">@color/secondary_button</item>
+    </style>
+
+    <style name="Widget.PhoneScanner.StopAction" parent="Widget.PhoneScanner.Action">
+        <item name="backgroundTint">@color/stop_button</item>
+    </style>
+
+    <style name="Widget.PhoneScanner.SettingsCheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+    </style>
+</resources>

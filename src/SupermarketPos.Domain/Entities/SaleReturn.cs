@@ -23,4 +23,5 @@ public sealed class SaleReturn
 
 public sealed record ReturnSelection(int SaleLineId, decimal Quantity, bool Restock, string? Identity = null);
 public sealed record ReturnedLine(int SaleLineId, int ProductId, string Name, string Unit, decimal Quantity,
-    long BaseQuantity, decimal Gross, decimal Tax, bool Restock, int? BatchId, string? Lot, DateOnly? Expiry, string? Serial, string? Location);
+    long BaseQuantity, decimal Gross, decimal Tax, bool Restock, int? BatchId, string? Lot, DateOnly? Expiry, string? Serial, string? Location,
+    string? Disposition = null, string? VerifiedIdentity = null);
