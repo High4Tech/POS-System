@@ -26,5 +26,6 @@ public static class DialogBounds
         var height = owner is { ActualHeight: > 0 } ? owner.ActualHeight : SystemParameters.WorkArea.Height;
         window.MaxWidth = width;
         window.MaxHeight = height;
+        window.StateChanged+=(_,_)=>{if(window.WindowState==WindowState.Maximized){window.SizeToContent=SizeToContent.Manual;window.MaxWidth=window.MaxHeight=double.PositiveInfinity;}};
     }
 }

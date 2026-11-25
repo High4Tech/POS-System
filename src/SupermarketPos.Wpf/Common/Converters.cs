@@ -6,6 +6,13 @@ using SupermarketPos.Domain.Entities;
 
 namespace SupermarketPos.Wpf.Common;
 
+public sealed class ProductTextFontConverter:IValueConverter
+{
+    private static readonly FontFamily Latin=new("Segoe UI");
+    public object Convert(object value,Type targetType,object parameter,CultureInfo culture)=>value is string text&&text.Any(c=>c is >= '\u0600' and <= '\u08ff' or >= '\ufb50' and <= '\ufeff')?Localization.LocalizationManager.Instance.FontFamily:Latin;
+    public object ConvertBack(object value,Type targetType,object parameter,CultureInfo culture)=>throw new NotSupportedException();
+}
+
 /// <summary>Deterministically maps an integer (category id/index) to one of the vibrant hues.</summary>
 public sealed class CategoryColorConverter : IValueConverter
 {
@@ -103,23 +110,6 @@ public sealed class RegisterTileWidthConverter : IMultiValueConverter
         var columns = Math.Max(1, Math.Max(preferredColumns, Math.Min(5, standardColumns)));
         var fittedWidth = Math.Floor(viewport / columns) - Gap;
         return columns < 3 ? Math.Min(preferred, fittedWidth) : fittedWidth;
-    }
-
-    public object[] ConvertBack(object value, Type[] targetTypes, object? parameter, CultureInfo culture) =>
-        throw new NotSupportedException();
-}
-
-public sealed class ProductResultsHeightConverter : IMultiValueConverter
-{
-    public object Convert(object[] values, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (values[0] is not double available || values[1] is not double tableHeader)
-            return DependencyProperty.UnsetValue;
-
-        // Leave room for the cart title, table header, scan button and spacing.
-        var cartReserve = tableHeader * 1.5 + 128;
-        if(parameter as string=="context")return Math.Max(100,Math.Min(available*.75,available-cartReserve));
-        return Math.Min(available * 0.50, Math.Max(available * 0.15, available - cartReserve));
     }
 
     public object[] ConvertBack(object value, Type[] targetTypes, object? parameter, CultureInfo culture) =>

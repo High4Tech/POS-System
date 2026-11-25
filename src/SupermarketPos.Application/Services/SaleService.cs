@@ -65,9 +65,11 @@ public sealed class SaleService : ISaleService
                 if (!product.IsActive)
                     throw new DomainException($"Product '{product.Name}' is inactive.");
                 if(product.VatRate!=charge.Line.VatRate)throw new DomainException("Tax_RateMismatch");
-                if(product.Unit!=charge.Line.Product.Unit||charge.Line.MedicineUnit is{} medicineUnit&&product.ResolveSellingUnit(medicineUnit).Size!=charge.Line.PackageSize||charge.Line.MedicineUnit is null&&charge.Line.IsPackage&&product.UnitsPerPackage!=charge.Line.PackageSize)throw new DomainException("Measure_ChangedUnit");
+                if(!product.SellingUnitConfigured)throw new DomainException("Pharmacy_MissingUnit");
+                if(product.Unit!=charge.Line.Product.Unit||charge.Line.MedicineUnit is{} medicineUnit&&product.SellingUnitSize(medicineUnit)!=charge.Line.PackageSize||charge.Line.MedicineUnit is null&&charge.Line.IsPackage&&product.UnitsPerPackage!=charge.Line.PackageSize)throw new DomainException("Measure_ChangedUnit");
+                if(charge.Line.MedicineUnit is not null&&(charge.Line.GrossUnitPrice<=0||charge.Line.HasPriceOverride&&!cashier.IsAdmin))throw new DomainException("Pharmacy_ConfirmUnitPrice");
                 if(product.RequiresPrescription&&!charge.Line.PrescriptionChecked||product.RequiresDispensingReference&&string.IsNullOrWhiteSpace(charge.Line.DispensingReference))throw new DomainException("Pharmacy_TraceabilityRequired");
-                if(!product.StockTracked&&(!product.DispensingRulesReviewed||product.TrackExpiry||product.TrackSerial))throw new DomainException("Pharmacy_TraceabilityRequired");
+                if(!product.StockTracked&&(product.TrackExpiry||product.TrackSerial))throw new DomainException("Pharmacy_TraceabilityRequired");
 
                 var serial = charge.Line.SerialNumber;
                 SerializedUnit? device = null;

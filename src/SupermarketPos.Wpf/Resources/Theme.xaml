@@ -5,6 +5,7 @@
                     xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
                     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
 
+    <layout:ProductTextFontConverter x:Key="ProductTextFont"/>
     <sys:Double x:Key="TextSize12">12</sys:Double>
     <sys:Double x:Key="TextSize13">13</sys:Double>
     <sys:Double x:Key="TextSize14">14</sys:Double>
@@ -187,6 +188,7 @@
         <Setter Property="Background" Value="{StaticResource InfoBrush}" />
     </Style>
 
+    <DataTemplate x:Key="ButtonCaption"><TextBlock FontFamily="{Binding FontFamily,RelativeSource={RelativeSource AncestorType=Button}}" Text="{Binding}" Foreground="{Binding Foreground,RelativeSource={RelativeSource AncestorType=Button}}" FontSize="{Binding FontSize,RelativeSource={RelativeSource AncestorType=Button}}" FontWeight="{Binding FontWeight,RelativeSource={RelativeSource AncestorType=Button}}" TextWrapping="Wrap" TextAlignment="Center"/></DataTemplate>
     <Style x:Key="GhostButton" TargetType="Button">
         <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
         <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
@@ -240,30 +242,10 @@
         <Setter Property="Margin" Value="14" />
     </Style>
 
-    <Style x:Key="CaptionButton" TargetType="Button" BasedOn="{StaticResource GhostButton}">
-        <Setter Property="Width" Value="42"/><Setter Property="Height" Value="34"/><Setter Property="MinHeight" Value="0"/>
-        <Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="2"/>
-        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/><Setter Property="FontSize" Value="12"/>
-        <Setter Property="shell:WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
-    </Style>
     <Style x:Key="CaptionWindow" TargetType="Window">
         <Setter Property="FontFamily" Value="{DynamicResource UiFont}"/>
-        <Setter Property="shell:WindowChrome.WindowChrome"><Setter.Value><shell:WindowChrome CaptionHeight="42" ResizeBorderThickness="6" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></Setter.Value></Setter>
-        <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Window">
-            <Border BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}" Background="{TemplateBinding Background}">
-                <Grid><Grid.RowDefinitions><RowDefinition Height="42"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-                    <DockPanel FlowDirection="LeftToRight" Background="{DynamicResource BgBrush}">
-                        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                            <Button Style="{StaticResource CaptionButton}" layout:WindowCaption.Action="minimize" AutomationProperties.Name="{loc:T Window_Minimize}" ToolTip="{loc:T Window_Minimize}"><Path Data="M0,5 L12,5" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.4" Width="12" Height="10"/></Button>
-                            <Button Style="{StaticResource CaptionButton}" layout:WindowCaption.Action="maximize" AutomationProperties.Name="{loc:T Window_Maximize}" ToolTip="{loc:T Window_Maximize}"><Path Data="M0,0 L10,0 10,10 0,10 Z" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.4" Width="12" Height="12"/></Button>
-                            <Button Style="{StaticResource CaptionButton}" layout:WindowCaption.Action="close" AutomationProperties.Name="{loc:T Common_Close}" ToolTip="{loc:T Common_Close}"><Path Data="M0,0 L10,10 M10,0 L0,10" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.4" Width="12" Height="12"/></Button>
-                        </StackPanel>
-                        <TextBlock Text="{TemplateBinding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="12,0" FontSize="14"/>
-                    </DockPanel>
-                    <AdornerDecorator Grid.Row="1"><ContentPresenter/></AdornerDecorator>
-                </Grid>
-            </Border>
-        </ControlTemplate></Setter.Value></Setter>
+        <Setter Property="WindowStyle" Value="SingleBorderWindow"/>
+        <Setter Property="layout:WindowCaption.Native" Value="True"/>
     </Style>
     <Style TargetType="Window" BasedOn="{StaticResource CaptionWindow}"/>
     <Style x:Key="FormDialogWindow" TargetType="Window" BasedOn="{StaticResource CaptionWindow}">
@@ -334,19 +316,31 @@
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
+    <Style x:Key="HeightDivider" TargetType="GridSplitter">
+        <Setter Property="ResizeDirection" Value="Rows"/><Setter Property="ResizeBehavior" Value="PreviousAndNext"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/><Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Cursor" Value="SizeNS"/><Setter Property="Focusable" Value="True"/><Setter Property="KeyboardIncrement" Value="12"/>
+        <Setter Property="Background" Value="Transparent"/><Setter Property="ToolTip" Value="{loc:T Layout_ResizeHint}"/>
+        <Setter Property="AutomationProperties.Name" Value="{loc:T Layout_ResizeHeight}"/>
+        <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="GridSplitter">
+            <Grid Background="{TemplateBinding Background}"><Border x:Name="grip" Width="72" Height="3" CornerRadius="1.5" Background="{StaticResource BorderBrush}"/></Grid>
+            <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="grip" Property="Background" Value="{StaticResource AccentBrush}"/></Trigger><Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="grip" Property="Background" Value="{StaticResource AccentBrush}"/></Trigger></ControlTemplate.Triggers>
+        </ControlTemplate></Setter.Value></Setter>
+    </Style>
     <!-- ============ Tappable product / category tile ============ -->
     <Style x:Key="TileButton" TargetType="Button">
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="14"
                             BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"
                             Padding="{TemplateBinding Padding}">
-                        <ContentPresenter />
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">

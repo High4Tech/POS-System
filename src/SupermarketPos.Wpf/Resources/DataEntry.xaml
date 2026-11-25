@@ -583,20 +583,22 @@
         <Setter Property="HeadersVisibility" Value="Column" />
         <Setter Property="MinColumnWidth" Value="36" />
         <Setter Property="ColumnHeaderHeight" Value="{DynamicResource TableRowHeight}" />
-        <Setter Property="RowHeight" Value="{DynamicResource TableRowHeight}" />
+        <Setter Property="RowHeight" Value="NaN" />
+        <Setter Property="MinRowHeight" Value="{DynamicResource TableRowHeight}" />
         <Setter Property="FontSize" Value="{DynamicResource TableTextSize}" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
 
     <Style x:Key="TableValue" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{DynamicResource TableTextSize}" />
-        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Setter Property="TextTrimming" Value="None" />
+        <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
     </Style>
 
     <Style x:Key="TableName" TargetType="TextBlock" BasedOn="{StaticResource TableValue}">
         <Setter Property="TextWrapping" Value="Wrap" />
-        <Setter Property="MaxHeight" Value="{DynamicResource TableLabelHeight}" />
+        <Setter Property="MaxHeight" Value="Infinity" />
     </Style>
 
     <Style x:Key="TableMoney" TargetType="TextBlock" BasedOn="{StaticResource TableValue}">

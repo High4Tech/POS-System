@@ -38,13 +38,25 @@ public sealed class PharmacyInventory(PosDbContext db,IUnitOfWork uow,IAuthServi
             db.Products.Add(product);await db.SaveChangesAsync(token);return product;
         },ct);
     }
+    public Task ConfirmSaleSetupAsync(int productId,string unit,decimal price,decimal vat,CancellationToken ct=default)
+    {
+        auth.RequireAdmin();return uow.ExecuteInTransactionAsync(async token=>
+        {
+            var p=await db.Products.SingleAsync(p=>p.Id==productId,token);
+            if(!p.StockTracked&&(!p.SellingUnitConfigured||p.UnitPrice<=0)&&p.UnitsPerStrip<=1&&p.UnitsPerPackage<=1&&(unit!=p.SellingUnit||!p.SellingUnitConfigured))
+            {if(await db.SaleLines.AnyAsync(l=>l.ProductId==p.Id,token))throw new DomainException("Measure_ChangedUnit");p.ConfigureMedicineUnits(unit);}
+            var current=p.SellingPriceFor(unit);
+            if(current is>0){if(current==price&&p.VatRate==vat){await db.SaveChangesAsync(token);return true;}throw new DomainException("Measure_ChangedUnit");}
+            p.SetSellingUnitPrice(unit,price);p.SetVatRate(vat);await db.SaveChangesAsync(token);return true;
+        },ct);
+    }
     public Task VerifyStockAsync(int productId,decimal physicalQuantity,string note,CancellationToken ct=default)
     {
         auth.RequireAdmin();
         return uow.ExecuteInTransactionAsync(async token=>
         {
             if(string.IsNullOrWhiteSpace(note)||note.Length>1000)throw new DomainException("Pharmacy_ResolutionRequired");
-            var p=await db.Products.SingleAsync(p=>p.Id==productId,token);var delta=physicalQuantity-p.StockQuantity;p.VerifyOpeningStock(physicalQuantity);
+            var p=await db.Products.SingleAsync(p=>p.Id==productId,token);if(Domain.Pricing.MeasuredGoods.BaseQuantity(physicalQuantity,p.Unit)<await db.StockPlacements.Where(s=>s.ProductId==productId).SumAsync(s=>s.BaseQuantity,token))throw new DomainException("Pharmacy_LocationStockShortage");var delta=physicalQuantity-p.StockQuantity;p.VerifyOpeningStock(physicalQuantity);
             db.StockMovements.Add(new StockMovement(p.Id,p.Name,delta,StockMovementKind.ManualAdjustment,DateTime.Now,note));
             foreach(var task in await db.StockReconciliations.Where(r=>r.ProductId==productId&&r.ResolvedAt==null).ToArrayAsync(token))task.Resolve(note,auth.CurrentUser!.DisplayName);
             await db.SaveChangesAsync(token);return true;

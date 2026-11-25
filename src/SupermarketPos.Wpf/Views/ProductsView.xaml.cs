@@ -7,6 +7,7 @@ namespace SupermarketPos.Wpf.Views;
 
 public partial class ProductsView : UserControl
 {
+    private void OpenMore(object sender,System.Windows.RoutedEventArgs e){if(sender is Button{ContextMenu:{} menu} button){menu.PlacementTarget=button;menu.IsOpen=true;}}
     public ProductsView() => InitializeComponent();
 
     private void ChooseCategoryColor(object sender, RoutedEventArgs e)

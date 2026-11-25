@@ -45,7 +45,7 @@ public sealed partial class PosViewModel
     private void UpdateScanWorkflow()
     {
         var mode = !_registerActive || !_auth.IsLoggedIn ? ScanMode.Away
-            : IsAddingScannedProduct || BatchPrompt is not null ? ScanMode.ProductEntry
+            : IsAddingScannedProduct || BatchPrompt is not null || PharmacyWorkspace?.HasPendingEntry==true ? ScanMode.ProductEntry
             : IsPaymentOpen || _checkoutBusy || _clearConfirmation ? ScanMode.Checkout
             : IsScanActive ? ScanMode.Scanning : ScanMode.Idle;
         _scanner.SetWorkflow(this, mode, DispatchBarcodeAsync);
@@ -97,7 +97,7 @@ public sealed partial class PosViewModel
         }
     }
 
-    private bool CanReadBarcode() => CanKeepScan() && !_readingBarcode;
+    private bool CanReadBarcode() => CanKeepScan() && !_readingBarcode&&PharmacyWorkspace?.HasPendingEntry!=true;
     private bool CanKeepScan() => !_clearConfirmation&&_registerActive && _auth.IsLoggedIn && !IsAddingScannedProduct &&
         !IsPaymentOpen && !_checkoutBusy && BatchPrompt is null;
 
@@ -114,8 +114,8 @@ public sealed partial class PosViewModel
         }
         if (match is null)
         {
-            if(IsPharmacy&&PharmacyWorkspace is{} pharmacy&&gs1 is null)
-            {if(pharmacy.HasPendingEntry)return new ScanOutcome("busy");_pharmacyScanned=scanned;await pharmacy.SelectAsync(null,"",code);return new ScanOutcome("pending");}
+            if(IsPharmacy&&gs1 is null)
+            {AddProvisionalMedicine(null,"",code);return new ScanOutcome("pending");}
             if (code.Length > 64)
             {
                 Status = Text["Batch_InvalidBarcode"];
@@ -129,7 +129,7 @@ public sealed partial class PosViewModel
         if(IsPharmacy&&product.Unit!=Unit.Piece){Status=Text["Pharmacy_PackedOnly"];return new("invalid",product.Name);}
         var needsLocation=false;
         if(IsPharmacy&&product.StockTracked){var places=await _stockLocations.StockAsync(product.Id);needsLocation=places.Select(l=>l.Id).Distinct().Count()>1||places.Length>0&&places.Sum(l=>l.BaseQuantity)<product.BaseStockQuantity;if(!CanKeepScan()||epoch is{} active&&!_scanner.CanApply(this,active))return new("paused");}
-        if(IsPharmacy&&PharmacyWorkspace is{} workspace&&(needsLocation||product.UnitPrice<=0||!product.DispensingRulesReviewed||product.RequiresPrescription||product.RequiresDispensingReference||product.UnitsPerStrip>1||product.UnitsPerPackage>1))
+        if(IsPharmacy&&PharmacyWorkspace is{} workspace&&(needsLocation||product.TrackExpiry||gs1?.HasTrackingData()==true||product.RequiresPrescription||product.RequiresDispensingReference))
         {
             if(workspace.HasPendingEntry)return new ScanOutcome("busy");
             _pharmacyScanned=scanned;
@@ -139,7 +139,7 @@ public sealed partial class PosViewModel
         _pendingPackage=match.Packaged;
         if(match.Packaged&&!EnablePackagedUnits){Status=Text["Measure_FeatureDisabled"];return new ScanOutcome("paused");}
         InventoryBatch? batch = null;
-        var qty = match.Quantity ?? 1m;
+        var qty = match.Quantity ?? (IsPharmacy?product.SellingUnitSize(product.DefaultSellingUnit):1m);
         if (product.IsActive && (product.TrackExpiry || !product.TrackSerial && gs1?.HasTrackingData() == true))
         {
             if (!product.TrackExpiry)
@@ -215,6 +215,7 @@ public sealed partial class PosViewModel
         }
         if (!CanKeepScan()||epoch is{} final&&!_scanner.CanApply(this,final)) return new ScanOutcome("paused");
         AddProduct(product, match.Quantity, batch, deviceSerial ?? gs1?.SerialNumber,match.Packaged);
+        if(IsPharmacy)await RefreshLocationLimitsAsync(product.Id);
         Status = Text.Format("Scanner_Added", match.Product.Name);
         decimal? remaining = product.StockTracked?(batch?.Quantity ?? product.StockQuantity) - QuantityInCart(product.Id, batch?.Id):null;
         StockWarning = remaining == 0m ? Text.Format("Scanner_LastStock", match.Product.Name)

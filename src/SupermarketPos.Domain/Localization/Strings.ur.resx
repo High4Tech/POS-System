@@ -1033,4 +1033,27 @@
   <data name="Pharmacy_SelectedLabels" xml:space="preserve"><value>منتخب جگہیں</value></data>
   <data name="Pharmacy_Strength" xml:space="preserve"><value>طاقت</value></data>
   <data name="Pharmacy_Filters" xml:space="preserve"><value>اسٹاک کے فلٹر</value></data>
+  <data name="Pos_Cards" xml:space="preserve"><value>کارڈز</value></data>
+  <data name="Pos_List" xml:space="preserve"><value>فہرست</value></data>
+  <data name="Pos_All" xml:space="preserve"><value>تمام</value></data>
+  <data name="Common_More" xml:space="preserve"><value>مزید</value></data>
+  <data name="Common_Next" xml:space="preserve"><value>اگلا</value></data>
+  <data name="Pharmacy_Unlisted" xml:space="preserve"><value>غیر درج شدہ دوائی</value></data>
+  <data name="Pharmacy_EnterCartDetails" xml:space="preserve"><value>کارٹ میں نام، اکائی، قیمت اور قابل اطلاق ٹیکس کی نامکمل تفصیلات درج کریں۔</value></data>
+  <data name="Pharmacy_SetupStatus" xml:space="preserve"><value>تیاری</value></data>
+  <data name="Pharmacy_CompanyShort" xml:space="preserve"><value>کمپنی</value></data>
+  <data name="Pharmacy_StripsPerPack" xml:space="preserve"><value>بڑے پیک میں اسٹرپس</value></data>
+  <data name="Pharmacy_DefaultSellingUnit" xml:space="preserve"><value>فروخت کی منتخب اکائی</value></data>
+  <data name="Pharmacy_OpeningStockUnit" xml:space="preserve"><value>ابتدائی اسٹاک کی اکائی</value></data>
+  <data name="Pharmacy_Search" xml:space="preserve"><value>دوائی تلاش کریں یا بارکوڈ اسکین کریں…</value></data>
+  <data name="Pos_Details" xml:space="preserve"><value>تفصیلات</value></data>
+  <data name="Pharmacy_LocationInUse" xml:space="preserve"><value>اس مقام کو غیر فعال کرنے سے پہلے باقی اسٹاک منتقل کریں، مصنوعات کا طے شدہ مقام تبدیل کریں اور ذیلی شیلف غیر فعال کریں۔</value></data>
+  <data name="Pharmacy_DeactivateLocation" xml:space="preserve"><value>خالی مقام غیر فعال کریں</value></data>
+  <data name="Pharmacy_MoveStock" xml:space="preserve"><value>اسٹاک منتقل کریں</value></data>
+  <data name="Pharmacy_FromLocation" xml:space="preserve"><value>موجودہ مقام</value></data>
+  <data name="Pharmacy_ToLocation" xml:space="preserve"><value>نیا مقام</value></data>
+  <data name="Pharmacy_TransferChanged" xml:space="preserve"><value>یہ منتقلی تصدیق مختلف تفصیلات کے لیے استعمال ہو چکی ہے۔ نئی منتقلی شروع کریں۔</value></data>
+  <data name="Stock_StockTransfer" xml:space="preserve"><value>مقام کی منتقلی</value></data>
+  <data name="Layout_ResizeHeight" xml:space="preserve"><value>پینل کی اونچائی بدلیں</value></data>
+  <data name="Layout_ResizeHint" xml:space="preserve"><value>اونچائی بدلنے کے لیے اوپر یا نیچے کھینچیں۔ تیر والے بٹن بھی استعمال کر سکتے ہیں۔ اصل سائز کے لیے دو بار کلک کریں۔</value></data>
 </root>

@@ -35,7 +35,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
     public bool PackagesEnabled{get;set;}
     public BusinessFormChoice[] SellingMethods=>new[]{"piece","weight","volume","pack"}.Where(c=>c==SellingMethod||c=="piece"||(c=="pack"?PackagesEnabled:LooseEnabled)).Select(c=>new BusinessFormChoice(c,LocalizationManager.Instance["Measure_"+c])).ToArray();
     public BusinessFormChoice[] PurchaseUnits=>new[]{"box","carton","pack"}.Select(c=>new BusinessFormChoice(c,LocalizationManager.Instance["Measure_"+c])).ToArray();
-    partial void OnSellingMethodChanged(string value){IsKilogram=value=="weight";OnPropertyChanged(nameof(SellingMethods));}
+    partial void OnSellingMethodChanged(string value){IsKilogram=value=="weight";OnPropertyChanged(nameof(SellingMethods));NotifySaleUnits();}
     [ObservableProperty] private bool _isActive = true;
     [ObservableProperty] private string _stock = string.Empty;
     [ObservableProperty] private int _categoryId;
@@ -80,7 +80,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
         BatchLot = BatchQuantity = "";
         BatchExpiry = null;
         UnassignedStock = 0m;
-        NotifyBatchOptions();
+        NotifyBatchOptions();DefaultSellingUnit=MedicineUnit;OpeningStockUnit=MedicineUnit;NotifySaleUnits();
     }
 
     public void Load(Product p)
@@ -109,7 +109,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
         BatchLot = BatchQuantity = "";
         BatchExpiry = null;
         UnassignedStock = p.UnassignedStock;
-        NotifyBatchOptions();
+        NotifyBatchOptions();DefaultSellingUnit=p.DefaultSellingUnit;OpeningStockUnit=MedicineUnit;NotifySaleUnits();
     }
 
     private void NotifyBatchOptions()

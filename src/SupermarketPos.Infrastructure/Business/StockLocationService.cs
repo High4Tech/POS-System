@@ -52,6 +52,37 @@ public sealed class StockLocationService(PosDbContext db,IUnitOfWork uow,IAuthSe
             var location=id is{} existing?await db.StockLocations.SingleAsync(l=>l.Id==existing,token):new StockLocation(name,parentId);location.Rename(name);if(id is null)db.StockLocations.Add(location);await db.SaveChangesAsync(token);return location;
         },ct);
     }
+    public Task DeactivateAsync(int locationId,CancellationToken ct=default)
+    {
+        auth.RequireAdmin();return uow.ExecuteInTransactionAsync(async token=>
+        {
+            var location=await db.StockLocations.SingleAsync(l=>l.Id==locationId,token);
+            if(await db.StockPlacements.AnyAsync(p=>p.LocationId==locationId&&p.BaseQuantity>0,token)||await db.Products.AnyAsync(p=>p.DefaultLocationId==locationId,token)||await db.StockLocations.AnyAsync(l=>l.ParentId==locationId&&l.IsActive,token))throw new DomainException("Pharmacy_LocationInUse");
+            location.SetActive(false);db.BusinessAudits.Add(new(){Actor=auth.CurrentUser!.DisplayName,Action="DeactivateLocation",Summary=$"LocationId={locationId}; Name={location.Name}"});await db.SaveChangesAsync(token);return true;
+        },ct);
+    }
+    public Task TransferAsync(int productId,int? batchId,int sourceId,int targetId,long quantity,string reason,Guid confirmationId,CancellationToken ct=default)
+    {
+        auth.RequireAdmin();return uow.ExecuteInTransactionAsync(async token=>
+        {
+            reason=reason.Trim();if(quantity<=0||sourceId<0||targetId<0||sourceId==targetId||confirmationId==Guid.Empty||reason.Length is <1 or >1000||reason.Any(char.IsControl))throw new DomainException("Pharmacy_ResolutionRequired");
+            var reference=$"Transfer {sourceId} -> {targetId}; Qty={quantity}; {reason}";
+            if(await db.StockMovements.AsNoTracking().SingleOrDefaultAsync(m=>m.ConfirmationId==confirmationId,token) is{} previous)
+            {if(previous.ProductId!=productId||previous.BatchId!=batchId||previous.Reference!=reference)throw new DomainException("Pharmacy_TransferChanged");return true;}
+            var p=await db.Products.Include(p=>p.Batches).SingleAsync(p=>p.Id==productId,token);if(!p.StockTracked)throw new DomainException("Pharmacy_VerifyStockFirst");
+            if(p.TrackExpiry!=batchId.HasValue)throw new DomainException("Pharmacy_TraceabilityRequired");
+            var batch=batchId is{} id?p.Batches.SingleOrDefault(b=>b.Id==id)??throw new DomainException("Pharmacy_TraceabilityRequired"):null;
+            foreach(var locationId in new[]{sourceId,targetId}.Where(id=>id>0))if(!await db.StockLocations.AnyAsync(l=>l.Id==locationId&&l.IsActive,token))throw new DomainException("Pharmacy_SelectStockLocation");
+            var placements=await db.StockPlacements.Where(s=>s.ProductId==productId&&s.BatchId==batchId).ToArrayAsync(token);
+            var source=placements.SingleOrDefault(s=>s.LocationId==sourceId);var available=sourceId==0?(batch?.BaseQuantity??p.BaseStockQuantity)-placements.Sum(s=>s.BaseQuantity):source?.BaseQuantity??0;
+            if(quantity>available)throw new DomainException("Pharmacy_LocationStockShortage");
+            source?.Adjust(-quantity);
+            if(targetId>0){var target=placements.SingleOrDefault(s=>s.LocationId==targetId);if(target is null){target=new(productId,batchId,targetId);db.StockPlacements.Add(target);}target.Adjust(quantity);}
+            // Location moves never receive or consume physical stock, including held/expired batches.
+            p.RecordLocationChange();db.StockMovements.Add(new(p.Id,p.Name,0,StockMovementKind.StockTransfer,DateTime.Now,reference,batch,confirmationId));
+            db.BusinessAudits.Add(new(){Actor=auth.CurrentUser!.DisplayName,Action="StockTransfer",Summary=$"ProductId={productId}; BatchId={batchId}; From={sourceId}; To={targetId}; BaseQuantity={quantity}"});await db.SaveChangesAsync(token);return true;
+        },ct);
+    }
     public Task AssignOpeningAsync(int productId,int? batchId,int locationId,long quantity,string reason,CancellationToken ct=default)
     {
         auth.RequireAdmin();return uow.ExecuteInTransactionAsync(async token=>

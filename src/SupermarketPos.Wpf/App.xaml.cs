@@ -64,6 +64,7 @@ public partial class App : System.Windows.Application
             _provider.GetRequiredService<StoreProfile>().Apply(current);
             _provider.GetRequiredService<DesktopTextSize>().Load();
             TableLayout.Load(storage);
+            PanelHeights.Load(storage);
 
             var setup = await _provider.GetRequiredService<IBusinessSetup>().LoadAsync();
             var license = _provider.GetRequiredService<LicenseClient>();

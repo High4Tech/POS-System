@@ -505,6 +505,10 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.Property<int?>("DefaultLocationId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("DefaultSellingUnitCode")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("DispensingRulesReviewed")
                         .HasColumnType("INTEGER");
 
@@ -1254,6 +1258,9 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ConfirmationId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Kind")
                         .HasColumnType("INTEGER");
 
@@ -1272,10 +1279,13 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Reference")
-                        .HasMaxLength(80)
+                        .HasMaxLength(1200)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ConfirmationId")
+                        .IsUnique();
 
                     b.HasIndex("ProductId", "OccurredAt");
 

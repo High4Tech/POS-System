@@ -7,57 +7,44 @@
              Background="{StaticResource BgBrush}">
     <Grid Margin="24">
         <DockPanel>
-            <Grid DockPanel.Dock="Top" Margin="0,0,0,18">
-                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-                <TextBlock Text="{loc:T Products_Title}" Style="{StaticResource H1}" VerticalAlignment="Center" />
-                <WrapPanel Grid.Row="1" HorizontalAlignment="Left" Margin="0,8,0,0">
-                    <CheckBox Content="{loc:T Products_LowStockOnly}" IsChecked="{Binding LowStockOnly}"
-                              VerticalAlignment="Center" Margin="0,0,18,0" />
-                    <Button Content="{loc:T Products_ShelfLabels}" Command="{Binding PrintLabelsCommand}" Style="{StaticResource GhostButton}" Margin="0,0,10,0" />
-                    <Button Content="{loc:T Category_Manage}" Command="{Binding EditCategoriesCommand}" Style="{StaticResource GhostButton}" Margin="0,0,10,0" />
-                    <Button Content="{loc:T Trade_Devices}" Command="{Binding ShowDevicesCommand}" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Visibility="{Binding ShowProductImages,Converter={StaticResource BoolToVis}}"/>
-                    <CheckBox Content="{loc:T Pharmacy_NeedsSetup}" IsChecked="{Binding NeedsSetupOnly}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,12,0"/>
-                    <CheckBox Content="{loc:T Pharmacy_Ready}" IsChecked="{Binding ReadyOnly}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,12,0"/>
-                    <Button Content="{loc:T Pharmacy_VerifyPhysicalStock}" Command="{Binding VerifyMedicineStockCommand}" Style="{StaticResource GhostButton}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,10,0"/>
-                    <Button Content="{loc:T Pharmacy_Locations}" Command="{Binding ManageStockLocationsCommand}" Style="{StaticResource GhostButton}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,10,0"/>
-                    <CheckBox Content="{loc:T Pharmacy_CardView}" IsChecked="{Binding MedicineCards}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,10,0"/>
-                    <Button Content="{loc:T Products_New}" Command="{Binding NewCommand}" Style="{StaticResource PrimaryButton}" />
-                </WrapPanel>
-            </Grid>
-
-            <ContentControl DockPanel.Dock="Top" Content="{Binding InventoryMedicineSearch}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,0,12"/>
-            <Expander DockPanel.Dock="Top" Header="{loc:T Pharmacy_Filters}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,0,10">
-            <WrapPanel Margin="0,8,0,0">
-              <ComboBox ItemsSource="{Binding FilterCategories}" SelectedValuePath="Id" DisplayMemberPath="Name" SelectedValue="{Binding FilterCategoryId}" MinWidth="220" MaxWidth="400" Margin="0,0,8,4" ToolTip="{Binding SelectionBoxItem.Name,RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{loc:T Products_Category}"/>
-              <ComboBox ItemsSource="{Binding StockStates}" SelectedValuePath="Code" DisplayMemberPath="Name" SelectedValue="{Binding StockState}" MinWidth="220" MaxWidth="400" Margin="0,0,8,4" ToolTip="{Binding SelectionBoxItem.Name,RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{loc:T Products_Stock}"/>
-              <ComboBox ItemsSource="{Binding ExpiryStates}" SelectedValuePath="Code" DisplayMemberPath="Name" SelectedValue="{Binding ExpiryState}" MinWidth="220" MaxWidth="400" Margin="0,0,8,4" ToolTip="{Binding SelectionBoxItem.Name,RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{loc:T Batch_Expiry}"/>
-              <ComboBox ItemsSource="{Binding LocationFilters}" SelectedValuePath="Id" DisplayMemberPath="Name" SelectedValue="{Binding SelectedLocationFilter}" MinWidth="220" MaxWidth="400" Margin="0,0,8,4" ToolTip="{Binding SelectionBoxItem.Name,RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{loc:T Pharmacy_Locations}"/>
-              <ComboBox ItemsSource="{Binding BatchFilters}" SelectedValuePath="Code" DisplayMemberPath="Name" SelectedValue="{Binding BatchFilter}" MinWidth="220" MaxWidth="400" Margin="0,0,8,4" ToolTip="{Binding SelectionBoxItem.Name,RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{loc:T Batch_Lot}"/>
-              <ComboBox ItemsSource="{Binding ManufacturerFilters}" SelectedValuePath="Code" DisplayMemberPath="Name" SelectedValue="{Binding ManufacturerFilter}" MinWidth="220" MaxWidth="400" Margin="0,0,8,4" ToolTip="{Binding SelectionBoxItem.Name,RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{loc:T Pharmacy_Manufacturer}"/>
-              <ComboBox ItemsSource="{Binding FormFilters}" SelectedValuePath="Code" DisplayMemberPath="Name" SelectedValue="{Binding FormFilter}" MinWidth="220" MaxWidth="400" Margin="0,0,8,4" ToolTip="{Binding SelectionBoxItem.Name,RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{loc:T Pharmacy_Form}"/>
-              <ComboBox ItemsSource="{Binding BarcodeStates}" SelectedValuePath="Code" DisplayMemberPath="Name" SelectedValue="{Binding BarcodeState}" MinWidth="220" MaxWidth="400" Margin="0,0,8,4" ToolTip="{Binding SelectionBoxItem.Name,RelativeSource={RelativeSource Self}}" AutomationProperties.Name="{loc:T Products_Barcode}"/>
-              <Button Content="{loc:T Pharmacy_ClearFilters}" Command="{Binding ClearPharmacyFiltersCommand}" Style="{StaticResource GhostButton}" Margin="0,0,8,4"/>
-              <Button Content="{Binding LocationFilterName}" Command="{Binding ClearLocationFilterCommand}" Style="{StaticResource GhostButton}" ToolTip="{loc:T Pharmacy_ClearLocation}" Visibility="{Binding LocationFilterName,Converter={StaticResource StrToVis}}"/>
-            </WrapPanel>
-            </Expander>
+            <TextBlock DockPanel.Dock="Top" Text="{loc:T Products_Title}" Style="{StaticResource H1}" Margin="0,0,0,12"/>
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+              <WrapPanel DockPanel.Dock="Right" Margin="10,0,0,0">
+                <Button Content="{loc:T Products_New}" Command="{Binding NewCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0"/>
+                <Button Content="{loc:T Pharmacy_Locations}" Command="{Binding ManageStockLocationsCommand}" Style="{StaticResource GhostButton}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,8,0"/>
+                <Button Content="{loc:T Common_More}" Style="{StaticResource GhostButton}" Click="OpenMore">
+                  <Button.ContextMenu><ContextMenu DataContext="{Binding PlacementTarget.DataContext,RelativeSource={RelativeSource Self}}">
+                    <MenuItem Header="{loc:T Bulk_ImportProducts}" Command="{Binding ImportProductsCommand}"/>
+                    <MenuItem Header="{loc:T Bulk_Template}" Command="{Binding DownloadProductTemplateCommand}"/>
+                    <MenuItem Header="{loc:T Category_Manage}" Command="{Binding EditCategoriesCommand}"/>
+                    <MenuItem Header="{loc:T Products_ShelfLabels}" Command="{Binding PrintLabelsCommand}"/>
+                    <MenuItem Header="{loc:T Pharmacy_VerifyPhysicalStock}" Command="{Binding VerifyMedicineStockCommand}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}"/>
+                    <MenuItem Header="{loc:T Trade_Devices}" Command="{Binding ShowDevicesCommand}" Visibility="{Binding ShowProductImages,Converter={StaticResource BoolToVis}}"/>
+                  </ContextMenu></Button.ContextMenu>
+                </Button>
+              </WrapPanel>
+              <Grid>
+                <ContentControl Content="{Binding InventoryMedicineSearch}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}"/>
+                <TextBox Text="{Binding Filter,UpdateSourceTrigger=PropertyChanged}" ToolTip="{loc:T Bulk_Search}" AutomationProperties.Name="{loc:T Bulk_Search}" Visibility="{Binding ShowProductImages,Converter={StaticResource BoolToVis}}"/>
+              </Grid>
+            </DockPanel>
+            <ScrollViewer x:Name="InventoryFilters" DockPanel.Dock="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,0,8">
+              <StackPanel Orientation="Horizontal">
+                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Products_Category}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding FilterCategories}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding FilterCategoryId}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Products_Stock}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding StockStates}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding StockState}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Pharmacy_SetupStatus}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding SetupStates}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding SetupState}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Pharmacy_Locations}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding LocationFilters}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding SelectedLocationFilter}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Batch_Expiry}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding ExpiryStates}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding ExpiryState}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Pharmacy_CompanyShort}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding ManufacturerFilters}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding ManufacturerFilter}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Pharmacy_Form}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding FormFilters}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding FormFilter}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Batch_Lot}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding BatchFilters}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding BatchFilter}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Products_Barcode}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding BarcodeStates}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding BarcodeState}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <Button Content="{loc:T Pharmacy_ClearFilters}" Command="{Binding ClearPharmacyFiltersCommand}" Style="{StaticResource GhostButton}" VerticalAlignment="Bottom" Margin="0,0,0,3"/>
+              </StackPanel>
+            </ScrollViewer>
+            <CheckBox DockPanel.Dock="Top" Content="{loc:T Products_LowStockOnly}" IsChecked="{Binding LowStockOnly}" Visibility="{Binding ShowProductImages,Converter={StaticResource BoolToVis}}" Margin="0,0,0,8"/>
             <TextBlock DockPanel.Dock="Top" Text="{Binding FilterSummary}" TextWrapping="Wrap" Margin="0,0,0,10" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}"/>
             <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                <Grid Width="210" Margin="0,0,8,5" Visibility="{Binding ShowProductImages,Converter={StaticResource BoolToVis}}">
-                    <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:T Bulk_Search}" />
-                    <TextBlock Text="{loc:T Bulk_Search}" IsHitTestVisible="False" VerticalAlignment="Center" Margin="12,0">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock" BasedOn="{StaticResource Muted}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Filter}" Value="">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </Grid>
-                <Button Content="{loc:T Bulk_SelectVisible}" Command="{Binding SelectVisibleCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,5" />
                 <Button Content="{loc:T Bulk_Clear}" Command="{Binding ClearSelectionCommand}" Style="{StaticResource GhostButton}" Margin="0,0,8,5"
                         Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}" />
                 <TextBlock Text="{Binding SelectionText}" VerticalAlignment="Center" Style="{StaticResource Muted}" Margin="0,0,12,5"
@@ -69,12 +56,6 @@
             </WrapPanel>
 
             <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                <WrapPanel>
-                    <Button Content="{loc:T Bulk_ImportProducts}" Command="{Binding ImportProductsCommand}"
-                            Style="{StaticResource GhostButton}" Margin="0,0,8,4" />
-                    <Button Content="{loc:T Bulk_Template}" Command="{Binding DownloadProductTemplateCommand}"
-                            Style="{StaticResource GhostButton}" Margin="0,0,0,4" ToolTip="{loc:T Bulk_ProductHelp}" />
-                </WrapPanel>
                 <TextBlock Text="{Binding ImportMessage}" Foreground="{StaticResource SuccessBrush}" TextWrapping="Wrap"
                            Visibility="{Binding ImportMessage, Converter={StaticResource StrToVis}}" />
                 <TextBlock Text="{Binding ImportError}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap"
@@ -88,25 +69,7 @@
                         Style="{StaticResource GhostButton}" />
             </StackPanel>
             <Grid>
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Visibility="{Binding ShowMedicineCards,Converter={StaticResource BoolToVis}}">
-              <ItemsControl ItemsSource="{Binding VisibleProducts}">
-                <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate><DataTemplate>
-                  <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="12" Width="320" Padding="14" Margin="0,0,10,10">
-                    <StackPanel>
-                      <CheckBox IsChecked="{Binding IsSelected,Mode=TwoWay}" AutomationProperties.Name="{Binding Name}"/>
-                      <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Margin="0,8" MinHeight="44"/>
-                      <TextBlock Text="{Binding Details}" TextWrapping="Wrap" Margin="0,4"/><TextBlock Text="{Binding Locations}" TextWrapping="Wrap" Margin="0,4"/>
-                      <TextBlock Text="{Binding PriceText}" Foreground="{StaticResource AccentBrush}"/>
-                      <TextBlock Text="{Binding StockText}" TextWrapping="Wrap"/><TextBlock Text="{Binding StatusText}" TextWrapping="Wrap"/>
-                      <TextBlock Text="{Binding SetupDetails}" TextWrapping="Wrap" Margin="0,6"/>
-                      <WrapPanel><Button Content="{loc:T Bulk_Edit}" Command="{Binding DataContext.EditCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Style="{StaticResource GhostButton}"/><Button Content="{loc:T Common_Delete}" Command="{Binding DataContext.DeleteCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Style="{StaticResource DangerButton}" Margin="6,0"/></WrapPanel>
-                    </StackPanel>
-                  </Border>
-                </DataTemplate></ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
-            <Border Style="{StaticResource Card}" Padding="6" Visibility="{Binding ShowInventoryTable,Converter={StaticResource BoolToVis}}">
+            <Border Style="{StaticResource Card}" Padding="6">
                 <DataGrid layout:TableLayout.Key="inventory-products" ItemsSource="{Binding VisibleProducts}" IsReadOnly="True">
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">

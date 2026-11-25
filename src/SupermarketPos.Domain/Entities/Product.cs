@@ -13,6 +13,7 @@ public sealed class Product
     public bool TrackSerial { get; private set; }
     public int WarrantyMonths { get; private set; }
     public int StockRevision { get; private set; }
+    public void RecordLocationChange()=>StockRevision++;
     public IReadOnlyList<InventoryBatch> Batches => _batches;
     public decimal UnassignedStock => StockQuantity - _batches.Sum(batch => batch.Quantity);
     public decimal AvailableForSale(DateOnly today)=>TrackExpiry?_batches.Where(b=>b.ExpiryDate>=today&&b.HoldReason.Length==0).Sum(b=>b.Quantity):StockQuantity;
@@ -31,6 +32,12 @@ public sealed class Product
     }
     public bool StockTracked{get;private set;}=true;
     public string SellingUnit{get;private set;}="piece";
+    public bool SellingUnitConfigured{get;private set;}=true;
+    public void LeaveSellingUnitUnspecified(){if(StockTracked||UnitsPerStrip>1||UnitsPerPackage>1)throw new DomainException("Pharmacy_MissingUnit");SellingUnitConfigured=false;}
+    public string DefaultSellingUnitCode{get;private set;}="";
+    public string DefaultSellingUnit=>DefaultSellingUnitCode.Length==0?SellingUnit:DefaultSellingUnitCode;
+    public void SetDefaultSellingUnit(string unit){_=SellingUnitSize(unit);DefaultSellingUnitCode=unit==SellingUnit?"":unit;}
+    public decimal? SellingPriceFor(string unit){_=SellingUnitSize(unit);return unit==SellingUnit?UnitPrice:unit=="strip"?StripSellingPrice:PackageSellingPrice;}
     public int UnitsPerStrip{get;private set;}=1;
     public decimal? StripSellingPrice{get;private set;}
     public bool DispensingRulesReviewed{get;private set;}
@@ -40,12 +47,12 @@ public sealed class Product
     {DispensingRulesReviewed=true;RequiresPrescription=prescription;RequiresDispensingReference=reference;StockRevision++;}
     public void MarkStockUntracked()
     {
-        if(Id!=0||BaseStockQuantity!=0||TrackExpiry||TrackSerial)throw new DomainException("Pharmacy_CannotUntrack");
+        if(Id!=0||BaseStockQuantity!=0||_batches.Count>0||TrackSerial)throw new DomainException("Pharmacy_CannotUntrack");
         StockTracked=false;
     }
     public void VerifyOpeningStock(decimal quantity)
     {
-        if(TrackExpiry||TrackSerial)throw new DomainException("Pharmacy_TraceabilityRequired");
+        if(TrackSerial||TrackExpiry&&(quantity!=0||_batches.Count>0))throw new DomainException("Pharmacy_TraceabilityRequired");
         if(quantity<0)throw new DomainException("Stock cannot be negative.");var exact=Domain.Pricing.MeasuredGoods.BaseQuantity(quantity,Unit);BaseStockQuantity=exact;StockTracked=true;StockRevision++;
     }
     public void ConfigureMedicineUnits(string unit,int unitsPerStrip=1,decimal? stripPrice=null)
@@ -53,7 +60,7 @@ public sealed class Product
         if(Unit!=Unit.Piece||TrackSerial||unit is not ("piece" or "tablet" or "capsule" or "bottle" or "tube" or "sachet" or "vial" or "other")||unitsPerStrip<1||unitsPerStrip>1000000||
             unitsPerStrip>1&&unit is not ("tablet" or "capsule")||stripPrice is{} price&&(price<=0||price!=Money.Round2(price))||unitsPerStrip>1&&UnitsPerPackage>1&&UnitsPerPackage%unitsPerStrip!=0)
             throw new DomainException("Pharmacy_InvalidUnits");
-        SellingUnit=unit;UnitsPerStrip=unitsPerStrip;StripSellingPrice=stripPrice;StockRevision++;
+        SellingUnit=unit;SellingUnitConfigured=true;UnitsPerStrip=unitsPerStrip;StripSellingPrice=stripPrice;StockRevision++;
     }
     public (int Size,decimal Price) ResolveSellingUnit(string unit)
     {
@@ -150,7 +157,7 @@ public sealed class Product
 
     public void SetExpiryTracking(bool enabled)
     {
-        if(enabled&&!StockTracked)throw new DomainException("Pharmacy_VerifyStockFirst");
+        if(enabled&&!StockTracked&&(BaseStockQuantity!=0||_batches.Count>0))throw new DomainException("Pharmacy_VerifyStockFirst");
         if (TrackExpiry == enabled) return;
         if (!enabled && _batches.Count > 0)
             throw new DomainException("Expiry tracking cannot be disabled after batches have been recorded.");

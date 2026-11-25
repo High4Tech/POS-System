@@ -49,7 +49,7 @@ public sealed class FbrCompliance(PosDbContext db) : IBusinessCompliance
             var productIds=cart.Lines.Select(l=>l.Product.Id).ToArray();
             var products=await db.Products.AsNoTracking().Where(p=>productIds.Contains(p.Id)).ToArrayAsync(ct);
             if(products.Any(p=>p.Unit!=SupermarketPos.Domain.Common.Unit.Piece))throw new BusinessValidationException("Pharmacy_PackedOnly");
-            if(products.Any(p=>p.TrackSerial||p.WarrantyMonths>0||!p.DispensingRulesReviewed))throw new BusinessValidationException("Pharmacy_TraceabilityRequired");
+            if(products.Any(p=>p.TrackSerial||p.WarrantyMonths>0))throw new BusinessValidationException("Pharmacy_TraceabilityRequired");
         }
         if (profile.FbrRequired) throw new BusinessValidationException("Setup_RequiredIntegration");
         if (!profile.Registered) return;

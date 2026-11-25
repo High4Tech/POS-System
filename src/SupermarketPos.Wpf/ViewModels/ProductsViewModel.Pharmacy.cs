@@ -12,12 +12,9 @@ public sealed partial class ProductsViewModel
     private readonly MedicineCatalogService _medicineCatalog;
     private readonly PharmacyInventory _pharmacyInventory;
     private readonly StockLocationService _stockLocations;
-    private readonly LayoutPreferences<InventoryViewPreference> _inventoryPreferences;
-    [ObservableProperty][NotifyPropertyChangedFor(nameof(ShowMedicineCards),nameof(ShowInventoryTable))]private bool _medicineCards;
-    public bool ShowMedicineCards=>IsPharmacy&&MedicineCards;
-    public bool ShowInventoryTable=>!ShowMedicineCards;
-    partial void OnMedicineCardsChanged(bool value)=>_inventoryPreferences.Write(new(value));
-    private sealed record InventoryViewPreference(bool Cards);
+    [ObservableProperty]private string _setupState="all";
+    public BusinessForm.Choice[] SetupStates=>new[]{("all","Pos_All"),("ready","Pharmacy_Ready"),("needs","Pharmacy_NeedsSetup")}.Select(c=>new BusinessForm.Choice(c.Item1,Localization.LocalizationManager.Instance[c.Item2])).ToArray();
+    partial void OnSetupStateChanged(string value){ReadyOnly=value=="ready";NeedsSetupOnly=value=="needs";RefreshPharmacyFilter();}
     private bool _quickAddOpen;
     private int? _locationFilterId;
     private HashSet<int>? _locationProductIds;
@@ -65,7 +62,7 @@ public sealed partial class ProductsViewModel
     partial void OnSelectedLocationFilterChanged(int value){if(!_applyingLocationFilter)_=ApplyLocationFilterAsync(value);}
     private void RefreshPharmacyFilter(){VisibleProducts.Refresh();OnPropertyChanged(nameof(FilterSummary));}
     public IReadOnlyList<Category> FilterCategories=>new[]{new Category(Localization.LocalizationManager.Instance["Pharmacy_AllCategories"])}.Concat(_categoryList).ToArray();
-    public BusinessForm.Choice[] StockStates=>new[]{("all","Pharmacy_AllStock"),("in","Pharmacy_InStock"),("out","Pharmacy_OutOfStock"),("untracked","Pharmacy_StockUntracked")}.Select(c=>new BusinessForm.Choice(c.Item1,Localization.LocalizationManager.Instance[c.Item2])).ToArray();
+    public BusinessForm.Choice[] StockStates=>new[]{("all","Pos_All"),("in","Pharmacy_InStock"),("low","Products_LowStock"),("out","Pharmacy_OutOfStock"),("untracked","Pharmacy_StockUntracked")}.Select(c=>new BusinessForm.Choice(c.Item1,Localization.LocalizationManager.Instance[c.Item2])).ToArray();
     public BusinessForm.Choice[] ExpiryStates=>new[]{("all","Pharmacy_AllExpiry"),("expired","Batch_ExpiredStatus"),("soon","Batch_ExpiringSoon"),("valid","Batch_Ready")}.Select(c=>new BusinessForm.Choice(c.Item1,Localization.LocalizationManager.Instance[c.Item2])).ToArray();
     partial void OnFilterCategoryIdChanged(int value)=>RefreshPharmacyFilter();
     partial void OnStockStateChanged(string value)=>RefreshPharmacyFilter();
@@ -76,7 +73,7 @@ public sealed partial class ProductsViewModel
         if(ReadyOnly&&row.NeedsSetup||BatchFilter.Length>0&&!p.Batches.Any(b=>b.Lot==BatchFilter)||ManufacturerFilter.Length>0&&row.Manufacturer!=ManufacturerFilter||FormFilter.Length>0&&row.Formulation!=FormFilter)return false;
         var hasBarcode=!p.Barcode.StartsWith("INTERNAL-",StringComparison.Ordinal);
         if(BarcodeState=="has"&&!hasBarcode||BarcodeState=="missing"&&hasBarcode)return false;
-        return (FilterCategoryId==0||p.CategoryId==FilterCategoryId)&&(_locationProductIds is null||_locationProductIds.Contains(p.Id))&&(StockState switch{"in"=>p.StockTracked&&available>0,"out"=>p.StockTracked&&available<=0,"untracked"=>!p.StockTracked,_=>true})&&(ExpiryState switch{"expired"=>p.Batches.Any(b=>b.Quantity>0&&b.ExpiryDate<today),"soon"=>p.Batches.Any(b=>b.Quantity>0&&b.ExpiryDate>=today&&b.ExpiryDate<=today.AddDays(30)),"valid"=>p.Batches.Any(b=>b.Quantity>0&&b.ExpiryDate>=today&&b.HoldReason.Length==0),_=>true});
+        return (FilterCategoryId==0||p.CategoryId==FilterCategoryId)&&(_locationProductIds is null||_locationProductIds.Contains(p.Id))&&(StockState switch{"in"=>p.StockTracked&&available>0,"low"=>row.IsLowStock,"out"=>p.StockTracked&&available<=0,"untracked"=>!p.StockTracked,_=>true})&&(ExpiryState switch{"expired"=>p.Batches.Any(b=>b.Quantity>0&&b.ExpiryDate<today),"soon"=>p.Batches.Any(b=>b.Quantity>0&&b.ExpiryDate>=today&&b.ExpiryDate<=today.AddDays(30)),"valid"=>p.Batches.Any(b=>b.Quantity>0&&b.ExpiryDate>=today&&b.HoldReason.Length==0),_=>true});
     }
     private async Task<SupermarketPos.Infrastructure.Scanning.ScanOutcome> FilterLocationAsync(string code,Guid? epoch=null)
     {
@@ -97,7 +94,7 @@ public sealed partial class ProductsViewModel
         catch{ProductError=Localization.LocalizationManager.Instance["Pharmacy_SearchError"];return false;}
     }
     [RelayCommand]private void ClearLocationFilter(){SelectedLocationFilter=0;_locationFilterVersion++;_locationFilterId=null;_locationProductIds=null;_locationQuantities=null;_locationBatchQuantities=null;LocationFilterName=null;RefreshPharmacyFilter();}
-    [RelayCommand]private void ClearPharmacyFilters(){ClearLocationFilter();Filter="";FilterCategoryId=0;StockState=ExpiryState=BarcodeState="all";BatchFilter=ManufacturerFilter=FormFilter="";ReadyOnly=NeedsSetupOnly=LowStockOnly=false;RefreshPharmacyFilter();}
+    [RelayCommand]private void ClearPharmacyFilters(){ClearLocationFilter();Filter="";FilterCategoryId=0;SetupState=StockState=ExpiryState=BarcodeState="all";BatchFilter=ManufacturerFilter=FormFilter="";ReadyOnly=NeedsSetupOnly=LowStockOnly=false;RefreshPharmacyFilter();}
     [ObservableProperty]private FrameworkElement? _medicineNameSearch;
     [ObservableProperty]private FrameworkElement? _inventoryMedicineSearch;
     [ObservableProperty]private bool _needsSetupOnly;
@@ -128,9 +125,9 @@ public sealed partial class ProductsViewModel
     private void PrepareMedicineSearch()
     {
         if(!IsPharmacy||MedicineNameSearch is not null)return;
-        var editor=new MedicineSearchBox(_medicineCatalog);editor.Input.SetBinding(TextBox.TextProperty,new System.Windows.Data.Binding(nameof(Editor.Name)){Source=Editor,Mode=System.Windows.Data.BindingMode.TwoWay,UpdateSourceTrigger=System.Windows.Data.UpdateSourceTrigger.PropertyChanged});
-        editor.Selected+=async match=>{if(match.ProductId is{} id)await OpenProductAsync(id);else{Editor.MedicineReferenceId=match.ReferenceId;Editor.Name=match.Name;}};MedicineNameSearch=editor;
-        var search=new MedicineSearchBox(_medicineCatalog);search.Input.SetBinding(TextBox.TextProperty,new System.Windows.Data.Binding(nameof(Filter)){Source=this,Mode=System.Windows.Data.BindingMode.TwoWay,UpdateSourceTrigger=System.Windows.Data.UpdateSourceTrigger.PropertyChanged});search.Selected+=async match=>{if(match.ProductId is not null)Filter=match.Name;else await QuickAddMedicineAsync("",match.Name,match.ReferenceId);};search.BarcodeSubmitted+=async code=>{await _scanner.DispatchPhysicalAsync(code);search.Input.Clear();};InventoryMedicineSearch=search;
+        var editor=new MedicineSearchBox(_medicineCatalog);editor.Input.SetBinding(TextBox.TextProperty,new System.Windows.Data.Binding(nameof(Editor.Name)){Source=Editor,Mode=System.Windows.Data.BindingMode.TwoWay,UpdateSourceTrigger=System.Windows.Data.UpdateSourceTrigger.PropertyChanged,ValidatesOnDataErrors=true});
+        editor.Selected+=async match=>{if(match.ProductId is{} id)await OpenProductAsync(id);else{Editor.MedicineReferenceId=match.ReferenceId;Editor.Name=match.Name;Editor.MedicineGeneric=match.GenericName;Editor.MedicineStrength=match.Strength;Editor.MedicineForm=match.Formulation;Editor.MedicineManufacturer=match.Manufacturer;if(Editor.Barcode.Length==0&&match.Barcode.Length>0)Editor.Barcode=match.Barcode;}};MedicineNameSearch=editor;
+        var search=new MedicineSearchBox(_medicineCatalog);search.Input.SetBinding(TextBox.TextProperty,new System.Windows.Data.Binding(nameof(Filter)){Source=this,Mode=System.Windows.Data.BindingMode.TwoWay,UpdateSourceTrigger=System.Windows.Data.UpdateSourceTrigger.PropertyChanged,Delay=120});search.Selected+=async match=>{if(match.ProductId is not null)Filter=match.Name;else await QuickAddMedicineAsync("",match.Name,match.ReferenceId);};search.BarcodeSubmitted+=async code=>{await _scanner.DispatchPhysicalAsync(code);search.Input.Clear();};InventoryMedicineSearch=search;
     }
     public async Task<int?> CreateMedicineForPurchaseAsync(string barcode,string name,int? reference=null,int? supplierId=null)
     {

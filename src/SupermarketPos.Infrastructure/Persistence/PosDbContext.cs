@@ -240,7 +240,8 @@ public sealed class PosDbContext : DbContext
             e.Property(m => m.BatchLot).HasMaxLength(20);
             e.Property(m => m.ProductName).HasMaxLength(200);
             e.Property(m => m.QuantityChange).HasColumnType("TEXT");
-            e.Property(m => m.Reference).HasMaxLength(80);
+            e.Property(m => m.Reference).HasMaxLength(1200);
+            e.HasIndex(m => m.ConfirmationId).IsUnique();
             e.HasIndex(m => new { m.ProductId, m.OccurredAt });
         });
 

@@ -190,12 +190,12 @@
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding SelectedPurchase.Notes}" TextWrapping="Wrap" Margin="0,6,0,0"
                                Visibility="{Binding SelectedPurchase.Notes, Converter={StaticResource StrToVis}, FallbackValue=Collapsed}" />
-                    <Grid>
+                    <Grid layout:PanelHeights.Key="purchase-history">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
-                            <RowDefinition Height="16" />
+                            <RowDefinition Height="12" />
                             <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
+                        </Grid.RowDefinitions><GridSplitter Grid.Row="1" Style="{StaticResource HeightDivider}"/>
                         <DataGrid layout:TableLayout.Key="purchases-receipts" ItemsSource="{Binding VisibleHistory}" SelectedItem="{Binding SelectedPurchase}" AutoGenerateColumns="False"
                                   IsReadOnly="True" SelectionMode="Single" CanUserAddRows="False">
                             <DataGrid.Columns>
@@ -247,8 +247,8 @@
                         <TextBlock DockPanel.Dock="Top" Text="{loc:T Trade_BalanceHelp}" TextWrapping="Wrap" Margin="0,0,0,12" />
                         <Button DockPanel.Dock="Bottom" Content="{loc:T Trade_PaySupplier}" Command="{Binding PaySupplierCommand}"
                                 Style="{StaticResource PrimaryButton}" HorizontalAlignment="Right" Margin="0,12,0,0" />
-                        <Grid>
-                            <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="12" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                        <Grid layout:PanelHeights.Key="supplier-balances">
+                            <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="12" /><RowDefinition Height="*" /></Grid.RowDefinitions><GridSplitter Grid.Row="1" Style="{StaticResource HeightDivider}"/>
                             <DataGrid layout:TableLayout.Key="supplier-balances" ItemsSource="{Binding SupplierBalances}" SelectedItem="{Binding SelectedBalanceSupplier}" IsReadOnly="True">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="{loc:T Purchase_Supplier}" Binding="{Binding Name}" Width="2*" ElementStyle="{StaticResource TableName}" />

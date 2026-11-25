@@ -1,6 +1,6 @@
 namespace SupermarketPos.Domain.Entities;
 
-public enum StockMovementKind { OpeningStock, PurchaseReceipt, Sale, ManualAdjustment, BatchAssignment, BatchHold }
+public enum StockMovementKind { OpeningStock, PurchaseReceipt, Sale, ManualAdjustment, BatchAssignment, BatchHold, StockTransfer }
 
 public sealed class StockMovement
 {
@@ -13,11 +13,12 @@ public sealed class StockMovement
     public string? Reference { get; private set; }
     public int? BatchId { get; private set; }
     public string? BatchLot { get; private set; }
+    public Guid? ConfirmationId { get; private set; }
 
     private StockMovement() { }
 
     public StockMovement(int productId, string productName, decimal quantityChange, StockMovementKind kind,
-        DateTime occurredAt, string? reference = null, InventoryBatch? batch = null)
+        DateTime occurredAt, string? reference = null, InventoryBatch? batch = null, Guid? confirmationId = null)
     {
         ProductId = productId;
         ProductName = productName;
@@ -27,5 +28,6 @@ public sealed class StockMovement
         Reference = reference;
         BatchId = batch?.Id;
         BatchLot = batch?.Lot;
+        ConfirmationId = confirmationId;
     }
 }

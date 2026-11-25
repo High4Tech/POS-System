@@ -61,6 +61,7 @@ public sealed partial class PosViewModel : ObservableObject
         _ledger = ledger;
         _businessSetup=businessSetup;
         _medicineCatalog=medicineCatalog;_pharmacyInventory=pharmacyInventory;_stockLocations=stockLocations;
+        _registerPreferences=new(storage,"register-view.json");_registerList=_registerPreferences.Read()?.List??false;
         Recalculate();
     }
 
@@ -68,6 +69,7 @@ public sealed partial class PosViewModel : ObservableObject
     public ObservableCollection<RegisterProductTile> ProductTiles { get; } = new();
     public ObservableCollection<CategoryTileViewModel> Categories { get; } = new();
     public ObservableCollection<VatLineViewModel> VatBreakdown { get; } = new();
+    private Dictionary<int,MedicineMatch> _registerMetadata=[];
 
     [ObservableProperty] private int _selectedCategoryId;
 
@@ -85,7 +87,10 @@ public sealed partial class PosViewModel : ObservableObject
         if(IsPharmacy&&PharmacyWorkspace is null)
         {
             PharmacyWorkspace=new PharmacySalePanel(_medicineCatalog,_pharmacyInventory,_products,_stockLocations,AddMedicineAsync);
-            PharmacyWorkspace.Search.BarcodeSubmitted+=async code=>{await _scanner.DispatchPhysicalAsync(code);PharmacyWorkspace.Search.Input.Clear();};
+            PharmacyWorkspace.PendingChanged+=UpdateScanWorkflow;
+            PharmacyWorkspace.Search.Input.SetBinding(System.Windows.Controls.TextBox.TextProperty,new System.Windows.Data.Binding(nameof(SearchText)){Source=this,Mode=System.Windows.Data.BindingMode.TwoWay,UpdateSourceTrigger=System.Windows.Data.UpdateSourceTrigger.PropertyChanged});
+            PharmacyWorkspace.Search.Selected+=async match=>await SelectMedicineAsync(match);
+            PharmacyWorkspace.Search.BarcodeSubmitted+=async code=>{await _scanner.DispatchPhysicalAsync(code);};
         }
         var cats = await _categoryRepo.GetAllAsync();
         Categories.Clear();
@@ -94,45 +99,42 @@ public sealed partial class PosViewModel : ObservableObject
             Categories.Add(new CategoryTileViewModel(c, i++, _storage.CategoryImagePath(c.ImageFileName))
                 { IsSelected = c.Id == SelectedCategoryId });
         foreach (var line in Lines)
-            line.UpdateAvailability(await _products.GetCurrentForRegisterAsync(line.Line.Product.Id));
-        if (SelectedCategoryId == 0) return;
-        if (Categories.Any(tile => tile.IsSelected))
-            ShowProductTiles(await _products.GetByCategoryAsync(SelectedCategoryId));
-        else
-        {
-            SelectedCategoryId = 0;
-            ShowProductTiles([]);
-        }
+            line.UpdateAvailability(line.Line.Product.Id==0?line.Line.Product:await _products.GetCurrentForRegisterAsync(line.Line.Product.Id));
+        _registerProducts=(await _products.GetAllAsync()).Where(p=>p.IsActive).ToArray();
+        _registerMetadata=IsPharmacy?await _medicineCatalog.DescribeAsync(_registerProducts):[];
+        if(!Categories.Any(tile=>tile.IsSelected))SelectedCategoryId=0;
+        ApplyRegisterFilter();
     }
 
     [RelayCommand]
-    private async Task SelectCategory(CategoryTileViewModel? tile)
+    private Task SelectCategory(CategoryTileViewModel? tile)
     {
-        if (tile is null || !CanReadBarcode()) return;
+        if (tile is null || !CanReadBarcode()) return Task.CompletedTask;
         if (SelectedCategoryId == tile.Category.Id)
         {
             SelectedCategoryId = 0;
-            ShowProductTiles([]);
+            ApplyRegisterFilter();
             Status = null;
-            return;
+            return Task.CompletedTask;
         }
 
         _readingBarcode = true;
         NotifyPaymentAvailability();
         try
         {
-            var items = await _products.GetByCategoryAsync(tile.Category.Id);
-            if (!CanKeepScan()) return;
+            var items = _registerProducts.Where(p=>p.CategoryId==tile.Category.Id).ToArray();
+            if (!CanKeepScan()) return Task.CompletedTask;
             SelectedCategoryId = tile.Category.Id;
             SearchText = string.Empty;
             ShowProductTiles(items);
-            Status = items.Count == 0 ? Text["Pos_NotFound"] : null;
+            Status = items.Length == 0 ? Text["Pos_NotFound"] : null;
         }
         finally
         {
             _readingBarcode = false;
             NotifyPaymentAvailability();
         }
+        return Task.CompletedTask;
     }
 
     [ObservableProperty] private string _searchText = string.Empty;
@@ -170,8 +172,9 @@ public sealed partial class PosViewModel : ObservableObject
     {
         ProductTiles.Clear();
         foreach (var product in products)
-            ProductTiles.Add(new RegisterProductTile(product, QuantityInCart(product.Id)));
+            ProductTiles.Add(new RegisterProductTile(product, QuantityInCart(product.Id),_registerMetadata.GetValueOrDefault(product.Id),IsPharmacy));
         ShowResults = ProductTiles.Count > 0;
+        ProductPage=0;OnPropertyChanged(nameof(CardTiles));OnPropertyChanged(nameof(HasProductPages));OnPropertyChanged(nameof(ProductPageText));
     }
 
     // ---------- adding products ----------
@@ -272,10 +275,12 @@ public sealed partial class PosViewModel : ObservableObject
     private void AddProduct(Product product, decimal? quantity, InventoryBatch? batch, string? serial,bool packaged=false)
     {
         var qty = quantity ?? (product.Unit == Domain.Common.Unit.Kilogram ? 1.000m : 1m);
-        var added = _cart.AddOrIncrement(product, qty, batch, serial,packaged);
+        var unit=IsPharmacy?packaged?product.PurchaseUnit:quantity.HasValue?product.SellingUnit:product.DefaultSellingUnit:null;
+        if(IsPharmacy&&quantity is null)qty=product.SellingUnitSize(unit!);
+        var added = _cart.AddOrIncrement(product, qty, batch, serial,packaged,medicineUnit:unit);
         if (Lines.FirstOrDefault(item => ReferenceEquals(item.Line, added)) is { } existing)
             existing.Refresh();
-        else Lines.Add(new CartLineViewModel(added, Recalculate, ApproveCartQuantity));
+        else Lines.Add(CreateCartLine(added));
 
         Status = null;
         Recalculate();
@@ -291,7 +296,8 @@ public sealed partial class PosViewModel : ObservableObject
             return true;
         }
         var other = QuantityInCart(line.Line.Product.Id, line.Line.BatchId) - line.Line.Quantity;
-        if (line.IsAvailable && CartStock.CanAdd(line.AvailableStock, other, quantity))
+        var sourceOther=Lines.Where(l=>!ReferenceEquals(l,line)&&l.Line.Product.Id==line.Line.Product.Id&&l.Line.BatchId==line.Line.BatchId&&l.Line.LocationId==line.Line.LocationId).Sum(l=>l.Line.Quantity);
+        if (line.IsAvailable && CartStock.CanAdd(line.AvailableStock, other, quantity)&&(line.LocationStock is null||CartStock.CanAdd(line.LocationStock.Value,sourceOther,quantity)))
         {
             StockWarning = other + quantity == line.AvailableStock ? Text.Format("Scanner_LastStock", line.Name) : null;
             return true;
@@ -330,7 +336,7 @@ public sealed partial class PosViewModel : ObservableObject
     }
 
     private bool _clearConfirmation;
-    private bool CanClearCart() => !_cart.IsEmpty&&!_clearConfirmation&&!_checkoutBusy && !IsPaymentOpen && !_readingBarcode && !IsAddingScannedProduct;
+    private bool CanClearCart() => !InAppDialog.IsOpen&&!_cart.IsEmpty&&!_clearConfirmation&&!_checkoutBusy && !IsPaymentOpen && !_readingBarcode && !IsAddingScannedProduct;
 
     [RelayCommand(CanExecute = nameof(CanClearCart))]
     private async Task ClearCartAsync()
@@ -339,7 +345,7 @@ public sealed partial class PosViewModel : ObservableObject
         try
         {
             var body=new System.Windows.Controls.StackPanel{VerticalAlignment=System.Windows.VerticalAlignment.Center};body.Children.Add(new System.Windows.Controls.TextBlock{Text=Text["Pos_ConfirmClear"],TextWrapping=System.Windows.TextWrapping.Wrap,Margin=new System.Windows.Thickness(8)});
-            var actions=new System.Windows.Controls.WrapPanel();actions.Children.Add(BusinessForm.Button("Common_Cancel",(_,_)=>close(),"GhostButton"));actions.Children.Add(BusinessForm.Button("Pos_Clear",(_,_)=>{CancelBatch();Status=null;ResetCart();close();},"DangerButton"));body.Children.Add(actions);
+            var actions=new System.Windows.Controls.WrapPanel();actions.Children.Add(BusinessForm.Button("Common_Cancel",(_,_)=>close(),"GhostButton"));actions.Children.Add(BusinessForm.Button("Pos_Clear",(_,_)=>{CancelBatch();PharmacyWorkspace?.CancelEntry();Status=null;ResetCart();close();},"DangerButton"));body.Children.Add(actions);
             await InAppDialog.ShowAsync(body,c=>close=c);
         }
         finally{_clearConfirmation=false;UpdateScanWorkflow();NotifyPaymentAvailability();}
@@ -359,8 +365,8 @@ public sealed partial class PosViewModel : ObservableObject
 
     // ---------- payment ----------
 
-    private bool CanOpenPayment() => !_clearConfirmation&&!_cart.IsEmpty && !_readingBarcode && !IsAddingScannedProduct && BatchPrompt is null &&
-        !_checkoutBusy && !Lines.Any(line => line.HasInvalidPrice);
+    private bool CanOpenPayment() => !InAppDialog.IsOpen&&PharmacyWorkspace?.HasPendingEntry!=true&&!_clearConfirmation&&!_cart.IsEmpty && !_readingBarcode && !IsAddingScannedProduct && BatchPrompt is null &&
+        !_checkoutBusy && !Lines.Any(line => line.HasInvalidPrice||line.HasInvalidTax||line.HasInvalidName);
     private bool CanStartPayment()=>!IsPaymentOpen&&CanOpenPayment();
 
     [RelayCommand(CanExecute = nameof(CanStartPayment))]
@@ -416,6 +422,7 @@ public sealed partial class PosViewModel : ObservableObject
 
         try
         {
+            if(IsPharmacy)await CompletePendingMedicineSetupAsync();
             Payment payment = IsCredit ? new CreditPayment(total, ParseOrThrow(CreditPaidNow),CreditDueDate,CreditNote) : IsCash
                 ? new CashPayment(total, ParseOrThrow(Tendered))
                 : new CardPayment(total);
@@ -445,6 +452,7 @@ public sealed partial class PosViewModel : ObservableObject
 
     private void Recalculate()
     {
+        OnPropertyChanged(nameof(ShowPendingTax));
         var summary = PricingService.Summarize(_cart);
         GrossTotalText = MoneyText.Format(summary.GrossTotal);
         NetTotalText = MoneyText.Format(summary.NetTotal);
@@ -483,9 +491,13 @@ public sealed class VatLineViewModel
     public string VatText { get; }
 }
 
-public sealed partial class RegisterProductTile(Product product, decimal cartQuantity) : ObservableObject
+public sealed partial class RegisterProductTile(Product product, decimal cartQuantity,MedicineMatch? medicine=null,bool pharmacy=false) : ObservableObject
 {
-    public Product Product { get; } = product;
+    public Product Product => product;
+    public string Details=>pharmacy?string.Join(" · ",new[]{medicine?.Strength??product.MedicineStrength,medicine?.Formulation??product.MedicineForm}.Where(s=>s.Length>0)):product.Category?.Name??"";
+    public string LocationText=>medicine?.Locations??"";
+    public string PriceText=>pharmacy?(product.SellingPriceFor(product.DefaultSellingUnit) is>0?MoneyText.Format(product.SellingPriceFor(product.DefaultSellingUnit)!.Value):LocalizationManager.Instance["Pharmacy_MissingPrice"]):MoneyText.Format(product.UnitPrice);
+    public string StockText=>!product.StockTracked?LocalizationManager.Instance["Pharmacy_StockUntracked"]:$"{product.AvailableForSale(DateOnly.FromDateTime(DateTime.Today)):0.###} {LocalizationManager.Instance[product.Unit==Unit.Kilogram?"Unit_Kg":product.Unit==Unit.Litre?"Measure_litre":"Measure_"+product.SellingUnit]}";
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasCartQuantity))]
     private decimal _cartQuantity = cartQuantity;

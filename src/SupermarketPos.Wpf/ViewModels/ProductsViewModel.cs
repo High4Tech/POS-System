@@ -19,7 +19,7 @@ namespace SupermarketPos.Wpf.ViewModels;
 
 public sealed partial class ProductsViewModel : ObservableObject
 {
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(ShowProductImages),nameof(ShowMedicineCards),nameof(ShowInventoryTable))] private bool _isPharmacy;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(ShowProductImages))] private bool _isPharmacy;
     public bool ShowProductImages=>!IsPharmacy;
     private readonly IProductRepository _products;
     private readonly ICategoryRepository _categories;
@@ -66,7 +66,7 @@ public sealed partial class ProductsViewModel : ObservableObject
         _bulk = bulk;
         _ledger = ledger;
         _businessSetup=businessSetup;
-        _medicineCatalog=medicineCatalog;_pharmacyInventory=pharmacyInventory;_stockLocations=stockLocations;_inventoryPreferences=new(storage,"pharmacy-inventory-view.json");_medicineCards=_inventoryPreferences.Read()?.Cards??false;
+        _medicineCatalog=medicineCatalog;_pharmacyInventory=pharmacyInventory;_stockLocations=stockLocations;
         VisibleProducts = CollectionViewSource.GetDefaultView(Products);
         VisibleProducts.Filter = item => MatchesFilter((ProductRowViewModel)item);
     }
@@ -185,11 +185,11 @@ public sealed partial class ProductsViewModel : ObservableObject
     public async Task OpenProductAsync(int productId)
     {
         if (await _products.GetCurrentForRegisterAsync(productId) is { } product)
-            Edit(new ProductRowViewModel(product, _lowStockThreshold));
+            Edit(new ProductRowViewModel(product, _lowStockThreshold,IsPharmacy?(await _medicineCatalog.DescribeAsync([product])).GetValueOrDefault(product.Id):null));
     }
 
     [RelayCommand]
-    private async Task NewAsync(){if(IsPharmacy)await QuickAddMedicineAsync("");else OpenNewProduct(null);}
+    private void New(){OpenNewProduct(null);}
 
     private void OpenNewProduct(string? barcode, bool scannerEntry = false, bool purchasing = false)
     {
@@ -217,6 +217,8 @@ public sealed partial class ProductsViewModel : ObservableObject
         MatchingProduct = null;
         ProductError = null;
         Editor.Load(row.Product);
+        if(IsPharmacy&&row.Medicine is{} medicine)
+        {if(Editor.MedicineGeneric.Length==0)Editor.MedicineGeneric=medicine.GenericName;if(Editor.MedicineStrength.Length==0)Editor.MedicineStrength=medicine.Strength;if(Editor.MedicineForm.Length==0)Editor.MedicineForm=medicine.Formulation;if(Editor.MedicineManufacturer.Length==0)Editor.MedicineManufacturer=medicine.Manufacturer;}
         RestockAmount = string.Empty;
         IsEditorOpen = true;
     }
@@ -363,10 +365,16 @@ public sealed partial class ProductsViewModel : ObservableObject
         IsCaptureArmed = false;
         ProductError = null;
         var text = LocalizationManager.Instance;
+        if(Editor.FirstFieldError is{Length:>0} fieldError){ProductError=fieldError;return;}
         try
         {
             var price = ParseDecimal(Editor.Price);
             var stock = IsPurchaseEntry ? 0m : ParseOptional(Editor.Stock) ?? 0m;
+            if(IsPharmacy&&stock!=0&&Editor.OpeningStockUnit!=Editor.MedicineUnit)
+            {
+                var source=Editor.OpeningStockUnit=="strip"?Editor.UnitsPerStrip:Editor.UsesPackaging&&Editor.OpeningStockUnit==Editor.PurchaseUnit?Editor.UnitsPerPackage:throw new DomainException("Pharmacy_InvalidUnits");
+                if(!int.TryParse(source,out var factor)||factor<=0)throw new DomainException("Pharmacy_InvalidUnits");stock=checked(stock*factor);
+            }
             var assignment = Editor.TrackExpiry && !Editor.IsNew ? ParseOptional(Editor.BatchQuantity) ?? 0m : 0m;
             if (assignment < 0m) throw new DomainException(text["Batch_PositiveQuantity"]);
             var purchaseCost = ParseOptional(Editor.PurchaseCost);
@@ -449,10 +457,11 @@ public sealed partial class ProductsViewModel : ObservableObject
                     if(product.TrackSerial||product.WarrantyMonths>0)throw new DomainException("Pharmacy_Only");
                     if(!int.TryParse(Editor.UnitsPerStrip,out var stripUnits))throw new DomainException("Pharmacy_InvalidUnits");
                     product.ConfigureMedicineUnits(Editor.MedicineUnit,stripUnits,ParseOptional(Editor.StripPrice));
+                    product.SetDefaultSellingUnit(Editor.DefaultSellingUnit);
                     product.SetDefaultLocation(Editor.DefaultLocationId==0?null:Editor.DefaultLocationId);
                     product.SetMedicineDetails(Editor.MedicineGeneric,Editor.MedicineStrength,Editor.MedicineForm,Editor.MedicineManufacturer);
                     if(Editor.MedicineReferenceId is{} referenceId)product.LinkMedicine(referenceId);
-                    if(Editor.DispensingRulesReviewed)product.ReviewDispensingRules(Editor.RequiresPrescription,Editor.RequiresDispensingReference);
+                    product.ReviewDispensingRules(Editor.RequiresPrescription,Editor.RequiresDispensingReference);
                 }
                 await _ledger.ValidateProductTrackingAsync(product, token);
                 await _uow.SaveChangesAsync(token);

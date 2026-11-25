@@ -13,8 +13,8 @@
                        Visibility="{Binding Error, Converter={StaticResource StrToVis}}" />
             <TextBlock Text="{loc:T Trade_BalanceHelp}" TextWrapping="Wrap" Margin="0,8,0,0" />
         </StackPanel>
-        <Grid>
-            <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="14" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+        <Grid layout:PanelHeights.Key="customers">
+            <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="12" /><RowDefinition Height="*" /></Grid.RowDefinitions><GridSplitter Grid.Row="1" Style="{StaticResource HeightDivider}"/>
             <Border Style="{StaticResource Card}" Padding="8">
                 <DataGrid layout:TableLayout.Key="customers" ItemsSource="{Binding Customers}" SelectedItem="{Binding Selected}" IsReadOnly="True">
                     <DataGrid.Columns>
