@@ -42,9 +42,11 @@ public sealed partial class PosViewModel : ObservableObject
     public PosViewModel(IProductRepository products, ICategoryRepository categoryRepo, IBarcodeService barcode,
                         ISaleService sales, ReceiptPreviewDialog receipts, IAuthService auth, RegisterBarcodeLookup lookup,
                         ScannerController scanner, ProductsViewModel productEditor, ScannerFeedback sound, PosStorage storage,
-                        StockAlertsViewModel alerts, StoreProfile profile, ISaleRepository saleHistory, ITradeLedger ledger,IBusinessSetup businessSetup,MedicineCatalogService medicineCatalog,PharmacyInventory pharmacyInventory,StockLocationService stockLocations)
+                        StockAlertsViewModel alerts, StoreProfile profile, ISaleRepository saleHistory, ITradeLedger ledger,IBusinessSetup businessSetup,MedicineCatalogService medicineCatalog,PharmacyInventory pharmacyInventory,StockLocationService stockLocations, SaleHistory history)
     {
         _products = products;
+        _customerHistory = history;
+        Customer.PropertyChanged += (_, _) => RefreshCustomerSummary();
         _categoryRepo = categoryRepo;
         _barcode = barcode;
         _sales = sales;
@@ -159,6 +161,7 @@ public sealed partial class PosViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowCardInstructions))]
     private bool _isCredit;
     [ObservableProperty] private string _creditPaidNow = "0";
+    partial void OnCreditPaidNowChanged(string value) => OnPropertyChanged(nameof(CreditBalanceSummary));
     [ObservableProperty] private DateTime? _creditDueDate;
     [ObservableProperty] private string _creditNote="";
     public bool ShowCardInstructions => !IsCash && !IsCredit;
@@ -455,6 +458,7 @@ public sealed partial class PosViewModel : ObservableObject
         OnPropertyChanged(nameof(ShowPendingTax));
         var summary = PricingService.Summarize(_cart);
         GrossTotalText = MoneyText.Format(summary.GrossTotal);
+        OnPropertyChanged(nameof(CreditBalanceSummary));
         NetTotalText = MoneyText.Format(summary.NetTotal);
         VatTotalText = MoneyText.Format(summary.VatTotal);
         ItemCountText = _cart.ItemCount.ToString("0.###", CultureInfo.InvariantCulture);

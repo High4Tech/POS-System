@@ -126,7 +126,13 @@ public sealed partial class ProductsViewModel
     {
         if(!IsPharmacy||MedicineNameSearch is not null)return;
         var editor=new MedicineSearchBox(_medicineCatalog);editor.Input.SetBinding(TextBox.TextProperty,new System.Windows.Data.Binding(nameof(Editor.Name)){Source=Editor,Mode=System.Windows.Data.BindingMode.TwoWay,UpdateSourceTrigger=System.Windows.Data.UpdateSourceTrigger.PropertyChanged,ValidatesOnDataErrors=true});
-        editor.Selected+=async match=>{if(match.ProductId is{} id)await OpenProductAsync(id);else{Editor.MedicineReferenceId=match.ReferenceId;Editor.Name=match.Name;Editor.MedicineGeneric=match.GenericName;Editor.MedicineStrength=match.Strength;Editor.MedicineForm=match.Formulation;Editor.MedicineManufacturer=match.Manufacturer;if(Editor.Barcode.Length==0&&match.Barcode.Length>0)Editor.Barcode=match.Barcode;}};MedicineNameSearch=editor;
+        editor.Selected+=async match=>{if(match.ProductId is{} id)await OpenProductAsync(id);else{Editor.MedicineReferenceId=match.ReferenceId;Editor.Name=match.Name;Editor.MedicineGeneric=match.GenericName;Editor.MedicineStrength=match.Strength;Editor.MedicineForm=match.Formulation;Editor.MedicineManufacturer=match.Manufacturer;
+            if(Editor.MedicineUnit.Length==0)
+            {
+                var form=match.Formulation.Trim().ToLowerInvariant();
+                Editor.MedicineUnit=form switch {"tablet" or "tablets"=>"tablet","capsule" or "capsules"=>"capsule","vial"=>"vial","bottle"=>"bottle","sachet"=>"sachet","tube"=>"tube",_=>""};
+            }
+            if(Editor.Barcode.Length==0&&match.Barcode.Length>0)Editor.Barcode=match.Barcode;}};MedicineNameSearch=editor;
         var search=new MedicineSearchBox(_medicineCatalog);search.Input.SetBinding(TextBox.TextProperty,new System.Windows.Data.Binding(nameof(Filter)){Source=this,Mode=System.Windows.Data.BindingMode.TwoWay,UpdateSourceTrigger=System.Windows.Data.UpdateSourceTrigger.PropertyChanged,Delay=120});search.Selected+=async match=>{if(match.ProductId is not null)Filter=match.Name;else await QuickAddMedicineAsync("",match.Name,match.ReferenceId);};search.BarcodeSubmitted+=async code=>{await _scanner.DispatchPhysicalAsync(code);search.Input.Clear();};InventoryMedicineSearch=search;
     }
     public async Task<int?> CreateMedicineForPurchaseAsync(string barcode,string name,int? reference=null,int? supplierId=null)

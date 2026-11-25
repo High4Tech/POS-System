@@ -14,6 +14,8 @@ public sealed record BusinessProfile
     public bool EnablePackagedUnits { get; set; }
     public bool EnableDigitalWalletServices { get; set; }
     public bool EnableMobileRecharge { get; set; }
+    [JsonIgnore] public bool DeviceTrackingAvailable => BusinessType is "electronics" or "mobile" or "retail" or "other";
+    [JsonIgnore] public bool DigitalServicesAvailable => DigitalWalletAvailable || MobileRechargeAvailable;
     [JsonIgnore] public bool IsPharmacy=>string.Equals(BusinessType?.Trim(),"pharmacy",StringComparison.OrdinalIgnoreCase);
     [JsonIgnore] public bool LooseGoodsAvailable=>!IsPharmacy&&EnableLooseGoods;
     [JsonIgnore] public bool PackagingAvailable=>IsPharmacy||EnablePackagedUnits;

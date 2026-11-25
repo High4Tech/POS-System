@@ -20,7 +20,7 @@ public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthS
     public async Task SaveProviderAsync(ServiceProviderAccount entry)
     {
         auth.RequireAdmin();
-        if((await setup.LoadAsync()).Profile.IsPharmacy)throw new DomainException("Service_Disabled");
+        if((await setup.LoadAsync()).Profile.DigitalServicesAvailable==false)throw new DomainException("Service_Disabled");
         if(new[]{entry.DefaultCustomerFee,entry.DefaultProviderFee,entry.DefaultCommission}.Any(v=>v<0||v!=Money.Round2(v))||entry.LoadCostRate is <0 or >10)throw new DomainException("Service_InvalidAmount");
         if(string.IsNullOrWhiteSpace(entry.Name)||entry.Name.Length>100||entry.OpeningFloat<0||entry.OpeningFloat!=Money.Round2(entry.OpeningFloat)||entry.FeePolicy.Length>300||entry.CommissionPolicy.Length>300||entry.AllowedTypes.Split(',').Any(c=>c is not ("CASHIN" or "CASHOUT" or "LOAD" or "PACKAGE")))throw new DomainException("Service_Invalid");
         var saved=entry.Id==0?null:await db.ServiceProviders.SingleAsync(p=>p.Id==entry.Id);
@@ -31,7 +31,7 @@ public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthS
     public async Task SavePackageAsync(MobileServicePackage entry)
     {
         auth.RequireAdmin();
-        if((await setup.LoadAsync()).Profile.IsPharmacy)throw new DomainException("Service_Disabled");
+        if((await setup.LoadAsync()).Profile.DigitalServicesAvailable==false)throw new DomainException("Service_Disabled");
         if(!await db.ServiceProviders.AnyAsync(p=>p.Id==entry.ProviderId&&p.IsActive&&p.AllowedTypes.Contains("PACKAGE"))||string.IsNullOrWhiteSpace(entry.Name)||entry.Name.Length>150||entry.Kind.Length>80||entry.Validity.Length>100||entry.AccountType is not ("Prepaid" or "Postpaid")||entry.PackageIdentifier.Length>100||entry.Benefits.Length>1000||entry.Price<=0||new[]{entry.Price,entry.ProviderCost,entry.Commission,entry.CustomerFee,entry.ProviderFee}.Any(v=>v<0||v!=Money.Round2(v)))throw new DomainException("Service_Invalid");
         if(entry.Id==0)db.MobileServicePackages.Add(entry);else{var saved=await db.MobileServicePackages.SingleAsync(p=>p.Id==entry.Id);db.Entry(saved).CurrentValues.SetValues(entry);}await db.SaveChangesAsync();
     }
@@ -63,7 +63,7 @@ public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthS
     });
     public Task<ServiceTransaction> SetStatusAsync(int id,string status,bool confirmedExternally,string? reference=null)=>work.ExecuteInTransactionAsync(async ct=>
     {
-        if((await setup.LoadAsync(ct)).Profile.IsPharmacy)throw new DomainException("Service_Disabled");
+        if((await setup.LoadAsync(ct)).Profile.DigitalServicesAvailable==false)throw new DomainException("Service_Disabled");
         _=auth.CurrentUser??throw new DomainException("Service_SignIn");var entry=await db.ServiceTransactions.SingleAsync(t=>t.Id==id,ct);
         if(entry.Status==status)return entry;
         if(entry.Status is not ("Draft" or "Pending")||status is not ("Pending" or "Confirmed" or "Failed"))throw new DomainException("Service_Immutable");
@@ -81,7 +81,7 @@ public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthS
     }
     public Task<ServiceTransaction> ReverseAsync(int id,string reference,bool confirmedExternally)=>work.ExecuteInTransactionAsync(async ct=>
     {
-        if((await setup.LoadAsync()).Profile.IsPharmacy)throw new DomainException("Service_Disabled");
+        if((await setup.LoadAsync()).Profile.DigitalServicesAvailable==false)throw new DomainException("Service_Disabled");
         auth.RequireAdmin();if(!confirmedExternally||string.IsNullOrWhiteSpace(reference)||reference.Length>80)throw new DomainException("Service_ExternalRequired");
         if(await db.ServiceTransactions.SingleOrDefaultAsync(t=>t.ReversesId==id,ct) is{} repeated)return repeated;
         var original=await db.ServiceTransactions.SingleAsync(t=>t.Id==id,ct);if(original.Status!="Confirmed"||original.ReversesId.HasValue)throw new DomainException("Service_Immutable");

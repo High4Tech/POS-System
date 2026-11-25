@@ -30,6 +30,7 @@ public sealed class PosDbContext : DbContext
     public DbSet<Purchase> Purchases => Set<Purchase>();
     public DbSet<PurchaseLine> PurchaseLines => Set<PurchaseLine>();
     public DbSet<Supplier> Suppliers => Set<Supplier>();
+    public DbSet<SaleReturn> SaleReturns => Set<SaleReturn>();
     public DbSet<StockMovement> StockMovements => Set<StockMovement>();
     public DbSet<AppSettings> Settings => Set<AppSettings>();
     public DbSet<AccountPayment> AccountPayments => Set<AccountPayment>();
@@ -138,6 +139,14 @@ public sealed class PosDbContext : DbContext
             e.Property(u => u.Role).HasConversion<string>();
         });
 
+        b.Entity<SaleReturn>(e =>
+        {
+            e.HasIndex(r => r.ConfirmationId).IsUnique();
+            e.HasIndex(r => new { r.SaleId, r.Status });
+            e.HasOne<Sale>().WithMany().HasForeignKey(r => r.SaleId).OnDelete(DeleteBehavior.Restrict);
+            foreach(var property in new[]{nameof(SaleReturn.Gross),nameof(SaleReturn.Tax),nameof(SaleReturn.CashRefund),nameof(SaleReturn.CardRefund),nameof(SaleReturn.ReceivableReduction),nameof(SaleReturn.CustomerCredit)})
+                e.Property<decimal>(property).HasColumnType("TEXT");
+        });
         b.Entity<Sale>(e =>
         {
             e.Ignore(s => s.Outstanding);

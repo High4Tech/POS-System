@@ -20,8 +20,10 @@ namespace SupermarketPos.Wpf.ViewModels;
 public sealed partial class ProductsViewModel : ObservableObject
 {
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(ShowProductImages))] private bool _isPharmacy;
+    [ObservableProperty] private bool _deviceTrackingAvailable=true;
     public bool ShowProductImages=>!IsPharmacy;
     private readonly IProductRepository _products;
+    private readonly SupermarketPos.Infrastructure.Business.SaleHistory _saleSnapshots;
     private readonly ICategoryRepository _categories;
     private readonly ISettingsRepository _settings;
     private readonly IShelfLabelService _labels;
@@ -49,9 +51,10 @@ public sealed partial class ProductsViewModel : ObservableObject
                              ISettingsRepository settings, IShelfLabelService labels, IUnitOfWork uow,
                              PosStorage storage, IInventoryService inventory, IBarcodeService barcodes,
                              ScannerController scanner, ScannerFeedback sound, IPurchaseService purchases, BulkRecordService bulk,
-                             RegisterBarcodeLookup lookup, ITradeLedger ledger,IBusinessSetup businessSetup,SupermarketPos.Infrastructure.Business.MedicineCatalogService medicineCatalog,SupermarketPos.Infrastructure.Business.PharmacyInventory pharmacyInventory,SupermarketPos.Infrastructure.Business.StockLocationService stockLocations)
+                             RegisterBarcodeLookup lookup, ITradeLedger ledger,IBusinessSetup businessSetup,SupermarketPos.Infrastructure.Business.MedicineCatalogService medicineCatalog,SupermarketPos.Infrastructure.Business.PharmacyInventory pharmacyInventory,SupermarketPos.Infrastructure.Business.StockLocationService stockLocations, SupermarketPos.Infrastructure.Business.SaleHistory saleSnapshots)
     {
         _products = products;
+        _saleSnapshots = saleSnapshots;
         _categories = categories;
         _settings = settings;
         _labels = labels;
@@ -65,6 +68,11 @@ public sealed partial class ProductsViewModel : ObservableObject
         _purchases = purchases;
         _bulk = bulk;
         _ledger = ledger;
+        Editor.PropertyChanged += (_, e) =>
+        {
+            if(e.PropertyName is nameof(Editor.IsNew) or nameof(Editor.TrackExpiry) or nameof(Editor.Stock))
+            { OnPropertyChanged(nameof(ShowPharmacyOpeningStock)); OnPropertyChanged(nameof(ShowPharmacyOpeningBatch)); }
+        };
         _businessSetup=businessSetup;
         _medicineCatalog=medicineCatalog;_pharmacyInventory=pharmacyInventory;_stockLocations=stockLocations;
         VisibleProducts = CollectionViewSource.GetDefaultView(Products);
@@ -87,7 +95,9 @@ public sealed partial class ProductsViewModel : ObservableObject
     [ObservableProperty] private bool _lowStockOnly;
     [ObservableProperty] private bool _isEditorOpen;
     [ObservableProperty] private bool _isScannerEntry;
-    [ObservableProperty] private bool _isPurchaseEntry;
+    [ObservableProperty][NotifyPropertyChangedFor(nameof(ShowPharmacyOpeningStock),nameof(ShowPharmacyOpeningBatch))] private bool _isPurchaseEntry;
+    public bool ShowPharmacyOpeningStock => Editor.IsNew && !IsPurchaseEntry;
+    public bool ShowPharmacyOpeningBatch => ShowPharmacyOpeningStock && Editor.TrackExpiry && !string.IsNullOrWhiteSpace(Editor.Stock);
     [ObservableProperty] private bool _isCaptureArmed;
     [ObservableProperty] private Product? _matchingProduct;
     [ObservableProperty] private string? _productError;
@@ -156,7 +166,7 @@ public sealed partial class ProductsViewModel : ObservableObject
 
     private async Task LoadEditorOptionsAsync(AppSettings settings)
     {
-        var business=(await _businessSetup.LoadAsync()).Profile;IsPharmacy=Editor.IsPharmacy=business.IsPharmacy;Editor.LooseEnabled=business.LooseGoodsAvailable;Editor.PackagesEnabled=business.PackagingAvailable;
+        var business=(await _businessSetup.LoadAsync()).Profile;DeviceTrackingAvailable=business.DeviceTrackingAvailable;IsPharmacy=Editor.IsPharmacy=business.IsPharmacy;Editor.LooseEnabled=business.LooseGoodsAvailable;Editor.PackagesEnabled=business.PackagingAvailable;
         PrepareMedicineSearch();
         _categoryList = (await _categories.GetAllAsync()).ToList();
         OnPropertyChanged(nameof(FilterCategories));
@@ -199,7 +209,7 @@ public sealed partial class ProductsViewModel : ObservableObject
         ProductSaved = false;
         SavedProductId = null;
         ProductError = null;
-        Editor.LoadNew(_categoryList.FirstOrDefault()?.Id ?? 0, _defaultVat);
+        Editor.LoadNew(IsPharmacy?0:_categoryList.FirstOrDefault()?.Id ?? 0, _defaultVat);
         if(IsPharmacy)Editor.VatPercent="";
         if (purchasing) Editor.Stock = "0";
         if (barcode is not null) Editor.Barcode = barcode;
@@ -368,8 +378,8 @@ public sealed partial class ProductsViewModel : ObservableObject
         if(Editor.FirstFieldError is{Length:>0} fieldError){ProductError=fieldError;return;}
         try
         {
-            var price = ParseDecimal(Editor.Price);
-            var stock = IsPurchaseEntry ? 0m : ParseOptional(Editor.Stock) ?? 0m;
+            var price = IsPharmacy ? ParseOptional(Editor.Price) ?? 0m : ParseDecimal(Editor.Price);
+            var stock = IsPurchaseEntry || IsPharmacy && !Editor.IsNew ? 0m : ParseOptional(Editor.Stock) ?? 0m;
             if(IsPharmacy&&stock!=0&&Editor.OpeningStockUnit!=Editor.MedicineUnit)
             {
                 var source=Editor.OpeningStockUnit=="strip"?Editor.UnitsPerStrip:Editor.UsesPackaging&&Editor.OpeningStockUnit==Editor.PurchaseUnit?Editor.UnitsPerPackage:throw new DomainException("Pharmacy_InvalidUnits");
@@ -383,7 +393,7 @@ public sealed partial class ProductsViewModel : ObservableObject
             if(code.Length==0)code="INTERNAL-"+Guid.NewGuid().ToString("N");
             if (code.Length is 0 or > 64 || string.IsNullOrWhiteSpace(Editor.Name) || Editor.CategoryId == 0&&!IsPharmacy)
                 throw new DomainException(text["Scanner_ProductFields"]);
-            var vatRate = ParseOptional(Editor.VatPercent) / 100m;
+            var vatRate = (ParseOptional(Editor.VatPercent) ?? (IsPharmacy ? 0m : (decimal?)null)) / 100m;
             if (vatRate is null or < 0 or > 1)
                 throw new DomainException(text["Products_InvalidVat"]);
             if (!int.TryParse(Editor.WarrantyMonths, out var warrantyMonths)) throw new DomainException("Enter warranty months as a whole number.");
@@ -398,13 +408,15 @@ public sealed partial class ProductsViewModel : ObservableObject
                 if (Editor.TrackExpiry && await _lookup.FindTradeItemAsync(code, token) is { } tradeItem && tradeItem.Id != Editor.Id)
                     throw new DomainException(text["Scanner_DuplicateBarcode"]);
 
+                if (IsPharmacy && Editor.MedicineReferenceId is int medicineId)
+                    await _pharmacyInventory.CheckReferenceAvailableAsync(medicineId, Editor.Id, token);
                 Product product;
                 InventoryBatch? assigned = null;
                 var now = DateTime.Now;
                 if (Editor.IsNew)
                 {
                     product = new Product(code, Editor.Name, price, vatRate.Value, unit, Editor.TrackExpiry ? 0m : stock, categoryId);
-                    if(IsPharmacy&&!IsPurchaseEntry&&string.IsNullOrWhiteSpace(Editor.Stock))product.MarkStockUntracked();
+                    if(IsPharmacy&&stock==0)product.MarkStockUntracked();
                     product.SetExpiryTracking(Editor.TrackExpiry);
                     product.SetSerialTracking(Editor.TrackSerial, warrantyMonths);
                     product.SetImagePath(Editor.ImagePath);
@@ -428,11 +440,11 @@ public sealed partial class ProductsViewModel : ObservableObject
                     product.SetPrice(price);
                     product.SetVatRate(vatRate.Value);
                     product.SetUnit(unit);
-                    var adjustment = Editor.TrackExpiry ? 0m : stock - product.StockQuantity;
+                    var adjustment = IsPharmacy || Editor.TrackExpiry ? 0m : stock - product.StockQuantity;
                     product.SetExpiryTracking(Editor.TrackExpiry);
                     product.SetSerialTracking(Editor.TrackSerial, warrantyMonths);
                     if(!product.StockTracked&&stock!=0)throw new DomainException("Pharmacy_VerifyStockFirst");
-                    if (!Editor.TrackExpiry&&product.StockTracked) product.SetStock(stock);
+                    if (!IsPharmacy&&!Editor.TrackExpiry&&product.StockTracked) product.SetStock(stock);
                     if (adjustment != 0m)
                         _uow.RecordMovement(new StockMovement(product.Id, product.Name, adjustment,
                             StockMovementKind.ManualAdjustment, DateTime.Now));
@@ -456,12 +468,22 @@ public sealed partial class ProductsViewModel : ObservableObject
                 {
                     if(product.TrackSerial||product.WarrantyMonths>0)throw new DomainException("Pharmacy_Only");
                     if(!int.TryParse(Editor.UnitsPerStrip,out var stripUnits))throw new DomainException("Pharmacy_InvalidUnits");
-                    product.ConfigureMedicineUnits(Editor.MedicineUnit,stripUnits,ParseOptional(Editor.StripPrice));
-                    product.SetDefaultSellingUnit(Editor.DefaultSellingUnit);
+                    if (Editor.MedicineUnit.Length == 0) product.LeaveSellingUnitUnspecified();
+                    else
+                    {
+                        product.ConfigureMedicineUnits(Editor.MedicineUnit,stripUnits,ParseOptional(Editor.StripPrice));
+                        product.SetDefaultSellingUnit(Editor.DefaultSellingUnit.Length==0?Editor.MedicineUnit:Editor.DefaultSellingUnit);
+                    }
                     product.SetDefaultLocation(Editor.DefaultLocationId==0?null:Editor.DefaultLocationId);
                     product.SetMedicineDetails(Editor.MedicineGeneric,Editor.MedicineStrength,Editor.MedicineForm,Editor.MedicineManufacturer);
                     if(Editor.MedicineReferenceId is{} referenceId)product.LinkMedicine(referenceId);
-                    product.ReviewDispensingRules(Editor.RequiresPrescription,Editor.RequiresDispensingReference);
+                    if(product.RequiresPrescription!=Editor.RequiresPrescription || product.RequiresDispensingReference!=Editor.RequiresDispensingReference)
+                        product.ReviewDispensingRules(Editor.RequiresPrescription,Editor.RequiresDispensingReference);
+                    if(Editor.IsNew && stock>0 && product.DefaultLocationId is int location)
+                    {
+                        await _uow.SaveChangesAsync(token);
+                        await _stockLocations.PlaceReceivedAsync(product.Id,assigned?.Id,product.BaseStockQuantity,location,token);
+                    }
                 }
                 await _ledger.ValidateProductTrackingAsync(product, token);
                 await _uow.SaveChangesAsync(token);
@@ -479,15 +501,42 @@ public sealed partial class ProductsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ShowDevices() => new Views.SerialRecordsWindow(_ledger)
+    private void ShowDevices()
+    {
+        if(DeviceTrackingAvailable) new Views.SerialRecordsWindow(_ledger)
         { Owner = System.Windows.Application.Current.MainWindow }.ShowDialog();
+    }
 
     [RelayCommand]
     private async Task ShowProductDevicesAsync()
     {
-        if (Editor.Id is not { } id) return;
+        if (!DeviceTrackingAvailable || Editor.Id is not { } id) return;
         if (await _products.GetByIdAsync(id) is { } product)
             new Views.SerialRecordsWindow(_ledger, product) { Owner = System.Windows.Application.Current.MainWindow }.ShowDialog();
+    }
+
+    [RelayCommand]
+    private async Task ProductSalesAsync(int? productId)
+    {
+        if ((productId ?? Editor.Id) is not int id || InAppDialog.IsOpen) return;
+        try
+        {
+            var invoices = await _saleSnapshots.ForProductAsync(id);
+            var rows = invoices.SelectMany(s => s.Lines.Where(l=>l.ProductId==id).Select(l=>new
+            {
+                Date=s.CreatedAt.ToString("g"), Receipt=s.ReceiptNo, Customer=s.CustomerName,
+                l.Quantity, Unit=LocalizationManager.Instance["Measure_"+l.UnitCode], Price=MoneyText.Format(l.UnitPrice), Total=MoneyText.Format(l.LineGross),
+                l.BatchLot, l.BatchExpiry, l.SerialNumber, l.Imei1, l.Imei2, l.WarrantyUntil
+            })).ToArray();
+            var columns = new List<(string Header, string Property)> { ("Reports_Date","Date"),("Reports_ReceiptNo","Receipt"),
+                ("Customer_Name","Customer"),("Pos_Qty","Quantity"),("Products_Unit","Unit"),("Pos_SalePrice","Price"),("Pos_LineTotal","Total") };
+            if (IsPharmacy && rows.Any(row => row.BatchLot is not null))
+                columns.AddRange([("Batch_Lot","BatchLot"),("Batch_Expiry","BatchExpiry")]);
+            if (DeviceTrackingAvailable && rows.Any(row => row.SerialNumber is not null || row.Imei1 is not null || row.Imei2 is not null || row.WarrantyUntil is not null))
+                columns.AddRange([("Trade_Serial","SerialNumber"),("Trade_Imei1","Imei1"),("Trade_Imei2","Imei2"),("Trade_WarrantyUntil","WarrantyUntil")]);
+            await Views.HistoryTable.ShowAsync("Trade_ProductSales",rows,columns.ToArray());
+        }
+        catch (Exception) { ProductError=LocalizationManager.Instance["Reports_LoadError"]; }
     }
 
     private DateOnly RequireBatchExpiry() => Editor.BatchExpiry is { } expiry

@@ -8,6 +8,6 @@ public partial class ProductEditorView : UserControl
     public ProductEditorView()
     {
         InitializeComponent();
-        Loaded+=(_,_)=>{if(!_barcodeAttached&&DataContext is ViewModels.ProductsViewModel model){model.AttachBarcodeField(BarcodeField);model.AttachBarcodeField(PackageBarcodeField,package:true);_barcodeAttached=true;}};
+        Loaded+=(_,_)=>{if(!_barcodeAttached&&DataContext is ViewModels.ProductsViewModel model){model.AttachBarcodeField(BarcodeField);model.AttachBarcodeField(MedicineBarcodeField);model.AttachBarcodeField(MedicinePackBarcodeField,package:true);model.AttachBarcodeField(PackageBarcodeField,package:true);_barcodeAttached=true;}};
     }
 }

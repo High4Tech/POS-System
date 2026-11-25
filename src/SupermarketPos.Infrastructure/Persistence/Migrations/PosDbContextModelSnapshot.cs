@@ -582,6 +582,9 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValue("piece");
 
+                    b.Property<bool>("SellingUnitConfigured")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("StockRevision")
                         .IsConcurrencyToken()
                         .HasColumnType("INTEGER");
@@ -851,6 +854,9 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal>("ReturnCreditApplied")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("SourceReceiptNo")
                         .HasMaxLength(80)
                         .HasColumnType("TEXT")
@@ -967,6 +973,76 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .HasFilter("SerialNumber IS NOT NULL");
 
                     b.ToTable("SaleLines");
+                });
+
+            modelBuilder.Entity("SupermarketPos.Domain.Entities.SaleReturn", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("CardRefund")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("CashRefund")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ConfirmationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("CustomerCredit")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExternalReference")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Gross")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ItemsJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Method")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Operator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("PostedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("ReceivableReduction")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SaleId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Tax")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConfirmationId")
+                        .IsUnique();
+
+                    b.HasIndex("SaleId", "Status");
+
+                    b.ToTable("SaleReturns");
                 });
 
             modelBuilder.Entity("SupermarketPos.Domain.Entities.SerializedUnit", b =>
@@ -1543,6 +1619,15 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .WithMany("Lines")
                         .HasForeignKey("SaleId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SupermarketPos.Domain.Entities.SaleReturn", b =>
+                {
+                    b.HasOne("SupermarketPos.Domain.Entities.Sale", null)
+                        .WithMany()
+                        .HasForeignKey("SaleId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

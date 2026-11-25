@@ -12,7 +12,7 @@ namespace SupermarketPos.Wpf.Common;
 
 public sealed class SoftwareUpdates(LicenseClient license, PosStorage storage)
 {
-    public const int Schema = 11; // Configured default selling unit; reject incompatible releases.
+    public const int Schema = 13; // Configured default selling unit; reject incompatible releases.
     public Version CurrentVersion => typeof(App).Assembly.GetName().Version ?? new(1,0,0);
     private readonly string _folder = Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(storage.DatabasePath)!, "Updates")).FullName;
     public ReleaseClaims? Available { get; private set; }

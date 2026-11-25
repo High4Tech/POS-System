@@ -7,9 +7,14 @@ namespace SupermarketPos.Wpf.ViewModels;
 public sealed class SaleRowViewModel
 {
     public Sale Sale { get; }
-    public SaleRowViewModel(Sale sale)
+    public decimal ReturnedTotal { get; }
+    public string ReturnedText => MoneyText.Format(ReturnedTotal);
+    public string InvoiceMargin => Sale.GrossProfit is decimal profit && Sale.NetTotal>0
+        ? $"{MoneyText.Format(profit)} · {profit/Sale.NetTotal:P2}" : "—";
+    public SaleRowViewModel(Sale sale, decimal returnedTotal = 0)
     {
         Sale = sale;
+        ReturnedTotal = returnedTotal;
         Items = sale.Lines.Select(line => new SaleItemRow(
             line.BatchLot is { } lot ? $"{line.Name} · {lot} · {line.BatchExpiry:yyyy-MM-dd} {line.SerialNumber}".TrimEnd() : line.Name, line.Quantity,
             MoneyText.Format(line.UnitPrice), MoneyText.Format(line.LineGross), line.Barcode,

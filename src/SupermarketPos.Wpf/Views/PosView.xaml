@@ -96,6 +96,16 @@
              </WrapPanel>
              <Button Content="{loc:T Service_Title}" Command="{Binding DataContext.ShowDigitalServicesCommand,RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource PrimaryButton}" Visibility="{Binding EnableDigitalServices,Converter={StaticResource BoolToVis}}" Margin="0,0,6,4"/>
             </WrapPanel>
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                <WrapPanel DockPanel.Dock="Right">
+                    <Button Content="{loc:T Customer_SelectExisting}" Command="{Binding SelectCustomerCommand}" Style="{StaticResource GhostButton}" Padding="8,4" Margin="0,0,6,0"/>
+                    <WrapPanel Visibility="{Binding CustomerSummary,Converter={StaticResource StrToVis}}">
+                        <Button Content="{loc:T Trade_CustomerLedger}" Command="{Binding CustomerLedgerCommand}" Style="{StaticResource GhostButton}" Padding="8,4" Margin="0,0,6,0"/>
+                        <Button Content="{loc:T Trade_PreviousPurchases}" Command="{Binding PreviousPurchasesCommand}" Style="{StaticResource GhostButton}" Padding="8,4"/>
+                    </WrapPanel>
+                </WrapPanel>
+                <TextBlock Text="{Binding CustomerSummary}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+            </DockPanel>
             <DockPanel DockPanel.Dock="Top" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,0,12">
                 <Button DockPanel.Dock="Right" Visibility="{Binding SearchText,Converter={StaticResource StrToVis}}" Content="{loc:T Pharmacy_UseEnteredName}" Command="{Binding UseMedicineNameCommand}" Style="{StaticResource GhostButton}" Margin="8,0,0,0"/>
                 <ContentControl Content="{Binding PharmacyWorkspace.Search}"/>
@@ -499,6 +509,8 @@
 
                         <Separator Margin="0,16,0,12" Background="{StaticResource BorderBrush}" />
                         <views:CustomerFieldsView DataContext="{Binding Customer}" />
+                        <TextBlock Text="{Binding CreditBalanceSummary}" TextWrapping="Wrap" Margin="0,8,0,0"
+                                   Visibility="{Binding IsCredit, Converter={StaticResource BoolToVis}}" />
                         <Grid Margin="0,20,0,0">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
                             <Button Grid.Column="0" Content="{loc:T Common_Cancel}" Command="{Binding CancelPaymentCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,0" />

@@ -7,6 +7,7 @@ using SupermarketPos.Domain.Common;
 using SupermarketPos.Domain.Localization;
 using SupermarketPos.Domain.Entities;
 using SupermarketPos.Domain.Business;
+using SupermarketPos.Domain.Pricing;
 
 namespace SupermarketPos.Infrastructure.Documents;
 
@@ -135,8 +136,8 @@ public sealed class ReceiptDocument : IDocument
 
                 if (_sale.PaymentMethod == "CREDIT" || _sale.BalancePaid > 0)
                 {
-                    Identifier("Trade_ReceiptPaid",Price(_sale.AmountPaid+_sale.BalancePaid));
-                    Identifier("Trade_ReceiptDue",Price(_sale.Outstanding));
+                    Identifier("Trade_ReceiptPaid",Price(_sale.AmountPaid));
+                    Identifier("Trade_ReceiptDue",Price(Money.Round2(_sale.GrossTotal-_sale.AmountPaid)));
                     if(_sale.CreditDueDate is{} due)Identifier("Trade_DueDate",$"{due:yyyy-MM-dd}",7);
                 }
 

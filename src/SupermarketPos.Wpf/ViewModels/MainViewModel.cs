@@ -29,15 +29,19 @@ public sealed partial class MainViewModel : ObservableObject
     private SettingsViewModel? _settings;
     private DigitalServicesView? _digital;
     [ObservableProperty] private bool _digitalServicesVisible;
+    [ObservableProperty] private bool _deviceColumnsVisible = true;
+    internal bool IsPharmacy { get; private set; }
     [RelayCommand]private async Task ShowDigitalServicesAsync(string? kind)
     {
-        if((await _provider.GetRequiredService<IBusinessSetup>().LoadAsync()).Profile.IsPharmacy)return;
+        if(!(await _provider.GetRequiredService<IBusinessSetup>().LoadAsync()).Profile.DigitalServicesAvailable)return;
         if(!_auth.IsLoggedIn)return;_digital??=_provider.GetRequiredService<DigitalServicesView>();_digital.ChooseType(kind);if(_pos is null||!ReferenceEquals(CurrentViewModel,_pos))await ShowPosAsync();_pos!.OpenDigitalPanel(_digital);
     }
     public async Task RefreshFeaturesAsync()
     {
         var business=(await _provider.GetRequiredService<IBusinessSetup>().LoadAsync()).Profile;
-        DigitalServicesVisible=!business.IsPharmacy&&(business.DigitalWalletAvailable||business.MobileRechargeAvailable||(await _provider.GetRequiredService<SupermarketPos.Infrastructure.Business.DigitalServiceLedger>().HistoryAsync()).Count>0);
+        IsPharmacy=business.IsPharmacy;
+        DeviceColumnsVisible=business.DeviceTrackingAvailable;
+        DigitalServicesVisible=business.DigitalServicesAvailable;
     }
 
     public MainViewModel(IServiceProvider provider, IAuthService auth, LoginViewModel login, StoreProfile storeProfile,
@@ -130,6 +134,14 @@ public sealed partial class MainViewModel : ObservableObject
         await _pos.InitializeAsync();
         CurrentViewModel = _pos;
         ActiveScreen = "pos";
+    }
+
+    [RelayCommand]
+    private async Task RepeatSaleAsync(Sale? sale)
+    {
+        if (sale is null || IsReadOnly || !_auth.IsLoggedIn || InAppDialog.IsOpen) return;
+        if (CurrentViewModel != _pos) await ShowPosAsync();
+        if (_pos is not null) await _pos.RepeatAsync(sale);
     }
 
     private async Task ReviewProductAsync(int productId)

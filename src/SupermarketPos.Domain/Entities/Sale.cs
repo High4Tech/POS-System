@@ -31,7 +31,16 @@ public sealed class Sale
     public decimal AmountPaid { get; private set; }
     public decimal BalancePaid { get; private set; }
     public int BalanceRevision { get; private set; }
-    public decimal Outstanding => Money.Round2(GrossTotal - AmountPaid - BalancePaid);
+    public decimal ReturnCreditApplied { get; private set; }
+    public decimal Outstanding => Money.Round2(GrossTotal - AmountPaid - BalancePaid - ReturnCreditApplied);
+
+    public void ApplyReturnCredit(decimal amount)
+    {
+        if (amount < 0 || amount > Outstanding || amount != Money.Round2(amount))
+            throw new DomainException("Trade_ReturnInvalid");
+        ReturnCreditApplied += amount;
+        BalanceRevision++;
+    }
     public string? CustomerAccountKey { get; private set; }
     public DateTime? CreditDueDate{get;private set;}
     public string CreditNote{get;private set;}="";

@@ -57,7 +57,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
 
     public bool IsNew => Id is null;
     public bool CanAssignBatch => TrackExpiry && !IsNew && UnassignedStock > 0m;
-    public bool CanRestockNormally => !TrackExpiry && !IsNew;
+    public bool CanRestockNormally => !TrackExpiry && !IsNew && (!IsPharmacy || StockTracked);
     public bool IsTrackedExisting => TrackExpiry && !IsNew;
     partial void OnUnassignedStockChanged(decimal value) => OnPropertyChanged(nameof(CanAssignBatch));
 
@@ -80,7 +80,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
         BatchLot = BatchQuantity = "";
         BatchExpiry = null;
         UnassignedStock = 0m;
-        NotifyBatchOptions();DefaultSellingUnit=MedicineUnit;OpeningStockUnit=MedicineUnit;NotifySaleUnits();
+        MedicinePackStrips="";NotifyBatchOptions();DefaultSellingUnit=MedicineUnit;OpeningStockUnit=MedicineUnit;NotifySaleUnits();
     }
 
     public void Load(Product p)
@@ -91,7 +91,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
         _internalBarcode=p.Barcode.StartsWith("INTERNAL-",StringComparison.Ordinal)?p.Barcode:null;
         Barcode = _internalBarcode is null?p.Barcode:"";
         Name = p.Name;
-        Price = p.UnitPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+        Price = IsPharmacy&&p.UnitPrice==0?"":p.UnitPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
         PurchaseCost = p.PurchaseCost?.ToString("0.00", CultureInfo.InvariantCulture) ?? "";
         VatPercent = (p.VatRate * 100m).ToString("0.############################", CultureInfo.InvariantCulture);
         IsKilogram = p.Unit == Domain.Common.Unit.Kilogram;
@@ -109,7 +109,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
         BatchLot = BatchQuantity = "";
         BatchExpiry = null;
         UnassignedStock = p.UnassignedStock;
-        NotifyBatchOptions();DefaultSellingUnit=p.DefaultSellingUnit;OpeningStockUnit=MedicineUnit;NotifySaleUnits();
+        MedicinePackStrips=UsesStrips&&p.UnitsPerPackage>1?StripsPerPack:"";NotifyBatchOptions();DefaultSellingUnit=p.DefaultSellingUnit;OpeningStockUnit=MedicineUnit;NotifySaleUnits();
     }
 
     private void NotifyBatchOptions()

@@ -8,6 +8,10 @@
         <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
             <TextBlock Text="{loc:T Nav_Customers}" Style="{StaticResource H1}" />
             <TextBlock Text="{loc:T Customers_Search}" Style="{StaticResource FormLabel}" Margin="0,12,0,4" />
+            <WrapPanel Margin="0,0,0,6">
+                <Button Content="{loc:T Trade_CustomerLedger}" Command="{Binding ViewLedgerCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,0"/>
+                <Button Content="{loc:T Trade_RepeatSale}" Command="{Binding RepeatSelectedSaleCommand}" Style="{StaticResource GhostButton}"/>
+            </WrapPanel>
             <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:T Customers_Search}" />
             <TextBlock Text="{Binding Error}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap"
                        Visibility="{Binding Error, Converter={StaticResource StrToVis}}" />

@@ -36,6 +36,7 @@ public sealed partial class PosViewModel
     partial void OnSearchTextChanged(string value)=>ApplyRegisterFilter();
     [RelayCommand]private async Task SelectMedicineAsync(MedicineMatch match)
     {
+        if(!IsPharmacy||!CanReadBarcode())return;
         if(match.ProductId is{} id){if(await _products.GetCurrentForRegisterAsync(id) is{} existing)await AddFromResultsAsync(existing);return;}
         if(!CanReadBarcode())return;
         AddProvisionalMedicine(match,match.Name,"");await Task.CompletedTask;

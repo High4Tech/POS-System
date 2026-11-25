@@ -1056,4 +1056,68 @@
   <data name="Stock_StockTransfer" xml:space="preserve"><value>Location transfer</value></data>
   <data name="Layout_ResizeHeight" xml:space="preserve"><value>Adjust panel heights</value></data>
   <data name="Layout_ResizeHint" xml:space="preserve"><value>Drag up or down to adjust heights. Arrow keys also work. Double-click to reset.</value></data>
+  <data name="Nav_Shortcuts" xml:space="preserve"><value>Keyboard Shortcuts</value></data>
+  <data name="Shortcut_Subtitle" xml:space="preserve"><value>{0} · Shortcut Reference</value></data>
+  <data name="Shortcut_CurrentPage" xml:space="preserve"><value>Current Page Shortcuts</value></data>
+  <data name="Shortcut_AllOther" xml:space="preserve"><value>All Other Shortcuts</value></data>
+  <data name="Shortcut_Key" xml:space="preserve"><value>Shortcut</value></data>
+  <data name="Shortcut_Action" xml:space="preserve"><value>Action</value></data>
+  <data name="Shortcut_Page" xml:space="preserve"><value>Page</value></data>
+  <data name="Shortcut_PageSeparator" xml:space="preserve"><value>, </value></data>
+  <data name="Shortcut_Empty" xml:space="preserve"><value>No shortcuts are available on this page.</value></data>
+  <data name="Shortcut_NoOther" xml:space="preserve"><value>No other shortcuts are available.</value></data>
+  <data name="Shortcut_FocusSearch" xml:space="preserve"><value>Focus search</value></data>
+  <data name="Shortcut_Unavailable" xml:space="preserve"><value>Unavailable in the current view</value></data>
+  <data name="Shortcut_CartRequired" xml:space="preserve"><value>Requires a ready cart</value></data>
+  <data name="Shortcut_CustomerRequired" xml:space="preserve"><value>Requires a selected customer</value></data>
+  <data name="Shortcut_ProductRequired" xml:space="preserve"><value>Requires a selected product</value></data>
+  <data name="Shortcut_InvoiceRequired" xml:space="preserve"><value>Requires a selected invoice</value></data>
+  <data name="Shortcut_EditorRequired" xml:space="preserve"><value>Requires an open product editor</value></data>
+  <data name="Shortcut_LabelsRequired" xml:space="preserve"><value>Requires products in the inventory list</value></data>
+  <data name="Pharmacy_MedicineNameRequired" xml:space="preserve"><value>Medicine Name *</value></data>
+  <data name="Pharmacy_RequiredLegend" xml:space="preserve"><value>* Required</value></data>
+  <data name="Pharmacy_MedicineInformation" xml:space="preserve"><value>Medicine Information</value></data>
+  <data name="Pharmacy_SellingPricing" xml:space="preserve"><value>Selling &amp; Pricing</value></data>
+  <data name="Pharmacy_SellAs" xml:space="preserve"><value>Sell as</value></data>
+  <data name="Pharmacy_SellingPrice" xml:space="preserve"><value>Selling Price (PKR)</value></data>
+  <data name="Pharmacy_OptionalStripsPerPack" xml:space="preserve"><value>Strips per pack (optional)</value></data>
+  <data name="Pharmacy_UnitUnspecified" xml:space="preserve"><value>Select a unit (optional)</value></data>
+  <data name="Pharmacy_MissingUnit" xml:space="preserve"><value>Selling unit missing</value></data>
+  <data name="Pharmacy_ReferenceAlreadyLinked" xml:space="preserve"><value>This medicine is already in inventory. Open its existing product to edit it.</value></data>
+  <data name="Trade_RepeatSale" xml:space="preserve"><value>Repeat sale</value></data>
+  <data name="Trade_RepeatEmpty" xml:space="preserve"><value>Open an empty Register to repeat this sale.</value></data>
+  <data name="Trade_RepeatError" xml:space="preserve"><value>Could not load the previous sale. Review the cart.</value></data>
+  <data name="Trade_RepeatSkipped" xml:space="preserve"><value>Review these items before adding them: {0}</value></data>
+  <data name="Trade_CustomerLedger" xml:space="preserve"><value>Customer ledger</value></data>
+  <data name="Trade_ProductSales" xml:space="preserve"><value>Product sales history</value></data>
+  <data name="Trade_Debit" xml:space="preserve"><value>Debit</value></data>
+  <data name="Trade_CreditAmount" xml:space="preserve"><value>Credit</value></data>
+  <data name="Trade_InvoiceSearch" xml:space="preserve"><value>Invoice number, customer, phone or cashier</value></data>
+  <data name="Trade_MinimumAmount" xml:space="preserve"><value>Minimum invoice amount</value></data>
+  <data name="Trade_MaximumAmount" xml:space="preserve"><value>Maximum invoice amount</value></data>
+  <data name="Trade_Returns" xml:space="preserve"><value>Returns</value></data>
+  <data name="Trade_ReturnItems" xml:space="preserve"><value>Return items</value></data>
+  <data name="Trade_ReturnPosted" xml:space="preserve"><value>Posted</value></data>
+  <data name="Trade_ReturnPending" xml:space="preserve"><value>A card refund is awaiting confirmation.</value></data>
+  <data name="Trade_ReturnFailed" xml:space="preserve"><value>Failed</value></data>
+  <data name="Trade_ReturnInvalid" xml:space="preserve"><value>Check the returned quantities, original invoice and required details.</value></data>
+  <data name="Trade_ReturnReason" xml:space="preserve"><value>Reason</value></data>
+  <data name="Trade_RestockVerified" xml:space="preserve"><value>Checked and eligible for resale</value></data>
+  <data name="Trade_ReturnQuarantine" xml:space="preserve"><value>Keep this item outside saleable stock. Its identity or location needs separate verification.</value></data>
+  <data name="Trade_RefundReference" xml:space="preserve"><value>External refund reference or failure details</value></data>
+  <data name="Trade_RequestCardRefund" xml:space="preserve"><value>Record pending card refund</value></data>
+  <data name="Trade_ConfirmCardRefund" xml:space="preserve"><value>Record confirmed external refund</value></data>
+  <data name="Trade_CardRefundFailed" xml:space="preserve"><value>Record refund failure</value></data>
+  <data name="Trade_ConfirmCashRefund" xml:space="preserve"><value>I handed over the cash refund</value></data>
+  <data name="Stock_SaleReturn" xml:space="preserve"><value>Return to stock</value></data>
+  <data name="Reports_LoadError" xml:space="preserve"><value>Could not load the sales records.</value></data>
+  <data name="Trade_Outstanding" xml:space="preserve"><value>Outstanding</value></data>
+  <data name="Trade_CreditBalanceSummary" xml:space="preserve"><value>Previous outstanding {0} · Projected outstanding {1}</value></data>
+<data name="Trade_DeviceUnavailable"><value>Device tracking is unavailable for this business type.</value></data>
+<data name="Trade_Frequent"><value>Frequently purchased</value></data>
+<data name="Trade_PreviousPurchases"><value>Previous purchases</value></data>
+<data name="Trade_ReturnIdentity"><value>Enter the batch or device identifier from the item being returned. It must match the original sale.</value></data>
+<data name="Trade_ReturnIdentityField"><value>Physical batch / device identifier</value></data>
+<data name="Trade_RefundPaid"><value>Refund paid</value></data>
+<data name="Trade_ReturnSummary"><value>Returns posted: {0} · Total {1} · Cash {2} · Card {3} · Receivable reduction {4} · Customer credit {5}</value></data>
 </root>

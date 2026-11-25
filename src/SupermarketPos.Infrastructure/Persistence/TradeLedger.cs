@@ -42,8 +42,10 @@ public sealed class TradeLedger(PosDbContext db, IUnitOfWork work) : ITradeLedge
             return true;
         }, ct);
 
-    public async Task<IReadOnlyList<SerialRecord>> SerialsAsync(int? productId = null, CancellationToken ct = default) =>
-        await (from unit in db.SerializedUnits.AsNoTracking()
+    public async Task<IReadOnlyList<SerialRecord>> SerialsAsync(int? productId = null, CancellationToken ct = default)
+    {
+        await EnsureElectronicsAllowedAsync(ct);
+        return await (from unit in db.SerializedUnits.AsNoTracking()
                join product in db.Products.AsNoTracking() on unit.ProductId equals product.Id
                join sale in db.Sales.AsNoTracking() on unit.SaleId equals (int?)sale.Id into saleJoin
                from sale in saleJoin.DefaultIfEmpty()
@@ -52,6 +54,7 @@ public sealed class TradeLedger(PosDbContext db, IUnitOfWork work) : ITradeLedge
                select new SerialRecord(unit, product.Name, sale == null ? null : sale.ReceiptNo,
                    sale == null ? null : sale.CustomerName, sale == null ? null : sale.CustomerPhone,
                    sale == null ? null : sale.CustomerEmail)).ToArrayAsync(ct);
+    }
 
     public Task RegisterExistingAsync(int productId, IReadOnlyList<UnitIdentifiers> units, CancellationToken ct = default) =>
         work.ExecuteInTransactionAsync(async token =>
@@ -102,6 +105,7 @@ public sealed class TradeLedger(PosDbContext db, IUnitOfWork work) : ITradeLedge
 
     public async Task<(Product Product, string Serial)?> FindUnitAsync(string identifier, CancellationToken ct = default)
     {
+        if (!await ElectronicsAllowedAsync(ct)) return null;
         var normalized = identifier.Trim().ToUpperInvariant();
         var unit = await db.SerializedUnits.AsNoTracking().SingleOrDefaultAsync(u =>
             u.Serial == normalized || u.Imei1 == normalized || u.Imei2 == normalized, ct);
@@ -119,7 +123,11 @@ public sealed class TradeLedger(PosDbContext db, IUnitOfWork work) : ITradeLedge
     }
     private async Task EnsureElectronicsAllowedAsync(CancellationToken ct)
     {
+        if(!await ElectronicsAllowedAsync(ct)) throw new DomainException("Trade_DeviceUnavailable");
+    }
+    private async Task<bool> ElectronicsAllowedAsync(CancellationToken ct)
+    {
         var row=await db.BusinessConfigurations.AsNoTracking().SingleOrDefaultAsync(ct);
-        if(row is not null&&System.Text.Json.JsonSerializer.Deserialize<SupermarketPos.Domain.Business.BusinessProfile>(row.ProfileJson)?.IsPharmacy==true)throw new DomainException("Pharmacy_Only");
+        return row is null || System.Text.Json.JsonSerializer.Deserialize<SupermarketPos.Domain.Business.BusinessProfile>(row.ProfileJson)?.DeviceTrackingAvailable==true;
     }
 }

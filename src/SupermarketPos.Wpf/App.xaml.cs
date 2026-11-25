@@ -136,6 +136,8 @@ public partial class App : System.Windows.Application
         services.AddSingleton<StoreProfile>();
         services.AddSingleton<DesktopTextSize>();
         services.AddScoped<StockAlertsViewModel>();
+        services.AddScoped<SupermarketPos.Infrastructure.Business.SaleHistory>();
+        services.AddScoped<SupermarketPos.Infrastructure.Business.ReturnsService>();
         services.AddSingleton<ScannerStorage>();
         services.AddSingleton<IScannerTrustStore>(sp => sp.GetRequiredService<ScannerStorage>());
         services.AddSingleton<IScannerIdentityStore>(sp => sp.GetRequiredService<ScannerStorage>());

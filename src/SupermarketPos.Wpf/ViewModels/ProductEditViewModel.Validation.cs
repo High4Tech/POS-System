@@ -8,7 +8,7 @@ public sealed partial class ProductEditViewModel:IDataErrorInfo
 {
     public string Error=>"";
     public string this[string field]=>FieldError(field);
-    public string FirstFieldError=>new[]{nameof(Name),nameof(Barcode),nameof(Price),nameof(VatPercent),nameof(Stock),nameof(PurchaseCost),nameof(CategoryId),nameof(UnitsPerStrip),nameof(StripPrice),nameof(UnitsPerPackage),nameof(PackagePrice),nameof(PackageCost),nameof(MinimumStock),nameof(BatchLot),nameof(BatchExpiry)}.Select(FieldError).FirstOrDefault(e=>e.Length>0)??"";
+    public string FirstFieldError=>new[]{nameof(Name),nameof(Barcode),nameof(Price),nameof(VatPercent),nameof(Stock),nameof(PurchaseCost),nameof(CategoryId),nameof(MedicineUnit),nameof(UnitsPerStrip),nameof(MedicinePackStrips),nameof(StripPrice),nameof(UnitsPerPackage),nameof(PackagePrice),nameof(PackageCost),nameof(MinimumStock),nameof(BatchLot),nameof(BatchExpiry)}.Select(FieldError).FirstOrDefault(e=>e.Length>0)??"";
     private string FieldError(string field)
     {
         var text=LocalizationManager.Instance;
@@ -21,12 +21,14 @@ public sealed partial class ProductEditViewModel:IDataErrorInfo
         {
             case nameof(Name):return string.IsNullOrWhiteSpace(Name)?text["Validation_Required"]:Name.Trim().Length>200||Name.Any(char.IsControl)?text["Validation_Text"]:"";
             case nameof(Barcode):return Barcode.Length>64||Barcode.Any(char.IsControl)?text["Pharmacy_InvalidBarcode"]:"";
-            case nameof(Price):return Number(Price);
-            case nameof(VatPercent):return !decimal.TryParse(VatPercent,NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,out var vat)||vat is <0 or >100?text[string.IsNullOrWhiteSpace(VatPercent)?"Validation_Required":"Products_InvalidVat"]:"";
-            case nameof(Stock):return string.IsNullOrWhiteSpace(Stock)?"":!decimal.TryParse(Stock,NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,out var stock)||stock<0||stock!=decimal.Round(stock,SellingMethod is "weight" or "volume"?3:0)?text["Purchase_QuantityInvalid"]:"";
+            case nameof(Price):return Number(Price,IsPharmacy);
+            case nameof(VatPercent):return IsPharmacy&&string.IsNullOrWhiteSpace(VatPercent)?"":!decimal.TryParse(VatPercent,NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,out var vat)||vat is <0 or >100?text[string.IsNullOrWhiteSpace(VatPercent)?"Validation_Required":"Products_InvalidVat"]:"";
+            case nameof(Stock):return IsPharmacy&&!IsNew||string.IsNullOrWhiteSpace(Stock)?"":!decimal.TryParse(Stock,NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,out var stock)||stock<0||IsPharmacy&&stock==0||stock!=decimal.Round(stock,SellingMethod is "weight" or "volume"?3:0)?text["Purchase_QuantityInvalid"]:"";
             case nameof(CategoryId):return CategoryId==0&&!IsPharmacy?text["Validation_Required"]:"";
             case nameof(PurchaseCost):return Number(PurchaseCost,true);
             case nameof(MinimumStock):return Number(MinimumStock,true,precision:3);
+            case nameof(MedicineUnit):return IsPharmacy&&MedicineUnit.Length==0&&(IsNew&&Stock.Length>0||!IsNew&&StockTracked)?text["Pharmacy_MissingUnit"]:"";
+            case nameof(MedicinePackStrips):return IsPharmacy&&UsesStrips&&MedicinePackStrips.Length>0&&(!int.TryParse(MedicinePackStrips,out var packs)||packs<1||!int.TryParse(UnitsPerStrip,out var strip)||strip<1||packs>1000000/strip||packs*strip<=1)?text["Pharmacy_InvalidUnits"]:"";
             case nameof(UnitsPerStrip):return IsPharmacy&&UsesStrips?Number(UnitsPerStrip,positive:true,whole:true):"";
             case nameof(StripPrice):return IsPharmacy&&UsesStrips?Number(StripPrice,true,true):"";
             case nameof(UnitsPerPackage):return UsesPackaging?Number(UnitsPerPackage,positive:true,whole:true):"";

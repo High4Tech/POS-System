@@ -44,13 +44,14 @@ public sealed class FbrCompliance(PosDbContext db) : IBusinessCompliance
         var row = await db.BusinessConfigurations.AsNoTracking().SingleOrDefaultAsync(ct);
         if (row is null) return; // legacy database; setup never modifies existing checkout data
         var profile = JsonSerializer.Deserialize<BusinessProfile>(row.ProfileJson)!;
-        if(profile.IsPharmacy)
-        {
-            var productIds=cart.Lines.Select(l=>l.Product.Id).ToArray();
-            var products=await db.Products.AsNoTracking().Where(p=>productIds.Contains(p.Id)).ToArrayAsync(ct);
-            if(products.Any(p=>p.Unit!=SupermarketPos.Domain.Common.Unit.Piece))throw new BusinessValidationException("Pharmacy_PackedOnly");
-            if(products.Any(p=>p.TrackSerial||p.WarrantyMonths>0))throw new BusinessValidationException("Pharmacy_TraceabilityRequired");
-        }
+        var productIds=cart.Lines.Select(l=>l.Product.Id).ToArray();
+        var products=await db.Products.AsNoTracking().Where(p=>productIds.Contains(p.Id)).ToArrayAsync(ct);
+        if(!profile.LooseGoodsAvailable && products.Any(p=>p.Unit!=SupermarketPos.Domain.Common.Unit.Piece))
+            throw new BusinessValidationException(profile.IsPharmacy?"Pharmacy_PackedOnly":"Measure_InvalidProduct");
+        if(!profile.DeviceTrackingAvailable && products.Any(p=>p.TrackSerial||p.WarrantyMonths>0))
+            throw new BusinessValidationException("Trade_DeviceUnavailable");
+        if(!profile.IsPharmacy && cart.Lines.Any(l=>l.MedicineUnit is not null))
+            throw new BusinessValidationException("Pharmacy_Only");
         if (profile.FbrRequired) throw new BusinessValidationException("Setup_RequiredIntegration");
         if (!profile.Registered) return;
         var ids = cart.Lines.Select(l => l.Product.Id).ToArray();

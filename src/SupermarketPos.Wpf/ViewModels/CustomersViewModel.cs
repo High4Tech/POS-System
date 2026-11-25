@@ -10,7 +10,7 @@ using SupermarketPos.Wpf.Views;
 namespace SupermarketPos.Wpf.ViewModels;
 
 public sealed partial class CustomersViewModel(ISaleRepository sales, BulkRecordService records,
-    ReceiptPreviewDialog receipts, ITradeLedger ledger, IAuthService auth) : ObservableObject
+    ReceiptPreviewDialog receipts, ITradeLedger ledger, IAuthService auth, SupermarketPos.Infrastructure.Business.ReturnsService returns) : ObservableObject
 {
     private IReadOnlyList<CustomerRow> _all = [];
     [ObservableProperty] private IReadOnlyList<CustomerRow> _customers = [];
@@ -54,6 +54,46 @@ public sealed partial class CustomersViewModel(ISaleRepository sales, BulkRecord
         var search = Search.Trim();
         Customers = _all.Where(row => row.Matches(search)).ToArray();
         Selected = Customers.FirstOrDefault(row => row.Key == key) ?? Customers.FirstOrDefault();
+    }
+
+    [RelayCommand]
+    private async Task ViewLedgerAsync()
+    {
+        if (Selected is not { } customer || InAppDialog.IsOpen) return;
+        try
+        {
+            var events = new List<(DateTime Date, string Reference, string Kind, decimal Debit, decimal Credit)>();
+            foreach (var row in customer.Sales)
+            {
+                var sale = row.Sale;
+                events.Add((sale.CreatedAt, sale.ReceiptNo, "Reports_History", sale.GrossTotal, 0));
+                if (sale.AmountPaid > 0) events.Add((sale.CreatedAt, sale.ReceiptNo, "Reports_Payment", 0, sale.AmountPaid));
+                foreach (var payment in await ledger.PaymentsAsync(sale.Id, false))
+                    events.Add((payment.PaidOn, sale.ReceiptNo, "Reports_Payment", 0, payment.Amount));
+                foreach (var refund in (await returns.HistoryAsync(sale.Id)).Where(r=>r.Status=="Posted"))
+                {
+                    var refunded=refund.CashRefund+refund.CardRefund;
+                    events.Add((refund.PostedAt??refund.CreatedAt,sale.ReceiptNo,"Trade_Returns",0,refund.Gross));
+                    if(refunded>0)events.Add((refund.PostedAt??refund.CreatedAt,sale.ReceiptNo,"Trade_RefundPaid",refunded,0));
+                }
+            }
+            decimal balance = 0;
+            var rows = events.OrderBy(e=>e.Date.Date).ThenBy(e=>e.Date).ThenByDescending(e=>e.Debit).Select(e =>
+            {
+                balance += e.Debit - e.Credit;
+                return new { Date=e.Date.ToString("g"), e.Reference, Type=LocalizationManager.Instance[e.Kind], Debit=MoneyText.Format(e.Debit), Credit=MoneyText.Format(e.Credit), Balance=MoneyText.Format(balance) };
+            }).ToArray();
+            await HistoryTable.ShowAsync("Trade_CustomerLedger",rows,("Reports_Date","Date"),("Reports_ReceiptNo","Reference"),("Reports_Payment","Type"),("Trade_Debit","Debit"),("Trade_CreditAmount","Credit"),("Trade_Balance","Balance"));
+        }
+        catch (Exception) { Error = LocalizationManager.Instance["Customers_LoadError"]; }
+    }
+
+    [RelayCommand]
+    private async Task RepeatSelectedSaleAsync()
+    {
+        if (SelectedSale is not { } row || System.Windows.Application.Current.MainWindow?.DataContext is not MainViewModel shell) return;
+        try { await shell.RepeatSaleCommand.ExecuteAsync(await sales.GetByIdAsync(row.Sale.Id)); }
+        catch (Exception) { Error = LocalizationManager.Instance["Trade_RepeatError"]; }
     }
 
     private bool HasSelectedSale() => SelectedSale is not null;

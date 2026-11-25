@@ -126,6 +126,7 @@ public sealed partial class PosViewModel
             return new ScanOutcome("unknown");
         }
         var product = match.Product;
+        if (IsPharmacy && !product.SellingUnitConfigured) { Status=Text["Pharmacy_MissingUnit"]; return new("invalid"); }
         if(IsPharmacy&&product.Unit!=Unit.Piece){Status=Text["Pharmacy_PackedOnly"];return new("invalid",product.Name);}
         var needsLocation=false;
         if(IsPharmacy&&product.StockTracked){var places=await _stockLocations.StockAsync(product.Id);needsLocation=places.Select(l=>l.Id).Distinct().Count()>1||places.Length>0&&places.Sum(l=>l.BaseQuantity)<product.BaseStockQuantity;if(!CanKeepScan()||epoch is{} active&&!_scanner.CanApply(this,active))return new("paused");}

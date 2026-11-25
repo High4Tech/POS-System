@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
              xmlns:layout="clr-namespace:SupermarketPos.Wpf.Common">
-    <DataGrid ItemsSource="{Binding Items}" IsReadOnly="True"
+    <DataGrid x:Name="ItemsTable" ItemsSource="{Binding Items}" IsReadOnly="True"
               layout:TableLayout.Key="{Binding Path=(layout:TableLayout.Key), RelativeSource={RelativeSource AncestorType=UserControl}}">
         <DataGrid.Columns>
             <DataGridTextColumn Header="{loc:T Pos_Product}" Binding="{Binding Name}" Width="2.1*" MinWidth="88" ElementStyle="{StaticResource TableName}" />
@@ -14,10 +14,10 @@
             <DataGridTextColumn Header="{loc:T Products_Vat}" Binding="{Binding VatRate, StringFormat=P2}" Width="0.55*" MinWidth="42" />
             <DataGridTextColumn Header="{loc:T Purchase_UnitCost}" Binding="{Binding UnitCost}" Width="1.05*" MinWidth="66" ElementStyle="{StaticResource TableMoney}" />
             <DataGridTextColumn Header="{loc:T Pos_LineTotal}" Binding="{Binding LineTotal}" Width="1.1*" MinWidth="66" ElementStyle="{StaticResource TableMoney}" />
-            <DataGridTextColumn Header="{loc:T Trade_Serial}" Binding="{Binding Serial}" Width="*" ElementStyle="{StaticResource TableValue}" />
-            <DataGridTextColumn Header="{loc:T Trade_Imei1}" Binding="{Binding Imei1}" Width="*" ElementStyle="{StaticResource TableValue}" />
-            <DataGridTextColumn Header="{loc:T Trade_Imei2}" Binding="{Binding Imei2}" Width="*" ElementStyle="{StaticResource TableValue}" />
-            <DataGridTextColumn Header="{loc:T Trade_WarrantyUntil}" Binding="{Binding WarrantyUntil, StringFormat=d}" Width="*" />
+            <DataGridTextColumn x:Name="SerialColumn" Header="{loc:T Trade_Serial}" Binding="{Binding Serial}" Width="*" ElementStyle="{StaticResource TableValue}" />
+            <DataGridTextColumn x:Name="Imei1Column" Header="{loc:T Trade_Imei1}" Binding="{Binding Imei1}" Width="*" ElementStyle="{StaticResource TableValue}" />
+            <DataGridTextColumn x:Name="Imei2Column" Header="{loc:T Trade_Imei2}" Binding="{Binding Imei2}" Width="*" ElementStyle="{StaticResource TableValue}" />
+            <DataGridTextColumn x:Name="WarrantyColumn" Header="{loc:T Trade_WarrantyUntil}" Binding="{Binding WarrantyUntil, StringFormat=d}" Width="*" />
         </DataGrid.Columns>
     </DataGrid>
 </UserControl>

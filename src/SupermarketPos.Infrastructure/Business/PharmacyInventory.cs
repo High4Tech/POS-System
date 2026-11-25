@@ -38,6 +38,11 @@ public sealed class PharmacyInventory(PosDbContext db,IUnitOfWork uow,IAuthServi
             db.Products.Add(product);await db.SaveChangesAsync(token);return product;
         },ct);
     }
+    public async Task CheckReferenceAvailableAsync(int referenceId,int? productId,CancellationToken ct)
+    {
+        if(await db.Products.AnyAsync(p=>p.MedicineReferenceId==referenceId && p.Id!=productId,ct))
+            throw new DomainException("Pharmacy_ReferenceAlreadyLinked");
+    }
     public Task ConfirmSaleSetupAsync(int productId,string unit,decimal price,decimal vat,CancellationToken ct=default)
     {
         auth.RequireAdmin();return uow.ExecuteInTransactionAsync(async token=>

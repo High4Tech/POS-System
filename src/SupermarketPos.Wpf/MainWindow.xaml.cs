@@ -1,87 +1,103 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using SupermarketPos.Wpf.Common;
+using SupermarketPos.Wpf.Localization;
+using SupermarketPos.Wpf.ViewModels;
 
 namespace SupermarketPos.Wpf;
 
 public partial class MainWindow : Window
 {
-    private const double DefaultSidebarWidth = 248;
-    private const double MinimumSidebarWidth = 176;
-    private const double CollapsedSidebarWidth = 72;
-    private readonly LayoutPreferences<SidebarLayout> _sidebarPreferences;
-    private double _preferredSidebarWidth;
-    private bool _collapseSidebar;
+    private bool _fitQueued;
 
-    private static readonly DependencyPropertyKey IsSidebarCollapsedPropertyKey = DependencyProperty.RegisterReadOnly(
-        nameof(IsSidebarCollapsed), typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
-
-    public static readonly DependencyProperty IsSidebarCollapsedProperty = IsSidebarCollapsedPropertyKey.DependencyProperty;
-    public bool IsSidebarCollapsed => (bool)GetValue(IsSidebarCollapsedProperty);
-
-    public MainWindow(PosStorage storage,ViewModels.ScannerController? scanner=null)
+    public MainWindow(PosStorage storage, ScannerController? scanner = null)
     {
-        _sidebarPreferences = new(storage, "sidebar-layout.json");
-        var saved = _sidebarPreferences.Read();
-        _preferredSidebarWidth = saved is { Width: >= MinimumSidebarWidth } && double.IsFinite(saved.Width)
-            ? saved.Width : DefaultSidebarWidth;
-        _collapseSidebar = saved?.Collapsed ?? false;
-        SetValue(IsSidebarCollapsedPropertyKey, _collapseSidebar);
         InitializeComponent();
-        if(scanner is not null)PhysicalBarcodeInput.Attach(this,scanner);
-    }
-
-    private void ShellSizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        if (e.WidthChanged) ApplySidebarWidth();
-    }
-
-    private void ToggleSidebar(object sender, RoutedEventArgs e)
-    {
-        _collapseSidebar = !IsSidebarCollapsed;
-        ApplySidebarWidth();
-        SaveSidebar();
-    }
-
-    private void ApplySidebarWidth()
-    {
-        var available = Shell.ActualWidth;
-        if (available <= 0) return;
-        var maximum = available / 2;
-        SetValue(IsSidebarCollapsedPropertyKey, _collapseSidebar || maximum < MinimumSidebarWidth);
-        SidebarToggle.IsEnabled = maximum >= MinimumSidebarWidth;
-        SidebarColumn.MinWidth = Math.Min(CollapsedSidebarWidth, maximum);
-        SidebarColumn.MaxWidth = maximum;
-        SidebarColumn.Width = new GridLength(IsSidebarCollapsed ? SidebarColumn.MinWidth
-            : Math.Clamp(_preferredSidebarWidth, MinimumSidebarWidth, maximum));
-    }
-
-    private void SidebarDragCompleted(object sender, DragCompletedEventArgs e)
-    {
-        if (!e.Canceled && Math.Abs(e.HorizontalChange) >= 1) RememberSidebarWidth();
-    }
-
-    private void SidebarResizeKeyUp(object sender, KeyEventArgs e)
-    {
-        if (e.Key is Key.Left or Key.Right) RememberSidebarWidth();
-    }
-
-    private void RememberSidebarWidth()
-    {
-        var width = SidebarColumn.Width.Value;
-        if (width < MinimumSidebarWidth)
+        if (scanner is not null) PhysicalBarcodeInput.Attach(this, scanner);
+        DataContextChanged += (_, e) =>
         {
-            _collapseSidebar = true;
-            ApplySidebarWidth();
-            SidebarToggle.Focus();
-        }
-        else if (width == _preferredSidebarWidth) return;
-        else _preferredSidebarWidth = width;
-        SaveSidebar();
+            if (e.OldValue is MainViewModel oldModel) oldModel.PropertyChanged -= ModelChanged;
+            if (e.NewValue is MainViewModel model) model.PropertyChanged += ModelChanged;
+            QueueFit();
+        };
+        Loaded += (_, _) => QueueFit();
+        TopActions.SizeChanged += (_, _) => QueueFit();
+        MoreButton.SizeChanged += (_, _) => QueueFit();
+        LocalizationManager.Instance.PropertyChanged += LanguageChanged;
+        Closed += (_, _) => LocalizationManager.Instance.PropertyChanged -= LanguageChanged;
+        PreviewKeyDown += RouteShortcut;
     }
 
-    private void SaveSidebar() => _sidebarPreferences.Write(new SidebarLayout(_preferredSidebarWidth, _collapseSidebar));
+    private void ModelChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(MainViewModel.DigitalServicesVisible) or nameof(MainViewModel.IsLoggedIn) or nameof(MainViewModel.ActiveScreen)) QueueFit();
+    }
 
-    private sealed record SidebarLayout(double Width, bool Collapsed);
+    private void LanguageChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) => QueueFit();
+    private void FitNavigation(object sender, SizeChangedEventArgs e) => QueueFit();
+    private void QueueFit()
+    {
+        if (_fitQueued) return;
+        _fitQueued = true;
+        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, new Action(() =>
+        {
+            _fitQueued = false;
+            if (!IsLoaded || NavigationBar.ActualWidth <= 0) return;
+            var available = NavigationBar.ActualWidth - MoreButton.ActualWidth - TopActions.ActualWidth - 14;
+            var active = (DataContext as MainViewModel)?.ActiveScreen;
+            MoreButton.FontWeight = FontWeights.SemiBold;
+            foreach (var button in Destinations.Children.OfType<Button>())
+            {
+                var eligible = button != DigitalDestination || (DataContext as MainViewModel)?.DigitalServicesVisible == true;
+                button.Visibility = eligible ? Visibility.Visible : Visibility.Collapsed;
+                if (!eligible) continue;
+                button.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                available -= button.DesiredSize.Width;
+                if (available < 0)
+                {
+                    button.Visibility = Visibility.Collapsed;
+                    if (Equals(button.Tag, active)) MoreButton.FontWeight = FontWeights.ExtraBold;
+                }
+            }
+        }));
+    }
+
+    private void OpenMore(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is not MainViewModel model) return;
+        var menu = new ContextMenu { PlacementTarget = MoreButton, Placement = PlacementMode.Bottom, FlowDirection = LocalizationManager.Instance.FlowDirection };
+        foreach (var destination in Destinations.Children.OfType<Button>().Where(b => b.Visibility == Visibility.Collapsed))
+        {
+            if (destination == DigitalDestination && !model.DigitalServicesVisible) continue;
+            menu.Items.Add(new MenuItem { Header = destination.Content, Command = destination.Command, IsCheckable = destination.Tag is string, IsChecked = Equals(destination.Tag, model.ActiveScreen) });
+        }
+        var help = new MenuItem { Header = LocalizationManager.Instance["Nav_Shortcuts"] };
+        help.Click += async (_, _) =>
+        {
+            menu.IsOpen = false;
+            await Dispatcher.InvokeAsync(() => { }, System.Windows.Threading.DispatcherPriority.Background);
+            await ShowShortcutsAsync();
+        };
+        menu.Items.Add(help);
+        menu.Items.Add(new MenuItem { Header = LocalizationManager.Instance["Nav_Logout"], Command = model.LogoutCommand });
+        menu.IsOpen = true;
+    }
+
+    internal Task ShowShortcutsAsync()
+    {
+        if (DataContext is not MainViewModel { IsLoggedIn: true } model || InAppDialog.IsOpen ||
+            model.CurrentViewModel is PosViewModel { IsPaymentOpen: true }) return Task.CompletedTask;
+        var (page, current, other) = Shortcuts.Describe(this, model);
+        var reference = new Views.ShortcutReference(page, current, other);
+        return InAppDialog.ShowAsync(reference, reference.SetClose, owner: this, contentWidth: 620,
+            sizeToContent: true, returnFocus: MoreButton);
+    }
+
+    private void RouteShortcut(object sender, KeyEventArgs e)
+    {
+        if (DataContext is MainViewModel { IsLoggedIn: true } model && !InAppDialog.IsOpen)
+            e.Handled = Shortcuts.TryRun(this, model, e.Key == Key.System ? e.SystemKey : e.Key, Keyboard.Modifiers);
+    }
 }

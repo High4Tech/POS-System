@@ -81,9 +81,17 @@
                         <Button Content="{loc:T Bulk_Template}" Command="{Binding DownloadSaleTemplateCommand}"
                                 Style="{StaticResource GhostButton}" Margin="0,0,8,4" ToolTip="{loc:T Bulk_SaleHelp}" />
                     </WrapPanel>
+                    <TextBox x:Name="InvoiceSearchBox" Text="{Binding InvoiceSearch, UpdateSourceTrigger=PropertyChanged, Delay=120}" ToolTip="{loc:T Trade_InvoiceSearch}" AutomationProperties.Name="{loc:T Trade_InvoiceSearch}" Margin="0,0,0,6"/>
+                    <UniformGrid Columns="4" Margin="0,0,0,8">
+                        <ComboBox ItemsSource="{Binding InvoicePayments}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding InvoicePayment}" AutomationProperties.Name="{loc:T Reports_Payment}" Margin="0,0,6,0"/>
+                        <ComboBox ItemsSource="{Binding InvoiceStatuses}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding InvoiceStatus}" AutomationProperties.Name="{loc:T Products_Status}" Margin="0,0,6,0"/>
+                        <TextBox Text="{Binding InvoiceMinimum, UpdateSourceTrigger=PropertyChanged, Delay=120}" ToolTip="{loc:T Trade_MinimumAmount}" AutomationProperties.Name="{loc:T Trade_MinimumAmount}" Margin="0,0,6,0"/>
+                        <TextBox Text="{Binding InvoiceMaximum, UpdateSourceTrigger=PropertyChanged, Delay=120}" ToolTip="{loc:T Trade_MaximumAmount}" AutomationProperties.Name="{loc:T Trade_MaximumAmount}"/>
+                    </UniformGrid>
                     <TextBlock Text="{loc:T Bulk_SaleHelp}" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,8" />
                     <TextBlock Text="{Binding HistoryMessage}" Foreground="{StaticResource SuccessBrush}" TextWrapping="Wrap"
                                Visibility="{Binding HistoryMessage, Converter={StaticResource StrToVis}}" Margin="0,0,0,8" />
+                    <TextBlock Text="{Binding ReturnSummary}" TextWrapping="Wrap" Visibility="{Binding ReturnSummary, Converter={StaticResource StrToVis}}" Margin="0,0,0,8"/>
                     <TextBlock Text="{Binding HistoryError}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap"
                                Visibility="{Binding HistoryError, Converter={StaticResource StrToVis}}" Margin="0,0,0,8" />
                     <Grid>
@@ -127,12 +135,15 @@
                                             ElementStyle="{StaticResource TableName}" />
                         <DataGridTextColumn Header="{loc:T Customer_Name}" Binding="{Binding CustomerLabel}" Width="*" MinWidth="66"
                                             ElementStyle="{StaticResource TableName}" />
+                        <DataGridTextColumn Header="{loc:T Trade_Returns}" Binding="{Binding ReturnedText}" Width=".8*" MinWidth="70" ElementStyle="{StaticResource TableMoney}"/>
                         <DataGridTextColumn Header="{loc:T Pos_Total}" Binding="{Binding TotalText}" Width="*" MinWidth="66"
                                             ElementStyle="{StaticResource TableMoney}" SortMemberPath="Sale.GrossTotal" />
                     </DataGrid.Columns>
                     </DataGrid>
                     <GridSplitter Grid.Row="1" Height="12" VerticalAlignment="Top" Style="{StaticResource HeightDivider}"/><StackPanel Grid.Row="1" Margin="0,12,0,0"><DockPanel Margin="0,8">
                         <WrapPanel DockPanel.Dock="Right" Visibility="{Binding SelectedSale.ReceiptNo,Converter={StaticResource StrToVis},FallbackValue=Collapsed}">
+                         <Button Content="{loc:T Trade_RepeatSale}" Command="{Binding RepeatSelectedSaleCommand}" Style="{StaticResource GhostButton}" Margin="3"/>
+                         <Button Content="{loc:T Trade_ReturnItems}" Command="{Binding ReturnItemsCommand}" Style="{StaticResource GhostButton}" Margin="3"/>
                          <Button Content="{loc:T Invoice_Print}" Command="{Binding PrintInvoiceCommand}" Style="{StaticResource PrimaryButton}" Margin="3"/>
                          <Button Content="{loc:T Invoice_WhatsApp}" Command="{Binding WhatsAppInvoiceCommand}" Style="{StaticResource PrimaryButton}" Margin="3"/>
                          <Button Content="{loc:T Invoice_Download}" Command="{Binding DownloadInvoiceCommand}" Style="{StaticResource PrimaryButton}" Margin="3"/>
@@ -142,6 +153,7 @@
                                 Style="{StaticResource GhostButton}" Padding="10,6" Margin="0,0,4,0" />
                         <TextBlock Text="{loc:T Dash_InvoiceItems}" Style="{StaticResource FormLabel}" VerticalAlignment="Center" />
                     </DockPanel></StackPanel>
+                    <TextBlock Grid.Row="1" VerticalAlignment="Bottom" Margin="0,0,12,4" Text="{Binding SelectedSale.InvoiceMargin}" ToolTip="{loc:T Dash_Profit}" Visibility="{Binding ShowMargin, Converter={StaticResource BoolToVis}}"/>
                     <views:SaleItemsView Grid.Row="2" layout:TableLayout.Key="sales-items" DataContext="{Binding SelectedSale}" />
                 </Grid>
             </Border>

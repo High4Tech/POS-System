@@ -1,6 +1,6 @@
 namespace SupermarketPos.Domain.Entities;
 
-public enum StockMovementKind { OpeningStock, PurchaseReceipt, Sale, ManualAdjustment, BatchAssignment, BatchHold, StockTransfer }
+public enum StockMovementKind { OpeningStock, PurchaseReceipt, Sale, ManualAdjustment, BatchAssignment, BatchHold, StockTransfer, SaleReturn }
 
 public sealed class StockMovement
 {
