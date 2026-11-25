@@ -77,6 +77,28 @@ public class SaleServiceTests
         verify.Sales.Should().BeEmpty();                         // nothing persisted
     }
 
+    [Theory]
+    [InlineData(7)]
+    [InlineData(13)]
+    public async Task Checkout_PersistsAnIncreasedOrDecreasedPriceForThisSaleOnly(int unitPrice)
+    {
+        using var db = new TestDb();
+        var (service, _, cashier) = Build(db);
+        var product = SeedProduct(db, 10m, 5m);
+        var cart = new Cart();
+        cart.AddOrIncrement(product, 2).SetUnitPrice(unitPrice);
+        var amount = unitPrice * 2m;
+
+        var sale = await service.CheckoutAsync(cart, new CashPayment(amount, amount + 5m), cashier);
+
+        using var persisted = db.NewContext();
+        Assert.Equal(10m, persisted.Products.Single().UnitPrice);
+        Assert.Equal((decimal)unitPrice, persisted.SaleLines.Single().UnitPrice);
+        Assert.Equal(5m, sale.ChangeGiven);
+        Assert.Equal(amount, sale.GrossTotal);
+        Assert.Equal(10m, new Cart().AddOrIncrement(product, 1).GrossUnitPrice);
+    }
+
     [Fact]
     public async Task ReceiptNumbers_AreSequential()
     {

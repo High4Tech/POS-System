@@ -1,0 +1,276 @@
+<UserControl x:Class="SupermarketPos.Wpf.Views.PurchasesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
+             xmlns:layout="clr-namespace:SupermarketPos.Wpf.Common"
+             xmlns:views="clr-namespace:SupermarketPos.Wpf.Views"
+             Background="{StaticResource BgBrush}">
+    <DockPanel Margin="24">
+        <TextBlock DockPanel.Dock="Top" Text="{loc:T Purchase_Title}" Style="{StaticResource H1}" Margin="0,0,0,14" />
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Error}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap"
+                   Visibility="{Binding Error, Converter={StaticResource StrToVis}}" Margin="0,0,0,8" />
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Status}" Foreground="{StaticResource SuccessBrush}" TextWrapping="Wrap"
+                   Visibility="{Binding Status, Converter={StaticResource StrToVis}}" Margin="0,0,0,8" />
+        <Border DockPanel.Dock="Top" Padding="12" BorderBrush="{StaticResource WarnBrush}" BorderThickness="1"
+                CornerRadius="10" Background="#FFFFFBEB" Margin="0,0,0,10"
+                Visibility="{Binding UnknownBarcode, Converter={StaticResource StrToVis}}">
+            <StackPanel>
+                <TextBlock Text="{loc:T Purchase_Unknown}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding UnknownBarcode}" FontFamily="{StaticResource MonoFont}" FlowDirection="LeftToRight" Margin="0,4" />
+                <TextBlock Text="{loc:T Scanner_NotFoundHelp}" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding MoreBarcodeNotices}" Margin="0,4,0,0"
+                           Visibility="{Binding MoreBarcodeNotices, Converter={StaticResource StrToVis}}" />
+                <WrapPanel Margin="0,8,0,0">
+                    <Button Content="{loc:T Scanner_AddInventory}" Command="{Binding AddUnknownProductCommand}"
+                            Style="{StaticResource PrimaryButton}" Margin="0,0,6,0" />
+                    <Button Content="{loc:T Scanner_Dismiss}" Command="{Binding DismissUnknownCommand}" Style="{StaticResource GhostButton}" />
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+        <TabControl Background="{StaticResource BgBrush}" BorderThickness="0" Padding="0,10,0,0" SelectedIndex="{Binding ActiveTab}">
+            <TabItem Header="{loc:T Purchase_New}" Padding="16,9">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="310" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Style="{StaticResource Card}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock x:Name="SupplierLabel" Text="{loc:T Purchase_Supplier}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                            <ComboBox AutomationProperties.LabeledBy="{Binding ElementName=SupplierLabel}" ItemsSource="{Binding Suppliers}"
+                                      SelectedItem="{Binding SelectedSupplier}" DisplayMemberPath="Name" Margin="0,0,0,8" />
+                            <CheckBox Content="{loc:T Trade_PurchaseCredit}" IsChecked="{Binding PayLater}" Margin="0,6,0,8" />
+                            <StackPanel Visibility="{Binding PayLater, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="{loc:T Trade_SupplierPaidNow}" Style="{StaticResource FormLabel}" />
+                                <TextBox Text="{Binding PaidNow, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" Margin="0,4,0,8" />
+                            </StackPanel>
+                            <TextBlock Text="{loc:T Trade_InitialMethod}" Style="{StaticResource FormLabel}" />
+                            <ComboBox ItemsSource="{Binding PaymentMethods}" DisplayMemberPath="Name" SelectedValuePath="Code"
+                                      SelectedValue="{Binding InitialPaymentMethod}" Margin="0,4,0,10" />
+                            <WrapPanel Margin="0,0,0,10">
+                                <Button Content="{loc:T Purchase_AddSupplier}" Command="{Binding AddSupplierCommand}"
+                                        Style="{StaticResource GhostButton}" Padding="8,6" Margin="0,0,6,4" />
+                                <Button Content="{loc:T Supplier_Edit}" Command="{Binding EditSupplierCommand}"
+                                        Style="{StaticResource GhostButton}" Padding="8,6" Margin="0,0,0,4"
+                                        Visibility="{Binding SelectedSupplier.Name, Converter={StaticResource StrToVis}, FallbackValue=Collapsed}" />
+                            </WrapPanel>
+                            <TextBlock x:Name="ReferenceLabel" Text="{loc:T Purchase_Reference}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                            <TextBox AutomationProperties.LabeledBy="{Binding ElementName=ReferenceLabel}" MaxLength="80"
+                                     Text="{Binding Reference, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+                            <TextBlock Text="{loc:T Purchase_Date}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                            <DatePicker SelectedDate="{Binding PurchaseDate}" Margin="0,0,0,10" />
+                            <TextBlock Text="{loc:T Purchase_Notes}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                            <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" MaxLength="500" Margin="0,0,0,10"
+                                     TextWrapping="Wrap" />
+                        </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource Card}">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Top" Margin="0,0,0,14">
+                                <TextBlock Text="{Binding MarginWarning}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" Visibility="{Binding MarginWarning,Converter={StaticResource StrToVis}}" Margin="0,0,0,8"/>
+                                <ContentControl Content="{Binding MedicineSearch}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,0,10"/>
+                                <WrapPanel Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,0,8">
+                                  <StackPanel Visibility="{Binding ShowMedicinePurchaseUnit,Converter={StaticResource BoolToVis}}" Margin="0,0,12,0"><TextBlock Text="{loc:T Pharmacy_ReceivingUnit}" Style="{StaticResource FormLabel}"/><ComboBox ItemsSource="{Binding MedicinePurchaseUnits}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding MedicinePurchaseUnit}" MinWidth="160"/></StackPanel>
+                                  <StackPanel><TextBlock Text="{loc:T Pharmacy_StockLocation}" Style="{StaticResource FormLabel}"/><ComboBox ItemsSource="{Binding LocationOptions}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding DestinationLocationId}" MinWidth="200"/></StackPanel>
+                                </WrapPanel>
+                                <CheckBox Content="{loc:T Measure_BuyPacks}" IsChecked="{Binding BuyPackages}" Visibility="{Binding CanBuyPackages,Converter={StaticResource BoolToVis}}" Margin="0,0,0,8"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*" MinWidth="120" />
+                                        <ColumnDefinition Width="0.65*" MinWidth="62" />
+                                        <ColumnDefinition Width="*" MinWidth="104" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Margin="0,0,9,0">
+                                        <TextBlock x:Name="ProductLabel" Text="{loc:T Purchase_SearchProduct}" Style="{StaticResource FormLabel}" TextWrapping="Wrap" Margin="0,0,0,4" />
+                                        <TextBox Text="{Binding ProductSearch, UpdateSourceTrigger=PropertyChanged}" MaxLength="200" Visibility="{Binding IsNotPharmacy,Converter={StaticResource BoolToVis}}"
+                                                 AutomationProperties.LabeledBy="{Binding ElementName=ProductLabel}">
+                                            <TextBox.InputBindings><KeyBinding Key="Enter" Command="{Binding SubmitProductSearchCommand}" /></TextBox.InputBindings>
+                                        </TextBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="0,0,9,0">
+                                        <TextBlock x:Name="QuantityLabel" Text="{loc:T Pos_Qty}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                                        <TextBox AutomationProperties.LabeledBy="{Binding ElementName=QuantityLabel}" FlowDirection="LeftToRight"
+                                                 Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Margin="0,0,9,0">
+                                        <TextBlock x:Name="CostLabel" Text="{loc:T Purchase_UnitCost}" Style="{StaticResource FormLabel}" TextWrapping="Wrap" Margin="0,0,0,4" />
+                                        <TextBox AutomationProperties.LabeledBy="{Binding ElementName=CostLabel}" FlowDirection="LeftToRight"
+                                                 Text="{Binding UnitCost, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <Button Grid.Column="3" Content="{loc:T Purchase_AddLine}" Command="{Binding AddItemCommand}"
+                                            Style="{StaticResource PrimaryButton}" Padding="12,9" VerticalAlignment="Bottom" />
+                                </Grid>
+                                <Grid Margin="0,9,0,0" Visibility="{Binding ShowBatchEntry, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Margin="0,0,8,0">
+                                        <TextBlock Text="{loc:T Batch_Lot}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                                        <TextBox Text="{Binding BatchLot, UpdateSourceTrigger=PropertyChanged}" MaxLength="20"
+                                                 AutomationProperties.Name="{loc:T Batch_Lot}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                                        <TextBlock Text="{loc:T Batch_Expiry}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                                        <views:BatchDatePicker SelectedDate="{Binding BatchExpiry}" SelectedDateFormat="Short"
+                                                               Style="{StaticResource {x:Type DatePicker}}" ToolTip="{loc:T Batch_DateHelp}"
+                                                               AutomationProperties.Name="{loc:T Batch_Expiry}" />
+                                    </StackPanel>
+                                    <Button Grid.Column="2" Content="{loc:T Common_Cancel}" Command="{Binding CancelBatchEntryCommand}"
+                                            Style="{StaticResource GhostButton}" VerticalAlignment="Bottom" />
+                                </Grid>
+                                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,4,0,0"
+                                        Visibility="{Binding ShowProductMatches, Converter={StaticResource BoolToVis}}">
+                                    <ScrollViewer MaxHeight="158" VerticalScrollBarVisibility="Auto">
+                                        <ItemsControl ItemsSource="{Binding ProductMatches}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="{Binding Name}" ToolTip="{Binding Barcode}" Style="{StaticResource GhostButton}"
+                                                            Padding="9,5" Margin="3"
+                                                            Command="{Binding DataContext.ChooseProductCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                            CommandParameter="{Binding}" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </Border>
+                                <Button Content="{loc:T Purchase_AddNewProduct}" Command="{Binding AddNewProductCommand}"
+                                        Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Margin="0,6,0,0"
+                                        Visibility="{Binding CanAddNewProduct, Converter={StaticResource BoolToVis}}" />
+                            </StackPanel>
+                            <Grid DockPanel.Dock="Bottom" Margin="0,12,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{loc:T Purchase_Total}" Style="{StaticResource Muted}" />
+                                    <TextBlock Text="{Binding Total}" Style="{StaticResource Money}" FontSize="{DynamicResource TextSize21}" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="{loc:T Purchase_Save}" Command="{Binding RecordCommand}" Style="{StaticResource PrimaryButton}" />
+                            </Grid>
+                            <Button DockPanel.Dock="Bottom" Content="{loc:T Purchase_RemoveLine}" Command="{Binding RemoveItemCommand}"
+                                    HorizontalAlignment="Left" Style="{StaticResource DangerButton}" Margin="0,8,0,0" />
+                            <Grid ClipToBounds="True">
+                                <DataGrid layout:TableLayout.Key="purchases-draft" x:Name="PurchaseTable" ItemsSource="{Binding Draft}" SelectedItem="{Binding SelectedLine}"
+                                          VerticalAlignment="Top" Margin="0,0,0,94"
+                                          AutoGenerateColumns="False" SelectionMode="Single" CanUserAddRows="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="{loc:T Pos_Product}" Binding="{Binding Name}" Width="2*" IsReadOnly="True" ElementStyle="{StaticResource TableName}" />
+                                        <DataGridTextColumn Header="{loc:T Products_Barcode}" Binding="{Binding Barcode}" Width="1.1*" IsReadOnly="True"
+                                                            ElementStyle="{StaticResource TableValue}" />
+                                        <DataGridTextColumn Header="{loc:T Pos_Qty}" Binding="{Binding Quantity, UpdateSourceTrigger=LostFocus}" Width="0.55*" />
+                                        <DataGridTextColumn Header="{loc:T Products_Unit}" Binding="{Binding UnitLabel}" Width=".55*" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="{loc:T Purchase_UnitCost}" Binding="{Binding Cost, UpdateSourceTrigger=PropertyChanged}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                                        <DataGridTextColumn Header="{loc:T Trade_UnitCount}" Binding="{Binding DeviceCount}" IsReadOnly="True" Width=".55*" />
+                                        <DataGridTextColumn Header="{loc:T Pos_LineTotal}" Binding="{Binding Total}" Width="*" IsReadOnly="True" ElementStyle="{StaticResource TableMoney}" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <Button Visibility="Collapsed" Content="{Binding ScanLabel}" Command="{Binding ToggleScanCommand}" Tag="{Binding IsScanning}"
+                                        Style="{StaticResource TableScanButton}">
+                                    <Button.RenderTransform><TranslateTransform Y="{Binding ActualHeight, ElementName=PurchaseTable}" /></Button.RenderTransform>
+                                </Button>
+                            </Grid>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+            <TabItem Header="{loc:T Purchase_History}" Padding="16,9">
+                <Border Style="{StaticResource Card}">
+                    <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="{loc:T Purchase_Supplier}" Style="{StaticResource FormLabel}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <ComboBox ItemsSource="{Binding Suppliers}" SelectedItem="{Binding HistorySupplier}" DisplayMemberPath="Name" MinWidth="155" />
+                        <Button Content="{loc:T Purchase_AllSuppliers}" Command="{Binding ClearSupplierFilterCommand}"
+                                Style="{StaticResource GhostButton}" Margin="8,0,0,0" />
+                        <Button Content="{loc:T Trade_PaySupplier}" Command="{Binding PaySupplierCommand}" Style="{StaticResource PrimaryButton}" Margin="8,0,0,0" />
+                    </StackPanel>
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding SelectedPurchase.Notes}" TextWrapping="Wrap" Margin="0,6,0,0"
+                               Visibility="{Binding SelectedPurchase.Notes, Converter={StaticResource StrToVis}, FallbackValue=Collapsed}" />
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="16" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <DataGrid layout:TableLayout.Key="purchases-receipts" ItemsSource="{Binding VisibleHistory}" SelectedItem="{Binding SelectedPurchase}" AutoGenerateColumns="False"
+                                  IsReadOnly="True" SelectionMode="Single" CanUserAddRows="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="#" Binding="{Binding Id}" Width="44" />
+                                <DataGridTextColumn Header="{loc:T Reports_Date}" Binding="{Binding ReceivedAt, StringFormat=g}" Width="*" />
+                                <DataGridTextColumn Header="{loc:T Purchase_Date}" Binding="{Binding PurchasedOn, StringFormat=d}" Width="*" />
+                                <DataGridTextColumn Header="{loc:T Purchase_Supplier}" Binding="{Binding Supplier}" Width="2*" ElementStyle="{StaticResource TableName}" />
+                                <DataGridTextColumn Header="{loc:T Purchase_ReferenceShort}" Binding="{Binding Reference}" Width="*" ElementStyle="{StaticResource TableName}" />
+                                <DataGridTextColumn Header="{loc:T Purchase_ReceivedBy}" Binding="{Binding ReceivedBy}" Width="*" ElementStyle="{StaticResource TableName}" />
+                                <DataGridTextColumn Header="{loc:T Products_Status}" Binding="{Binding Status}" Width="*" />
+                                <DataGridTextColumn Header="{loc:T Pos_LineTotal}" Binding="{Binding Total}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                                <DataGridTextColumn Header="{loc:T Trade_TotalPaid}" Binding="{Binding Paid}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                                <DataGridTextColumn Header="{loc:T Trade_Balance}" Binding="{Binding Balance}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <TextBlock Text="{loc:T Purchase_HistoryEmpty}" Style="{StaticResource Muted}"
+                                   Visibility="{Binding IsHistoryEmpty, Converter={StaticResource BoolToVis}}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+                        <DataGrid layout:TableLayout.Key="purchases-items" Grid.Row="2" ItemsSource="{Binding SelectedPurchase.Items}" AutoGenerateColumns="False"
+                                  IsReadOnly="True" CanUserAddRows="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{loc:T Pos_Product}" Binding="{Binding Name}" Width="2*" ElementStyle="{StaticResource TableName}" />
+                                <DataGridTextColumn Header="{loc:T Products_Barcode}" Binding="{Binding Barcode}" Width="1.1*" ElementStyle="{StaticResource TableValue}" />
+                                <DataGridTextColumn Header="{loc:T Pos_Qty}" Binding="{Binding Quantity}" Width="0.55*" />
+                                <DataGridTextColumn Header="{loc:T Purchase_UnitCost}" Binding="{Binding UnitCost}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                                <DataGridTextColumn Header="{loc:T Pos_LineTotal}" Binding="{Binding Total}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <TextBlock Grid.Row="2" Text="{loc:T Purchase_SelectHistory}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Muted}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedPurchase}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                    </DockPanel>
+                </Border>
+            </TabItem>
+            <TabItem Header="{loc:T Trade_SupplierBalances}">
+                <Border Style="{StaticResource Card}">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="{loc:T Trade_BalanceHelp}" TextWrapping="Wrap" Margin="0,0,0,12" />
+                        <Button DockPanel.Dock="Bottom" Content="{loc:T Trade_PaySupplier}" Command="{Binding PaySupplierCommand}"
+                                Style="{StaticResource PrimaryButton}" HorizontalAlignment="Right" Margin="0,12,0,0" />
+                        <Grid>
+                            <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="12" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                            <DataGrid layout:TableLayout.Key="supplier-balances" ItemsSource="{Binding SupplierBalances}" SelectedItem="{Binding SelectedBalanceSupplier}" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{loc:T Purchase_Supplier}" Binding="{Binding Name}" Width="2*" ElementStyle="{StaticResource TableName}" />
+                                    <DataGridTextColumn Header="{loc:T Pos_Total}" Binding="{Binding Total}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                                    <DataGridTextColumn Header="{loc:T Trade_TotalPaid}" Binding="{Binding Paid}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                                    <DataGridTextColumn Header="{loc:T Trade_Balance}" Binding="{Binding Balance}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <DataGrid Grid.Row="2" layout:TableLayout.Key="supplier-balance-invoices" ItemsSource="{Binding SelectedBalanceSupplier.Invoices}"
+                                      SelectedItem="{Binding SelectedBalanceInvoice}" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="#" Binding="{Binding Id}" Width=".5*" />
+                                    <DataGridTextColumn Header="{loc:T Purchase_ReferenceShort}" Binding="{Binding Reference}" Width="*" />
+                                    <DataGridTextColumn Header="{loc:T Purchase_Date}" Binding="{Binding PurchasedOn, StringFormat=d}" Width="*" />
+                                    <DataGridTextColumn Header="{loc:T Pos_Total}" Binding="{Binding Total}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                                    <DataGridTextColumn Header="{loc:T Trade_Balance}" Binding="{Binding Balance}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </DockPanel>
+                </Border>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>

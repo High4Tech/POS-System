@@ -16,6 +16,12 @@ public sealed class ReceiptNumberGenerator : IReceiptNumberGenerator
     public async Task<string> NextAsync(DateTime now, CancellationToken ct = default)
     {
         var prefix = $"{now.Year}-";
+        var configuration=await _db.BusinessConfigurations.AsNoTracking().SingleOrDefaultAsync(ct);
+        if(configuration?.Completed==true)
+        {
+            var business=System.Text.Json.JsonSerializer.Deserialize<Domain.Business.BusinessProfile>(configuration.ProfileJson);
+            if(!string.IsNullOrWhiteSpace(business?.InvoicePrefix))prefix=business.InvoicePrefix.TrimEnd('-')+"-"+prefix;
+        }
         var last = await _db.Sales
             .Where(s => s.ReceiptNo.StartsWith(prefix))
             .OrderByDescending(s => s.ReceiptNo)

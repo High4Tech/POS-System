@@ -3,6 +3,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SupermarketPos.Domain.Common;
+using SupermarketPos.Domain.Localization;
 using SupermarketPos.Domain.Entities;
 
 namespace SupermarketPos.Infrastructure.Documents;
@@ -10,14 +11,15 @@ namespace SupermarketPos.Infrastructure.Documents;
 /// <summary>QuestPDF A4 sheet of shelf labels (3 per row): name, price and an EAN-13 barcode.</summary>
 public sealed class ShelfLabelDocument : IDocument
 {
-    private static readonly CultureInfo Tr = CultureInfo.GetCultureInfo("tr-TR");
+    private readonly CultureInfo _culture;
     private readonly IReadOnlyList<Product> _products;
     private readonly string _storeName;
 
-    public ShelfLabelDocument(IReadOnlyList<Product> products, string storeName)
+    public ShelfLabelDocument(IReadOnlyList<Product> products, string storeName, string language)
     {
         _products = products;
         _storeName = storeName;
+        _culture = PosText.Culture(language);
     }
 
     public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
@@ -28,7 +30,8 @@ public sealed class ShelfLabelDocument : IDocument
         {
             page.Size(PageSizes.A4);
             page.Margin(20);
-            page.DefaultTextStyle(t => t.FontSize(9));
+            page.DefaultTextStyle(t => t.FontSize(9).FontFamily(ReceiptFonts.Family(_culture.TwoLetterISOLanguageName)));
+            if (_culture.TextInfo.IsRightToLeft) page.ContentFromRightToLeft();
 
             page.Content().Table(table =>
             {
@@ -51,8 +54,8 @@ public sealed class ShelfLabelDocument : IDocument
         {
             col.Item().Text(_storeName).FontSize(7).FontColor("#64748B");
             col.Item().PaddingTop(2).Text(product.Name).Bold().FontSize(12);
-            col.Item().Text($"{product.UnitPrice.ToString("N2", Tr)} {Money.CurrencySymbol}" +
-                            (product.Unit == SupermarketPos.Domain.Common.Unit.Kilogram ? " / kg" : ""))
+            col.Item().Text(Money.Format(product.UnitPrice) +
+                            (product.Unit == SupermarketPos.Domain.Common.Unit.Kilogram ? $" / {PosText.Get("Unit_Kg", _culture)}" : product.Unit==SupermarketPos.Domain.Common.Unit.Litre?$" / {PosText.Get("Measure_litre",_culture)}":""))
                       .FontSize(15).Bold().FontColor("#2563EB");
 
             var png = BarcodeImage.TryRenderEan13(product.Barcode);

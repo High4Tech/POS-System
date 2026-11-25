@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SupermarketPos.Application.Abstractions;
+using SupermarketPos.Domain.Entities;
 
 namespace SupermarketPos.Infrastructure.Persistence;
 
@@ -9,6 +10,7 @@ public sealed class UnitOfWork : IUnitOfWork
     public UnitOfWork(PosDbContext db) => _db = db;
 
     public Task SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
+    public void RecordMovement(StockMovement movement) => _db.StockMovements.Add(movement);
 
     public async Task<T> ExecuteInTransactionAsync<T>(Func<CancellationToken, Task<T>> work, CancellationToken ct = default)
     {
@@ -26,6 +28,7 @@ public sealed class UnitOfWork : IUnitOfWork
             catch
             {
                 await tx.RollbackAsync(ct);
+                _db.ChangeTracker.Clear();
                 throw;
             }
         });

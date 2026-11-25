@@ -1,0 +1,14 @@
+# POS restoration — implementation map
+
+Canonical origin is High4Tech/POS-System. Extend this checkout and preserve existing work. The pre-change source checkpoint is `engineering/checkpoints/restore-ui-before-20261121`; real business data and backups stay on D:.
+
+1. **Measure and inspect:** use isolated WPF/SQLite data to time catalog lookup, screen opening/rendering, categories, cart and form operations. Separate unimplemented UI from measured slow behavior.
+2. **Restore selling:** reuse `PosView`, category/card components, shared `MedicineSearchBox` and `CartLineViewModel`. Put Cards/List on Register, restore visible categories and route configured products directly to cart. Replace the large pharmacy sale panel with cart fields plus targeted traceability prompts.
+3. **Units and missing data:** extend existing `CartLine`, product units and sale validation to support safe inline unit changes and missing-price entry. Preserve exact base quantities, transaction overrides, serial/batch/source distinctions and historical snapshots. Add a default selling unit only if existing fields cannot represent it.
+4. **Product editor and Inventory:** reuse `ProductEditorView` and the existing Inventory table. One complete product form, true catalog-attribute prefill, no universal acknowledgment. Consolidate toolbar/More actions and always-visible filters; remove Inventory cards/Select Visible while keeping header selection, import, categories, bulk actions and stock functions.
+5. **Windows, labels and receipts:** restore native OS captions in shared styles. Keep English/Urdu content layout, verified receipt formats and existing popup Close behavior. Complete safe location deactivation/transfer using the current allocations and audit history.
+6. **Verify and install:** focused domain/UI/render/regression checks, before/after timings, backed-up upgrade verification, Windows build and install after pending work is safely closed. Android only if source changes. Preserve existing local licensing/update/FBR boundaries; report external hardware, signing/runtime and deployment gates honestly. Do not create the final installer.
+
+Primary affected files: existing POS/Products/ProductEdit/CartLine view models and views, `MedicineSearchBox`, shared theme/caption configuration, `Product`, `CartLine`, `SaleService`, pharmacy/catalog/location services and the existing engineering checks. Reuse schema and services; avoid replacement workflows.
+
+Implemented and installed as local `1.1.0-beta.2` on 21 November 2026. Final result, checks, backups, timing limits and remaining commercial/hardware gates: `REGISTER_RESTORATION_BETA2.md`. Final automated checks: 192 domain/data tests and 729 desktop checks. Live schema-11 upgrade preserved all original columns/rows in 31 tables; the installed POS opened to sign-in.

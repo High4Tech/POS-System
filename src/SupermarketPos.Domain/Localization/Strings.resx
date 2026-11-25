@@ -1,0 +1,1036 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="App_Title"><value>Tech Store POS</value></data>
+  <data name="Login_Title"><value>Sign In</value></data>
+  <data name="Login_Username"><value>Username</value></data>
+  <data name="Login_Password"><value>Password</value></data>
+  <data name="Login_Button"><value>Sign in</value></data>
+  <data name="Nav_Dashboard"><value>Dashboard</value></data>
+  <data name="Nav_Pos"><value>Register</value></data>
+  <data name="Nav_Products"><value>Products &amp; Inventory</value></data>
+  <data name="Nav_Reports"><value>Sales &amp; Reports</value></data>
+  <data name="Nav_Settings"><value>Store profile</value></data>
+  <data name="Nav_Logout"><value>Sign out</value></data>
+  <data name="Nav_CollapseSidebar"><value>Collapse navigation</value></data>
+  <data name="Nav_ExpandSidebar"><value>Expand navigation</value></data>
+  <data name="Nav_ResizeSidebar"><value>Resize navigation</value></data>
+  <data name="Nav_WidenToExpand"><value>Widen the window to expand navigation</value></data>
+  <data name="Pos_ScanPrompt"><value>Scan a barcode or search by name…</value></data>
+  <data name="Pos_Cart"><value>Cart</value></data>
+  <data name="Pos_Product"><value>Product</value></data>
+  <data name="Pos_UnitPrice"><value>Unit Price</value></data>
+  <data name="Pos_Qty"><value>Qty</value></data>
+  <data name="Table_FitColumns"><value>Fit columns to table</value></data>
+  <data name="Pos_IncreaseQty"><value>Increase cart quantity</value></data>
+  <data name="Pos_DecreaseQty"><value>Decrease cart quantity</value></data>
+  <data name="Pos_LineTotal"><value>Total</value></data>
+  <data name="Pos_Remove"><value>Remove</value></data>
+  <data name="Pos_Total"><value>Total</value></data>
+  <data name="Pos_ItemCount"><value>Item count</value></data>
+  <data name="Pos_VatBreakdown"><value>VAT Breakdown</value></data>
+  <data name="Pos_Cash"><value>Cash (F1)</value></data>
+  <data name="Pos_Card"><value>Card (F2)</value></data>
+  <data name="Pos_Clear"><value>Clear cart (F4)</value></data>
+  <data name="Pos_Tendered"><value>Amount Tendered</value></data>
+  <data name="Pos_Change"><value>Change</value></data>
+  <data name="Pos_Pay"><value>Complete Payment</value></data>
+  <data name="Pos_CartDiscount"><value>Cart Discount</value></data>
+  <data name="Pos_LineDiscount"><value>Line Discount</value></data>
+  <data name="Pos_Empty"><value>Cart is empty</value></data>
+  <data name="Pos_NotFound"><value>Product not found</value></data>
+  <data name="Pos_DiscountPercent"><value>Percent %</value></data>
+  <data name="Pos_DiscountAmount"><value>Amount (PKR)</value></data>
+  <data name="Pos_Apply"><value>Apply</value></data>
+  <data name="Common_Save"><value>Save</value></data>
+  <data name="Common_Cancel"><value>Cancel</value></data>
+  <data name="Common_Add"><value>Add</value></data>
+  <data name="Common_Edit"><value>Edit</value></data>
+  <data name="Common_Delete"><value>Delete</value></data>
+  <data name="Common_Close"><value>Close</value></data>
+  <data name="Common_Error"><value>Error</value></data>
+  <data name="Common_Success"><value>Success</value></data>
+  <data name="Products_Title"><value>Products &amp; Inventory</value></data>
+  <data name="Products_Barcode"><value>Barcode</value></data>
+  <data name="Products_Name"><value>Name</value></data>
+  <data name="Products_Price"><value>Price (PKR, VAT incl.)</value></data>
+  <data name="Products_Vat"><value>VAT %</value></data>
+  <data name="Products_Unit"><value>Unit</value></data>
+  <data name="Products_Stock"><value>Stock</value></data>
+  <data name="Products_Category"><value>Category</value></data>
+  <data name="Products_Restock"><value>Restock</value></data>
+  <data name="Products_New"><value>New Product</value></data>
+  <data name="Products_EditTitle"><value>Edit product</value></data>
+  <data name="Products_Piece"><value>Piece</value></data>
+  <data name="Products_Kilogram"><value>Kilogram</value></data>
+  <data name="Products_LowStockOnly"><value>Low stock only</value></data>
+  <data name="Products_Status"><value>Status</value></data>
+  <data name="Products_ShelfLabels"><value>Shelf Labels (PDF)</value></data>
+  <data name="Products_ChooseImage"><value>Choose Image</value></data>
+  <data name="Products_InStock"><value>In stock</value></data>
+  <data name="Products_LowStock"><value>Low stock</value></data>
+  <data name="Reports_Title"><value>Sales &amp; Reports</value></data>
+  <data name="Reports_XReport"><value>X-Report</value></data>
+  <data name="Reports_ZReport"><value>Z-Report</value></data>
+  <data name="Reports_Day"><value>Day</value></data>
+  <data name="Reports_Generate"><value>Generate</value></data>
+  <data name="Reports_History"><value>Sales History</value></data>
+  <data name="Reports_SaleCount"><value>Sale count</value></data>
+  <data name="Reports_Gross"><value>Gross Total</value></data>
+  <data name="Reports_Net"><value>Net total</value></data>
+  <data name="Reports_Vat"><value>Total VAT</value></data>
+  <data name="Reports_ExportPdf"><value>Export PDF</value></data>
+  <data name="Reports_OpenReceipt"><value>Open Receipt</value></data>
+  <data name="Reports_CashTotal"><value>Cash Total</value></data>
+  <data name="Reports_CardTotal"><value>Card Total</value></data>
+  <data name="Reports_ReceiptNo"><value>Receipt number</value></data>
+  <data name="Reports_Date"><value>Date</value></data>
+  <data name="Reports_Cashier"><value>Operator</value></data>
+  <data name="Reports_Payment"><value>Payment</value></data>
+  <data name="Reports_PaymentSplit"><value>Payment Split</value></data>
+  <data name="Settings_Title"><value>Store profile</value></data>
+  <data name="Settings_StoreName"><value>Store Name</value></data>
+  <data name="Settings_StoreAddress"><value>Store Address</value></data>
+  <data name="Settings_Language"><value>Language</value></data>
+  <data name="Settings_LowStockThreshold"><value>Low-stock Threshold</value></data>
+  <data name="Settings_VatRates"><value>VAT Rates (comma separated)</value></data>
+  <data name="Settings_Saved"><value>Store profile saved.</value></data>
+  <data name="Msg_SaleComplete"><value>Sale complete. Receipt {0}.</value></data>
+  <data name="Msg_ReceiptSaved"><value>Receipt saved as PDF.</value></data>
+  <data name="Msg_PrintReceipt"><value>Print / Save Receipt</value></data>
+  <data name="Storage_PdfFolder"><value>Save PDF files in this folder: {0}</value></data>
+  <data name="Nav_Purchases"><value>Purchases</value></data>
+  <data name="Login_Invalid"><value>Sign-in failed. Check your username and password.</value></data>
+  <data name="Dash_Title"><value>Dashboard</value></data>
+  <data name="Dash_Revenue"><value>Revenue</value></data>
+  <data name="Dash_Sales"><value>Sales</value></data>
+  <data name="Dash_Vat"><value>VAT collected</value></data>
+  <data name="Dash_Catalog"><value>Catalog</value></data>
+  <data name="Dash_Products"><value>Total products</value></data>
+  <data name="Dash_Categories"><value>Categories</value></data>
+  <data name="Dash_LowStock"><value>Low stock</value></data>
+  <data name="Dash_Morning"><value>Good morning, {0}</value></data>
+  <data name="Dash_Afternoon"><value>Good afternoon, {0}</value></data>
+  <data name="Dash_Evening"><value>Good evening, {0}</value></data>
+  <data name="Common_From"><value>From</value></data>
+  <data name="Common_To"><value>To</value></data>
+  <data name="Common_Ok"><value>OK</value></data>
+  <data name="Common_InvalidNumber"><value>Enter a valid number.</value></data>
+  <data name="Unit_Kg"><value>kg</value></data>
+  <data name="Unit_Piece"><value>pc</value></data>
+  <data name="Payment_Cash"><value>Cash</value></data>
+  <data name="Payment_Card"><value>Card</value></data>
+  <data name="Payment_Title"><value>Payment</value></data>
+  <data name="Discount_PercentPrompt"><value>Discount percentage</value></data>
+  <data name="Receipt_ThankYou"><value>Thank you for shopping with us!</value></data>
+  <data name="Receipt_Received"><value>Cash received</value></data>
+  <data name="Report_Created"><value>Generated</value></data>
+  <data name="Report_Rate"><value>Rate</value></data>
+  <data name="Report_GrossShort"><value>Gross</value></data>
+  <data name="Purchase_Title"><value>Purchases</value></data>
+  <data name="Purchase_Receive"><value>Receive stock</value></data>
+  <data name="Purchase_History"><value>Purchase history</value></data>
+  <data name="Purchase_Supplier"><value>Supplier</value></data>
+  <data name="Purchase_Reference"><value>Invoice reference (optional)</value></data>
+  <data name="Purchase_ReferenceShort"><value>Invoice reference</value></data>
+  <data name="Purchase_UnitCost"><value>Unit cost (PKR)</value></data>
+  <data name="Purchase_AddLine"><value>Add item</value></data>
+  <data name="Purchase_RemoveLine"><value>Remove item</value></data>
+  <data name="Purchase_Save"><value>Confirm stock receipt</value></data>
+  <data name="Purchase_Empty"><value>Add products to build the purchase.</value></data>
+  <data name="Purchase_HistoryEmpty"><value>Recorded purchases will appear here.</value></data>
+  <data name="Purchase_SelectHistory"><value>Select a purchase to see its items.</value></data>
+  <data name="Purchase_ReceivedBy"><value>Received by</value></data>
+  <data name="Purchase_Recorded"><value>Purchase #{0} recorded. Stock updated.</value></data>
+  <data name="Purchase_ProductRequired"><value>Select a product.</value></data>
+  <data name="Purchase_QuantityInvalid"><value>Enter a whole number for pieces or up to three decimal places for kilograms.</value></data>
+  <data name="Purchase_CostInvalid"><value>Enter a nonnegative cost with up to two decimal places.</value></data>
+  <data name="Purchase_SaveError"><value>The purchase could not be recorded. Your draft is still here.</value></data>
+  <data name="Purchase_LoadError"><value>The purchases could not be refreshed. Open Purchases again to retry.</value></data>
+  <data name="Purchase_Total"><value>Purchase total</value></data>
+  <data name="Dash_Today"><value>Today</value></data>
+  <data name="Dash_Earnings"><value>Earnings</value></data>
+  <data name="Profile_Logo"><value>Store logo</value></data>
+  <data name="Profile_ChooseLogo"><value>Choose logo</value></data>
+  <data name="Profile_RemoveLogo"><value>Remove logo</value></data>
+  <data name="Profile_Save"><value>Save profile</value></data>
+  <data name="Profile_ChangePassword"><value>Change password</value></data>
+  <data name="Profile_CurrentPassword"><value>Current password</value></data>
+  <data name="Profile_NewPassword"><value>New password</value></data>
+  <data name="Profile_ConfirmPassword"><value>Confirm new password</value></data>
+  <data name="Profile_PasswordLength"><value>Enter a new password of up to 72 bytes.</value></data>
+  <data name="Profile_PasswordMismatch"><value>The new passwords do not match.</value></data>
+  <data name="Profile_PasswordChanged"><value>Your password was changed.</value></data>
+  <data name="Profile_CurrentInvalid"><value>The current password is incorrect.</value></data>
+  <data name="Profile_PasswordError"><value>The password could not be changed. Try again.</value></data>
+  <data name="Receipt_Preview"><value>Receipt preview</value></data>
+  <data name="Receipt_Download"><value>Download PDF</value></data>
+  <data name="Bulk_Search"><value>Name, barcode, or category</value></data>
+  <data name="Bulk_SelectVisible"><value>Select visible</value></data>
+  <data name="Bulk_SelectAllVisible"><value>Select all visible products</value></data>
+  <data name="Bulk_Clear"><value>Clear selection</value></data>
+  <data name="Bulk_Selected"><value>{0} selected</value></data>
+  <data name="Bulk_Edit"><value>Edit selected</value></data>
+  <data name="Bulk_Delete"><value>Delete selected</value></data>
+  <data name="Bulk_ConfirmDelete"><value>Delete {0} selected products from inventory? Sales and purchase history will be kept.</value></data>
+  <data name="Bulk_Optional"><value>Fill in the fields you want to change. Blank fields keep their existing values.</value></data>
+  <data name="Bulk_NoChange"><value>Keep current category</value></data>
+  <data name="Bulk_ChangeRequired"><value>Enter at least one change.</value></data>
+  <data name="Bulk_Apply"><value>Apply changes</value></data>
+  <data name="Bulk_NumberFormat"><value>Enter a number without commas, such as 1250 or 1250.50.</value></data>
+  <data name="Category_Manage"><value>Categories</value></data>
+  <data name="Category_Existing"><value>Edit an existing category</value></data>
+  <data name="Category_New"><value>New category</value></data>
+  <data name="Category_ChooseColor"><value>Choose color</value></data>
+  <data name="Category_NameRequired"><value>Enter a category name.</value></data>
+  <data name="Category_Duplicate"><value>That category name is already in use.</value></data>
+  <data name="Category_SaveError"><value>The category could not be saved.</value></data>
+  <data name="Products_InvalidVat"><value>Enter a VAT rate between 0 and 100%.</value></data>
+  <data name="Pos_SalePrice"><value>Unit price (PKR)</value></data>
+  <data name="Pos_InvalidPrice"><value>Enter a nonnegative price with up to two decimal places.</value></data>
+  <data name="Profile_OperatorName"><value>Operator name</value></data>
+  <data name="Profile_SaveOperator"><value>Save operator</value></data>
+  <data name="Profile_OperatorRequired"><value>Enter an operator name.</value></data>
+  <data name="Profile_OperatorSaved"><value>Operator name saved.</value></data>
+  <data name="Dash_ApplyRange"><value>Apply</value></data>
+  <data name="Dash_InvalidRange"><value>Choose both dates. The From date must be on or before the To date.</value></data>
+  <data name="Dash_PreviewInvoice"><value>Preview invoice</value></data>
+  <data name="Dash_InvoiceItems"><value>Invoice items</value></data>
+  <data name="Dash_NoSales"><value>No sales in this date range.</value></data>
+  <data name="Dash_LoadError"><value>Could not load sales for this date range.</value></data>
+  <data name="Control_OpenCalendar"><value>Open calendar</value></data>
+  <data name="Control_PreviousMonth"><value>Previous month</value></data>
+  <data name="Control_NextMonth"><value>Next month</value></data>
+  <data name="Products_TablePrice"><value>Price (PKR)</value></data>
+  <data name="Scanner_Start" xml:space="preserve"><value>Scan barcode</value></data>
+  <data name="Settings_TextSize" xml:space="preserve"><value>App display size</value></data>
+  <data name="Settings_ApplyTextSize" xml:space="preserve"><value>Apply display size</value></data>
+  <data name="Settings_TextSizeSaved" xml:space="preserve"><value>App display size updated.</value></data>
+  <data name="Scanner_Stop" xml:space="preserve"><value>Stop scanning</value></data>
+  <data name="Scanner_BarcodeLookup" xml:space="preserve"><value>Barcode lookup</value></data>
+  <data name="Scanner_EditPaused" xml:space="preserve"><value>Scanning paused while adding a product.</value></data>
+  <data name="Scanner_CheckoutPaused" xml:space="preserve"><value>Scanning paused during checkout.</value></data>
+  <data name="Scanner_UnknownPaused" xml:space="preserve"><value>Scanning paused until the unknown barcode is resolved.</value></data>
+  <data name="Scanner_PairInstruction" xml:space="preserve"><value>Open POS Scannar on your phone and scan this QR code.</value></data>
+  <data name="Scanner_Disconnected" xml:space="preserve"><value>No phone paired.</value></data>
+  <data name="Scanner_Reconnecting" xml:space="preserve"><value>Phone disconnected. Waiting to reconnect.</value></data>
+  <data name="Scanner_Ready" xml:space="preserve"><value>Phone connected. Ready to scan.</value></data>
+  <data name="Scanner_Idle" xml:space="preserve"><value>Phone connected. Scanning is stopped.</value></data>
+  <data name="Scanner_NoNetwork" xml:space="preserve"><value>Connect this PC to a local Wi-Fi or Ethernet network and try again.</value></data>
+  <data name="Scanner_ListenError" xml:space="preserve"><value>Could not start the scanner. Check the network and retry.</value></data>
+  <data name="Scanner_LookupError" xml:space="preserve"><value>Barcode lookup failed. Try again.</value></data>
+  <data name="Scanner_Added" xml:space="preserve"><value>Added {0} to the cart.</value></data>
+  <data name="Scanner_Inactive" xml:space="preserve"><value>{0} is inactive and cannot be sold.</value></data>
+  <data name="Scanner_Stock" xml:space="preserve"><value>Not enough stock for {0}.</value></data>
+  <data name="Scanner_Rescan" xml:space="preserve"><value>Product saved. Scan its barcode again to add it to the cart.</value></data>
+  <data name="Scanner_ProductSaveError" xml:space="preserve"><value>The product could not be saved. Check the details and try again.</value></data>
+  <data name="Scanner_Forget" xml:space="preserve"><value>Unpair phone</value></data>
+  <data name="Scanner_PairQr" xml:space="preserve"><value>Phone pairing QR code</value></data>
+  <data name="Scanner_PairTitle" xml:space="preserve"><value>Pair a phone</value></data>
+  <data name="Scanner_Network" xml:space="preserve"><value>Local network</value></data>
+  <data name="Scanner_NewQr" xml:space="preserve"><value>Generate QR code</value></data>
+  <data name="Scanner_NotFoundTitle" xml:space="preserve"><value>Barcode not found</value></data>
+  <data name="Scanner_NotFoundHelp" xml:space="preserve"><value>Scanning continues. You can add this barcode to inventory or dismiss the notice.</value></data>
+  <data name="Scanner_AdditionalNotices" xml:space="preserve"><value>Other unlisted barcodes waiting: {0}</value></data>
+  <data name="Scanner_LastStock" xml:space="preserve"><value>The last available unit of {0} is in the cart.</value></data>
+  <data name="Scanner_LowStock" xml:space="preserve"><value>Low stock for {0}. {1:0.###} units will remain after this sale.</value></data>
+  <data name="Scanner_OutOfStock" xml:space="preserve"><value>No more stock available for {0}.</value></data>
+  <data name="Scanner_StockRemaining" xml:space="preserve"><value>Only {1:0.###} more units of {0} can be added.</value></data>
+  <data name="Scanner_StockQuantity" xml:space="preserve"><value>The available stock for {0} is {1:0.###}.</value></data>
+  <data name="Scanner_AddInventory" xml:space="preserve"><value>Add to Inventory</value></data>
+  <data name="Scanner_Dismiss" xml:space="preserve"><value>Dismiss</value></data>
+  <data name="Scanner_CardTerminal" xml:space="preserve"><value>Complete payment on the card terminal before confirming it here.</value></data>
+  <data name="Scanner_ProductActive" xml:space="preserve"><value>Available for sale</value></data>
+  <data name="Scanner_Return" xml:space="preserve"><value>Return to Register</value></data>
+  <data name="Scanner_SaveProduct" xml:space="preserve"><value>Save Product</value></data>
+  <data name="Scanner_ProductFields" xml:space="preserve"><value>Enter a name, barcode, valid prices, VAT and opening stock, and choose a category.</value></data>
+  <data name="Scanner_DuplicateBarcode" xml:space="preserve"><value>This barcode is already assigned to another product.</value></data>
+  <data name="Scanner_CopyLink" xml:space="preserve"><value>Copy pairing link</value></data>
+  <data name="Scanner_Method" xml:space="preserve"><value>Connection method</value></data>
+  <data name="Scanner_Wifi" xml:space="preserve"><value>Wi-Fi</value></data>
+  <data name="Scanner_Bluetooth" xml:space="preserve"><value>Bluetooth</value></data>
+  <data name="Scanner_Usb" xml:space="preserve"><value>USB cable</value></data>
+  <data name="Scanner_WaitingForPair" xml:space="preserve"><value>Waiting for the phone to pair.</value></data>
+  <data name="Scanner_BluetoothSetup" xml:space="preserve"><value>Pair the devices in Bluetooth settings, enable Bluetooth tethering on the phone, and join its PAN on Windows. Then scan this QR code.</value></data>
+  <data name="Scanner_UsbSetup" xml:space="preserve"><value>Connect a data-capable USB cable and enable USB tethering on the phone. Then scan this QR code.</value></data>
+  <data name="Scanner_NoBluetooth" xml:space="preserve"><value>No Bluetooth PAN adapter is connected. Pair the devices, enable Bluetooth tethering, join the phone’s PAN on Windows, then try again.</value></data>
+  <data name="Scanner_NoUsb" xml:space="preserve"><value>No USB tethering adapter is connected. Check the data cable, enable USB tethering on the phone, then try again.</value></data>
+  <data name="Scanner_ManualDetails" xml:space="preserve"><value>Manual pairing details</value></data>
+  <data name="Scanner_Host" xml:space="preserve"><value>IP address</value></data>
+  <data name="Scanner_Port" xml:space="preserve"><value>Port</value></data>
+  <data name="Scanner_Fingerprint" xml:space="preserve"><value>Certificate fingerprint</value></data>
+  <data name="Scanner_PairCode" xml:space="preserve"><value>One-time code</value></data>
+  <data name="Category_Image" xml:space="preserve"><value>Category image</value></data>
+  <data name="Category_ChooseImage" xml:space="preserve"><value>Choose image</value></data>
+  <data name="Category_RemoveImage" xml:space="preserve"><value>Remove image</value></data>
+  <data name="Category_ImageError" xml:space="preserve"><value>Could not open that image. Choose a PNG, JPG, BMP, or GIF file.</value></data>
+  <data name="Scanner_Panel" xml:space="preserve"><value>Phone scanner</value></data>
+  <data name="Scanner_StatusConnected"><value>Connected</value></data>
+  <data name="Scanner_StatusDisconnected"><value>Disconnected</value></data>
+  <data name="Scanner_Connected" xml:space="preserve"><value>Phone connected.</value></data>
+  <data name="Scanner_ManualDisconnected" xml:space="preserve"><value>Disconnected. Select Reconnect to enable this connection.</value></data>
+  <data name="Scanner_ReconnectAction" xml:space="preserve"><value>Reconnect</value></data>
+  <data name="Scanner_DisconnectAction" xml:space="preserve"><value>Disconnect</value></data>
+  <data name="Scanner_Capture" xml:space="preserve"><value>Scan barcode</value></data>
+  <data name="Scanner_WaitingBarcode" xml:space="preserve"><value>Waiting for barcode…</value></data>
+  <data name="Scanner_DuplicateNamed" xml:space="preserve"><value>This barcode belongs to {0}.</value></data>
+  <data name="Scanner_ViewMatching" xml:space="preserve"><value>View existing product</value></data>
+  <data name="Purchase_New" xml:space="preserve"><value>New purchase</value></data>
+  <data name="Purchase_ScanProducts" xml:space="preserve"><value>Scan products</value></data>
+  <data name="Purchase_Unknown" xml:space="preserve"><value>New product detected</value></data>
+  <data name="Purchase_ScanAdded" xml:space="preserve"><value>Added {0} to the purchase draft.</value></data>
+  <data name="Purchase_Rescan" xml:space="preserve"><value>Product saved. Scan it again to add it to this purchase.</value></data>
+  <data name="Purchase_AddSupplier" xml:space="preserve"><value>Add supplier</value></data>
+  <data name="Purchase_SupplierName" xml:space="preserve"><value>New supplier name</value></data>
+  <data name="Purchase_SupplierRequired" xml:space="preserve"><value>Select or add a supplier first.</value></data>
+  <data name="Purchase_SupplierError" xml:space="preserve"><value>Could not save the supplier.</value></data>
+  <data name="Purchase_Date" xml:space="preserve"><value>Purchase date</value></data>
+  <data name="Purchase_DateRequired" xml:space="preserve"><value>Select a purchase date.</value></data>
+  <data name="Purchase_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="Purchase_AllSuppliers" xml:space="preserve"><value>All suppliers</value></data>
+  <data name="Sounds_Title" xml:space="preserve"><value>Sounds &amp; feedback</value></data>
+  <data name="Sounds_Enabled" xml:space="preserve"><value>Enable sound feedback</value></data>
+  <data name="Sounds_Success" xml:space="preserve"><value>Successful scans</value></data>
+  <data name="Sounds_Warning" xml:space="preserve"><value>Errors and scan warnings</value></data>
+  <data name="Sounds_Test" xml:space="preserve"><value>Test sound</value></data>
+  <data name="Stock_History" xml:space="preserve"><value>Stock movements</value></data>
+  <data name="Stock_LoadError" xml:space="preserve"><value>Stock history could not be loaded.</value></data>
+  <data name="Stock_Type" xml:space="preserve"><value>Movement type</value></data>
+  <data name="Stock_Change" xml:space="preserve"><value>Quantity change</value></data>
+  <data name="Stock_OpeningStock" xml:space="preserve"><value>Opening stock</value></data>
+  <data name="Stock_PurchaseReceipt" xml:space="preserve"><value>Purchase receipt</value></data>
+  <data name="Stock_Sale" xml:space="preserve"><value>Sale</value></data>
+  <data name="Stock_ManualAdjustment" xml:space="preserve"><value>Manual adjustment</value></data>
+  <data name="Purchase_Received" xml:space="preserve"><value>Received</value></data>
+  <data name="Customer_Include" xml:space="preserve"><value>Add customer details</value></data>
+  <data name="Customer_Details" xml:space="preserve"><value>Customer details</value></data>
+  <data name="Customer_Name" xml:space="preserve"><value>Customer name</value></data>
+  <data name="Customer_Phone" xml:space="preserve"><value>Phone</value></data>
+  <data name="Customer_Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Customer_Address" xml:space="preserve"><value>Address</value></data>
+  <data name="Supplier_None" xml:space="preserve"><value>No supplier</value></data>
+  <data name="Supplier_Optional" xml:space="preserve"><value>Supplier (optional)</value></data>
+  <data name="Supplier_Kind" xml:space="preserve"><value>Supplier type</value></data>
+  <data name="Supplier_Unspecified" xml:space="preserve"><value>Unspecified</value></data>
+  <data name="Supplier_Company" xml:space="preserve"><value>Company</value></data>
+  <data name="Supplier_Individual" xml:space="preserve"><value>Individual</value></data>
+  <data name="Supplier_Contact" xml:space="preserve"><value>Contact person</value></data>
+  <data name="Supplier_Edit" xml:space="preserve"><value>Edit supplier</value></data>
+  <data name="Purchase_SearchProduct" xml:space="preserve"><value>Product name or barcode</value></data>
+  <data name="Purchase_AddNewProduct" xml:space="preserve"><value>Add new product</value></data>
+  <data name="Bulk_Template" xml:space="preserve"><value>Download CSV template</value></data>
+  <data name="Bulk_Import" xml:space="preserve"><value>Import CSV</value></data>
+  <data name="Bulk_ImportProducts" xml:space="preserve"><value>Import products</value></data>
+  <data name="Bulk_ImportSales" xml:space="preserve"><value>Import sales history</value></data>
+  <data name="Bulk_ProductHelp" xml:space="preserve"><value>Use existing category names. Enter VAT as a percent, unit as piece or kg, and barcodes as text. Unit cost and supplier are optional.</value></data>
+  <data name="Bulk_SaleHelp" xml:space="preserve"><value>Use one row per sold item. Repeat the receipt reference, date, payment, and any customer details on each row of the same sale. Dates use YYYY-MM-DD HH:mm. Imports leave current stock as-is.</value></data>
+  <data name="Bulk_ProductsImported" xml:space="preserve"><value>Imported {0} products.</value></data>
+  <data name="Bulk_SalesImported" xml:space="preserve"><value>Recorded {0} sales in history.</value></data>
+  <data name="History_RecordSale" xml:space="preserve"><value>Record past sale</value></data>
+  <data name="History_SourceReceipt" xml:space="preserve"><value>Original receipt reference</value></data>
+  <data name="History_Time" xml:space="preserve"><value>Time (HH:mm)</value></data>
+  <data name="History_OptionalTender" xml:space="preserve"><value>Cash received (optional)</value></data>
+  <data name="History_ChargedTotal" xml:space="preserve"><value>Charged line total</value></data>
+  <data name="History_RecordingHelp" xml:space="preserve"><value>Enter the original receipt details and one row per sold item. The unit selling price includes VAT. If you leave charged line total blank, the app calculates it from price and quantity. This records history only.</value></data>
+  <data name="History_DateTimeInvalid" xml:space="preserve"><value>Select the sale date and enter a time in HH:mm format.</value></data>
+  <data name="Payment_Transfer" xml:space="preserve"><value>Bank transfer</value></data>
+  <data name="Payment_Wallet" xml:space="preserve"><value>Mobile wallet</value></data>
+  <data name="Payment_Other" xml:space="preserve"><value>Other payments</value></data>
+  <data name="Dash_GrossProfit" xml:space="preserve"><value>Gross profit (excl. VAT)</value></data>
+  <data name="Dash_ProfitMissing" xml:space="preserve"><value>{0} sales excluded because costs are missing.</value></data>
+  <data name="Nav_Customers" xml:space="preserve"><value>Customers</value></data>
+  <data name="Customers_Search" xml:space="preserve"><value>Search by name, contact or receipt</value></data>
+  <data name="Customers_LoadError" xml:space="preserve"><value>Customer records could not be loaded.</value></data>
+  <data name="Stock_AlertsHeading" xml:space="preserve"><value>Low-stock alerts</value></data>
+  <data name="Stock_ToggleAlerts" xml:space="preserve"><value>Show or hide low-stock product alerts</value></data>
+  <data name="Stock_OnHand" xml:space="preserve"><value>On hand</value></data>
+  <data name="Stock_ViewAll" xml:space="preserve"><value>View all low-stock products</value></data>
+  <data name="Stock_RestockTitle" xml:space="preserve"><value>Restock low-stock items</value></data>
+  <data name="Stock_RestockQuantity" xml:space="preserve"><value>Quantity to add</value></data>
+  <data name="Stock_Restocked" xml:space="preserve"><value>Stock updated for {0}.</value></data>
+  <data name="Bulk_PhotoHelp" xml:space="preserve"><value>Use PhotoPath for a local image. A filename is relative to the CSV. To update an existing product’s photo, fill Barcode and PhotoPath.</value></data>
+  <data name="Receipt_PreviousPage" xml:space="preserve"><value>Previous</value></data>
+  <data name="Receipt_NextPage" xml:space="preserve"><value>Next</value></data>
+  <data name="Receipt_PageNumber" xml:space="preserve"><value>Page {0} of {1}</value></data>
+  <data name="Batch_Track" xml:space="preserve"><value>Track expiry date</value></data>
+  <data name="Batch_Lot" xml:space="preserve"><value>Batch / lot number</value></data>
+  <data name="Batch_Expiry" xml:space="preserve"><value>Expiry date</value></data>
+  <data name="Batch_DateHelp" xml:space="preserve"><value>Use the calendar or enter a date in your local format.</value></data>
+  <data name="Batch_ExpiryRequired" xml:space="preserve"><value>Enter a batch number and a valid expiry date.</value></data>
+  <data name="Batch_Opening" xml:space="preserve"><value>Opening batch quantity</value></data>
+  <data name="Batch_Assign" xml:space="preserve"><value>Quantity to assign from existing stock</value></data>
+  <data name="Batch_PositiveQuantity" xml:space="preserve"><value>Enter a positive batch quantity.</value></data>
+  <data name="Batch_Details" xml:space="preserve"><value>View batches</value></data>
+  <data name="Batch_Summary" xml:space="preserve"><value>Total stock {0:0.###} · {1} batches · Next expiry {2} · Unassigned {3:0.###}</value></data>
+  <data name="Batch_Depleted" xml:space="preserve"><value>No stock</value></data>
+  <data name="Batch_ExpiredStatus" xml:space="preserve"><value>Expired</value></data>
+  <data name="Batch_ExpiringSoon" xml:space="preserve"><value>Expires within 30 days</value></data>
+  <data name="Batch_Ready" xml:space="preserve"><value>Available</value></data>
+  <data name="Batch_InvalidBarcode" xml:space="preserve"><value>The barcode could not be used. Check the GTIN and batch data.</value></data>
+  <data name="Batch_EnableFirst" xml:space="preserve"><value>Enable expiry tracking for this product to use its batch information.</value></data>
+  <data name="Batch_NotFound" xml:space="preserve"><value>Batch not found for {0}. Scanned batch {1}, expiry {2}.</value></data>
+  <data name="Batch_Mismatch" xml:space="preserve"><value>Batch {0} has a different expiry. Scanned {1:yyyy-MM-dd}, recorded {2:yyyy-MM-dd}.</value></data>
+  <data name="Batch_Expired" xml:space="preserve"><value>Product expired. {0} expired on {1:yyyy-MM-dd}.</value></data>
+  <data name="Batch_ConfirmPhysical" xml:space="preserve"><value>Confirm the batch on the package for {0}. The earliest eligible expiry is suggested.</value></data>
+  <data name="Batch_NoUsable" xml:space="preserve"><value>No matching batch of {0} is available to sell.</value></data>
+  <data name="Batch_SerialDuplicate" xml:space="preserve"><value>Serial {0} is already in the cart or has been sold.</value></data>
+  <data name="Batch_NoProduct" xml:space="preserve"><value>The product is no longer available.</value></data>
+  <data name="Batch_Confirm" xml:space="preserve"><value>Confirm batch</value></data>
+  <data name="Batch_Review" xml:space="preserve"><value>Review inventory</value></data>
+  <data name="Batch_CancelScan" xml:space="preserve"><value>Cancel scan</value></data>
+  <data name="Batch_PurchaseEntry" xml:space="preserve"><value>Check the batch, expiry, quantity and cost for {0}, then add the item.</value></data>
+  <data name="Stock_BatchAssignment" xml:space="preserve"><value>Assigned existing stock to batch</value></data>
+  <data name="Trade_Credit" xml:space="preserve"><value>Udhar / Pay later (F3)</value></data>
+  <data name="Trade_PaidNow" xml:space="preserve"><value>Cash received now (PKR)</value></data>
+  <data name="Trade_Balance" xml:space="preserve"><value>Outstanding (PKR)</value></data>
+  <data name="Trade_TotalPaid" xml:space="preserve"><value>Paid (PKR)</value></data>
+  <data name="Trade_ReceivePayment" xml:space="preserve"><value>Receive payment</value></data>
+  <data name="Trade_PaySupplier" xml:space="preserve"><value>Pay supplier</value></data>
+  <data name="Trade_Payments" xml:space="preserve"><value>Payments</value></data>
+  <data name="Trade_PaymentDate" xml:space="preserve"><value>Payment date</value></data>
+  <data name="Trade_Reference" xml:space="preserve"><value>Reference / notes</value></data>
+  <data name="Trade_Method" xml:space="preserve"><value>Payment method</value></data>
+  <data name="Trade_Amount" xml:space="preserve"><value>Amount (PKR)</value></data>
+  <data name="Trade_Record" xml:space="preserve"><value>Record payment</value></data>
+  <data name="Trade_InitialPayment" xml:space="preserve"><value>Paid when invoiced</value></data>
+  <data name="Trade_CreditHint" xml:space="preserve"><value>Enter zero for full credit, or the cash received now. Add the customer's name and phone or email below.</value></data>
+  <data name="Trade_PurchaseCredit" xml:space="preserve"><value>Pay supplier later / part payment</value></data>
+  <data name="Trade_SupplierPaidNow" xml:space="preserve"><value>Paid now (PKR)</value></data>
+  <data name="Trade_SupplierBalances" xml:space="preserve"><value>Supplier balances</value></data>
+  <data name="Trade_AmountOwed" xml:space="preserve"><value>Amount owed</value></data>
+  <data name="Trade_Invoice" xml:space="preserve"><value>Invoice</value></data>
+  <data name="Trade_SerialTrack" xml:space="preserve"><value>Track IMEI / serial per unit</value></data>
+  <data name="Trade_WarrantyMonths" xml:space="preserve"><value>Warranty (months, 0 for none)</value></data>
+  <data name="Trade_Devices" xml:space="preserve"><value>IMEI, serials &amp; warranties</value></data>
+  <data name="Trade_RegisterDevices" xml:space="preserve"><value>Register existing stock</value></data>
+  <data name="Trade_Identifiers" xml:space="preserve"><value>Device identifiers</value></data>
+  <data name="Trade_SerialHelp" xml:space="preserve"><value>Enter one unit per line. Use Serial | IMEI 1 | IMEI 2. IMEIs are optional and contain 15 digits. For IMEI-only devices, leave Serial blank.</value></data>
+  <data name="Trade_EnterIdentifiers" xml:space="preserve"><value>Enter serials / IMEIs</value></data>
+  <data name="Trade_Serial" xml:space="preserve"><value>Serial number</value></data>
+  <data name="Trade_Imei1" xml:space="preserve"><value>IMEI 1</value></data>
+  <data name="Trade_Imei2" xml:space="preserve"><value>IMEI 2</value></data>
+  <data name="Trade_WarrantyUntil" xml:space="preserve"><value>Warranty until</value></data>
+  <data name="Trade_SoldDate" xml:space="preserve"><value>Sold on</value></data>
+  <data name="Trade_SelectDevice" xml:space="preserve"><value>Select a device</value></data>
+  <data name="Trade_UseDevice" xml:space="preserve"><value>Use selected device</value></data>
+  <data name="Trade_Available" xml:space="preserve"><value>Available</value></data>
+  <data name="Trade_Sold" xml:space="preserve"><value>Sold</value></data>
+  <data name="Trade_InWarranty" xml:space="preserve"><value>In warranty</value></data>
+  <data name="Trade_WarrantyExpired" xml:space="preserve"><value>Warranty expired</value></data>
+  <data name="Trade_NoWarranty" xml:space="preserve"><value>No warranty</value></data>
+  <data name="Trade_SearchDevice" xml:space="preserve"><value>Search serial, IMEI, product, receipt or customer</value></data>
+  <data name="Trade_NoDevices" xml:space="preserve"><value>No matching devices. Register existing units in Products &amp; Inventory or receive them in Purchases.</value></data>
+  <data name="Trade_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Trade_SaveUnits" xml:space="preserve"><value>Save devices</value></data>
+  <data name="Trade_BalanceHelp" xml:space="preserve"><value>Select an invoice below to record a payment. Outstanding is the invoice total less all recorded payments.</value></data>
+  <data name="Trade_SerialsPrompt" xml:space="preserve"><value>Add one serial or IMEI for each unit before receiving stock.</value></data>
+  <data name="Payment_Credit" xml:space="preserve"><value>Udhar / Pay later</value></data>
+  <data name="Trade_UnitCount" xml:space="preserve"><value>Devices</value></data>
+  <data name="Trade_ReceiptDue" xml:space="preserve"><value>Balance due</value></data>
+  <data name="Trade_ReceiptPaid" xml:space="preserve"><value>Paid to date</value></data>
+  <data name="Trade_ReceiptWarranty" xml:space="preserve"><value>Warranty until</value></data>
+  <data name="Trade_InitialMethod" xml:space="preserve"><value>Payment method for amount paid</value></data>
+  <data name="Trade_DeviceRegistered" xml:space="preserve"><value>Devices registered.</value></data>
+  <data name="Setup_Title" xml:space="preserve"><value>Business setup</value></data>
+  <data name="Setup_Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Setup_Next" xml:space="preserve"><value>Continue</value></data>
+  <data name="Setup_Finish" xml:space="preserve"><value>Complete setup</value></data>
+  <data name="Setup_Start" xml:space="preserve"><value>Start using POS</value></data>
+  <data name="Setup_Step0" xml:space="preserve"><value>Choose Your Language · اپنی زبان منتخب کریں</value></data>
+  <data name="Setup_Help0" xml:space="preserve"><value>Choose the language for setup and your POS. You can change it later in Store Profile.</value></data>
+  <data name="Setup_Step1" xml:space="preserve"><value>Activate your POS</value></data>
+  <data name="Setup_Help1" xml:space="preserve"><value>Use your purchased license online, or export an offline activation request and import the publisher’s signed response.</value></data>
+  <data name="Setup_Step2" xml:space="preserve"><value>Store administrator</value></data>
+  <data name="Setup_Help2" xml:space="preserve"><value>For an existing store, sign in with its administrator account. Existing records and passwords are preserved.</value></data>
+  <data name="Setup_Step3" xml:space="preserve"><value>Is your business registered?</value></data>
+  <data name="Setup_Help3" xml:space="preserve"><value>Business registration, income-tax registration (NTN), and sales-tax registration (STRN) are different. This choice does not determine your legal tax obligations.</value></data>
+  <data name="Setup_Step4" xml:space="preserve"><value>Your store</value></data>
+  <data name="Setup_Help4" xml:space="preserve"><value>Enter the store name and optional contact details. Currency is PKR; Cash and Card remain available.</value></data>
+  <data name="Setup_Step5" xml:space="preserve"><value>Registration and tax details</value></data>
+  <data name="Setup_Help5" xml:space="preserve"><value>Enter only identifiers officially assigned to your business. An NTN alone is not sales-tax registration.</value></data>
+  <data name="Setup_Step6" xml:space="preserve"><value>Receipts and local storage</value></data>
+  <data name="Setup_Help6" xml:space="preserve"><value>Your shop data stays on this computer. Choose receipt preferences and a local backup folder.</value></data>
+  <data name="Setup_Step7" xml:space="preserve"><value>Secure owner access</value></data>
+  <data name="Setup_Help7" xml:space="preserve"><value>New stores need a password of at least 12 characters including a letter and number. Existing administrator passwords are kept.</value></data>
+  <data name="Setup_Step8" xml:space="preserve"><value>Review business setup</value></data>
+  <data name="Setup_Help8" xml:space="preserve"><value>Review your choices. No FBR number or verification marking is issued by this setup.</value></data>
+  <data name="Setup_English" xml:space="preserve"><value>English</value></data>
+  <data name="Setup_Urdu" xml:space="preserve"><value>اردو — Urdu</value></data>
+  <data name="Setup_Registration" xml:space="preserve"><value>Business registration</value></data>
+  <data name="Setup_Registered" xml:space="preserve"><value>Registered business</value></data>
+  <data name="Setup_Unregistered" xml:space="preserve"><value>Not registered</value></data>
+  <data name="Setup_UnregisteredNotice" xml:space="preserve"><value>You can use normal invoices without FBR credentials. Confirm any applicable legal obligations independently.</value></data>
+  <data name="Setup_Owner" xml:space="preserve"><value>Owner / manager</value></data>
+  <data name="Setup_City" xml:space="preserve"><value>City</value></data>
+  <data name="Setup_Province" xml:space="preserve"><value>Province</value></data>
+  <data name="Setup_Postal" xml:space="preserve"><value>Postal code</value></data>
+  <data name="Setup_LegalName" xml:space="preserve"><value>Legal business name</value></data>
+  <data name="Setup_Entity" xml:space="preserve"><value>Entity type</value></data>
+  <data name="Setup_Sole" xml:space="preserve"><value>Sole proprietorship</value></data>
+  <data name="Setup_Aop" xml:space="preserve"><value>Partnership / AOP</value></data>
+  <data name="Setup_Private" xml:space="preserve"><value>Private limited company</value></data>
+  <data name="Setup_Public" xml:space="preserve"><value>Public limited company</value></data>
+  <data name="Setup_Ntn" xml:space="preserve"><value>NTN / individual registration number</value></data>
+  <data name="Setup_Strn" xml:space="preserve"><value>STRN (if sales-tax registered)</value></data>
+  <data name="Setup_SalesTaxRegistered" xml:space="preserve"><value>Registered for federal sales tax</value></data>
+  <data name="Setup_Jurisdiction" xml:space="preserve"><value>Tax jurisdiction</value></data>
+  <data name="Setup_Formation" xml:space="preserve"><value>Tax office / formation</value></data>
+  <data name="Setup_FbrRequired" xml:space="preserve"><value>My business is required to transmit invoices to FBR</value></data>
+  <data name="Setup_Paper" xml:space="preserve"><value>Receipt paper</value></data>
+  <data name="Setup_58" xml:space="preserve"><value>58 mm</value></data>
+  <data name="Setup_80" xml:space="preserve"><value>80 mm</value></data>
+  <data name="Setup_A4" xml:space="preserve"><value>A4</value></data>
+  <data name="Setup_InvoiceLanguage" xml:space="preserve"><value>Invoice language</value></data>
+  <data name="Setup_Printer" xml:space="preserve"><value>Receipt printer (optional)</value></data>
+  <data name="Setup_BackupFolder" xml:space="preserve"><value>Local backup folder</value></data>
+  <data name="Setup_DataFolder" xml:space="preserve"><value>Current data folder</value></data>
+  <data name="Setup_StorageNote" xml:space="preserve"><value>Storage changes take effect only after a safe restart. The database is never copied while transactions are active. Backups include product photos and scanner settings.</value></data>
+  <data name="Setup_Branch" xml:space="preserve"><value>Branch identifier</value></data>
+  <data name="Setup_Terminal" xml:space="preserve"><value>Terminal identifier</value></data>
+  <data name="Setup_InvoicePrefix" xml:space="preserve"><value>Invoice prefix</value></data>
+  <data name="Setup_InvoiceTitle" xml:space="preserve"><value>Invoice title</value></data>
+  <data name="Setup_HeaderPreview" xml:space="preserve"><value>Invoice header preview</value></data>
+  <data name="Setup_OwnerReady" xml:space="preserve"><value>Your local administrator access is ready.</value></data>
+  <data name="Setup_RecoveryTitle" xml:space="preserve"><value>Save your owner recovery code</value></data>
+  <data name="Setup_RecoveryHelp" xml:space="preserve"><value>Keep this code in a secure place outside the PC. It can reset the owner password once. It is not uploaded to the publisher.</value></data>
+  <data name="Setup_RecoveryLocked" xml:space="preserve"><value>Too many attempts. Try again in 15 minutes.</value></data>
+  <data name="Setup_RecoveryInvalid" xml:space="preserve"><value>The owner recovery details are invalid.</value></data>
+  <data name="Setup_PasswordStrength" xml:space="preserve"><value>Use 12 or more characters, including letters and numbers, within 72 UTF-8 bytes.</value></data>
+  <data name="Setup_UsernameRequired" xml:space="preserve"><value>Enter a username of up to 64 characters.</value></data>
+  <data name="Setup_NameRequired" xml:space="preserve"><value>Enter your store name.</value></data>
+  <data name="Setup_RegisteredRequired" xml:space="preserve"><value>Enter the legal business name, address and city.</value></data>
+  <data name="Setup_NtnInvalid" xml:space="preserve"><value>Enter the official 7-digit NTN (optional check digit) or 13-digit individual registration number.</value></data>
+  <data name="Setup_StrnInvalid" xml:space="preserve"><value>Enter the official 13-digit STRN only if registered for federal sales tax.</value></data>
+  <data name="Setup_RequiredIntegration" xml:space="preserve"><value>This business declares mandatory FBR transmission. Checkout requires an authorized production integration or an applicable approved operating procedure. Sandbox setup cannot enable it.</value></data>
+  <data name="Setup_ProductionPending" xml:space="preserve"><value>An authorized production provider is not configured. Use the sandbox for development and contact your licensed integrator.</value></data>
+  <data name="Setup_Invalid" xml:space="preserve"><value>Check the entered settings and identifier formats.</value></data>
+  <data name="Setup_SaveFailed" xml:space="preserve"><value>Could not save this step. Check your entries, access and local storage, then try again.</value></data>
+  <data name="Setup_Restart" xml:space="preserve"><value>Restart business setup</value></data>
+  <data name="Business_Settings" xml:space="preserve"><value>Business, licensing &amp; support</value></data>
+  <data name="Business_SettingsHelp" xml:space="preserve"><value>Registration, tax configuration, activation, secure updates, backups and optional problem reports.</value></data>
+  <data name="Business_Audit" xml:space="preserve"><value>Configuration audit history</value></data>
+  <data name="Fbr_Title" xml:space="preserve"><value>FBR configuration</value></data>
+  <data name="Fbr_Route" xml:space="preserve"><value>Integration route</value></data>
+  <data name="Fbr_Pos" xml:space="preserve"><value>FBR POS framework</value></data>
+  <data name="Fbr_Digital" xml:space="preserve"><value>Digital invoicing / licensed integrator</value></data>
+  <data name="Fbr_NotConfigured" xml:space="preserve"><value>Not configured</value></data>
+  <data name="Fbr_Pending" xml:space="preserve"><value>Configuration in progress</value></data>
+  <data name="Fbr_Sandbox" xml:space="preserve"><value>Sandbox / testing</value></data>
+  <data name="Fbr_Production" xml:space="preserve"><value>Production (authorized provider required)</value></data>
+  <data name="Fbr_Attention" xml:space="preserve"><value>Requires attention</value></data>
+  <data name="Fbr_Explanation" xml:space="preserve"><value>Tax calculations and official invoice transmission are separate. FBR POS and Digital Invoicing use distinct schemes. Official integration needs appropriate authorization. Enter mock as provider for local sandbox tests; this is not FBR certification.</value></data>
+  <data name="Fbr_Status" xml:space="preserve"><value>Integration status</value></data>
+  <data name="Fbr_Provider" xml:space="preserve"><value>Licensed integrator / provider</value></data>
+  <data name="Fbr_PosId" xml:space="preserve"><value>Assigned POS / outlet ID</value></data>
+  <data name="Fbr_Endpoint" xml:space="preserve"><value>Authorized API endpoint</value></data>
+  <data name="Fbr_Schema" xml:space="preserve"><value>Invoice schema version</value></data>
+  <data name="Fbr_Environment" xml:space="preserve"><value>Environment</value></data>
+  <data name="Fbr_SandboxToken" xml:space="preserve"><value>Sandbox credential (protected locally)</value></data>
+  <data name="Fbr_Test" xml:space="preserve"><value>Test sandbox mapping</value></data>
+  <data name="Fbr_TestPassed" xml:space="preserve"><value>Mock sandbox validation passed. No invoice was sent to FBR.</value></data>
+  <data name="Tax_Title" xml:space="preserve"><value>Product tax rules</value></data>
+  <data name="Tax_HsCode" xml:space="preserve"><value>HS code</value></data>
+  <data name="Tax_SaleType" xml:space="preserve"><value>Sale type</value></data>
+  <data name="Tax_Classification" xml:space="preserve"><value>Tax classification</value></data>
+  <data name="Tax_Standard" xml:space="preserve"><value>Standard rated</value></data>
+  <data name="Tax_Exempt" xml:space="preserve"><value>Exempt</value></data>
+  <data name="Tax_Zero" xml:space="preserve"><value>Zero rated</value></data>
+  <data name="Tax_Special" xml:space="preserve"><value>Special treatment</value></data>
+  <data name="Tax_RateFraction" xml:space="preserve"><value>Rate fraction (example: 0.18 = 18%)</value></data>
+  <data name="Tax_Sro" xml:space="preserve"><value>SRO / exemption reference</value></data>
+  <data name="Tax_Authority" xml:space="preserve"><value>Verified rule / authority reference</value></data>
+  <data name="Tax_History" xml:space="preserve"><value>Rule history</value></data>
+  <data name="Tax_RuleCount" xml:space="preserve"><value>Saved rules:</value></data>
+  <data name="Tax_RulesHelp" xml:space="preserve"><value>Enter verified rates and dates for each applicable product. Shelf prices remain tax-inclusive. Product VAT must match the effective rule before checkout. Rates are never inferred from NTN registration.</value></data>
+  <data name="Tax_InvalidRule" xml:space="preserve"><value>Enter a valid product, rate, dates and verified authority reference.</value></data>
+  <data name="Tax_Overlap" xml:space="preserve"><value>A rule already covers these dates for this product.</value></data>
+  <data name="Tax_RateMismatch" xml:space="preserve"><value>Product VAT differs from its effective tax rule. Update the product VAT before selling.</value></data>
+  <data name="Tax_MappingInvalid" xml:space="preserve"><value>Invoice mapping validation failed.</value></data>
+  <data name="License_Title" xml:space="preserve"><value>License &amp; activation</value></data>
+  <data name="License_Key" xml:space="preserve"><value>License key</value></data>
+  <data name="License_DeviceLabel" xml:space="preserve"><value>Computer label</value></data>
+  <data name="License_Status" xml:space="preserve"><value>License status</value></data>
+  <data name="License_Online" xml:space="preserve"><value>Activate online</value></data>
+  <data name="License_ExportRequest" xml:space="preserve"><value>Export offline activation request</value></data>
+  <data name="License_ImportResponse" xml:space="preserve"><value>Import signed activation response</value></data>
+  <data name="License_Activated" xml:space="preserve"><value>Perpetual license activated</value></data>
+  <data name="License_Required" xml:space="preserve"><value>Activate a purchased license to continue.</value></data>
+  <data name="License_Development" xml:space="preserve"><value>Local development build — commercial licensing is not enforced.</value></data>
+  <data name="License_Invalid" xml:space="preserve"><value>The certificate is invalid for this computer or version.</value></data>
+  <data name="License_ServicePending" xml:space="preserve"><value>Publisher service is not configured. Local testing and offline imports remain available.</value></data>
+  <data name="License_ActivationFailed" xml:space="preserve"><value>Activation was not completed. Check the key, device seats or connection and contact the publisher.</value></data>
+  <data name="License_ProtectedStorage" xml:space="preserve"><value>Windows could not open protected activation data for this user.</value></data>
+  <data name="License_DeviceUnavailable" xml:space="preserve"><value>Windows device identity is unavailable.</value></data>
+  <data name="License_Transfer" xml:space="preserve"><value>Request device transfer</value></data>
+  <data name="License_TransferPending" xml:space="preserve"><value>Transfer request saved. The publisher must authorize the replacement device.</value></data>
+  <data name="License_UpdatesUntil" xml:space="preserve"><value>Updates included until</value></data>
+  <data name="License_PerpetualHelp" xml:space="preserve"><value>Offline use of the licensed version does not expire with update entitlement. A transfer needs publisher approval; an old offline certificate cannot be remotely revoked.</value></data>
+  <data name="Updates_Title" xml:space="preserve"><value>Software updates</value></data>
+  <data name="Updates_Current" xml:space="preserve"><value>Current version / channel</value></data>
+  <data name="Updates_LastCheck" xml:space="preserve"><value>Last successful check</value></data>
+  <data name="Updates_NotChecked" xml:space="preserve"><value>Not checked</value></data>
+  <data name="Updates_Check" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="Updates_Download" xml:space="preserve"><value>Download update</value></data>
+  <data name="Updates_Install" xml:space="preserve"><value>Install downloaded update</value></data>
+  <data name="Updates_Offline" xml:space="preserve"><value>Import offline update</value></data>
+  <data name="Updates_History" xml:space="preserve"><value>Update history</value></data>
+  <data name="Updates_NoHistory" xml:space="preserve"><value>No updates installed yet.</value></data>
+  <data name="Updates_Available" xml:space="preserve"><value>Eligible update available:</value></data>
+  <data name="Updates_None" xml:space="preserve"><value>No eligible update available.</value></data>
+  <data name="Updates_Downloaded" xml:space="preserve"><value>Update downloaded and verified.</value></data>
+  <data name="Updates_CheckFailed" xml:space="preserve"><value>Could not reach the update service. Your offline POS license remains valid.</value></data>
+  <data name="Updates_Ineligible" xml:space="preserve"><value>This update does not match your version, channel, schema or update entitlement.</value></data>
+  <data name="Updates_Untrusted" xml:space="preserve"><value>Update authenticity or package integrity verification failed.</value></data>
+  <data name="Updates_FinishDrafts" xml:space="preserve"><value>Finish or clear the pending sale and purchase before continuing.</value></data>
+  <data name="Updates_InstallerRequired" xml:space="preserve"><value>This copy is not installed with Velopack. The publisher must provide the signed installer before automatic installation is available.</value></data>
+  <data name="Updates_Safety" xml:space="preserve"><value>Installation waits for completed sales and purchases, verifies publisher signatures and creates a consistent local backup. Expired update access never disables your perpetual POS.</value></data>
+  <data name="Storage_Title" xml:space="preserve"><value>Data &amp; backups</value></data>
+  <data name="Storage_Backup" xml:space="preserve"><value>Create full local backup</value></data>
+  <data name="Storage_Restore" xml:space="preserve"><value>Restore backup on restart</value></data>
+  <data name="Storage_BackupCreated" xml:space="preserve"><value>Local backup created and database integrity verified.</value></data>
+  <data name="Storage_RestoreStaged" xml:space="preserve"><value>Backup verified and staged. Restart the POS to restore it before opening the database. A backup of the current state will be kept.</value></data>
+  <data name="Storage_InvalidBackup" xml:space="preserve"><value>This backup is invalid or unsafe to restore.</value></data>
+  <data name="Storage_DiskSpace" xml:space="preserve"><value>There is not enough free disk space for a safe update.</value></data>
+  <data name="Help_Support" xml:space="preserve"><value>Help &amp; support</value></data>
+  <data name="Support_Description" xml:space="preserve"><value>Describe the problem (avoid personal or business records)</value></data>
+  <data name="Support_Review" xml:space="preserve"><value>Review diagnostic information</value></data>
+  <data name="Support_Consent" xml:space="preserve"><value>I agree to send this description and the displayed diagnostics to the software publisher.</value></data>
+  <data name="Support_Send" xml:space="preserve"><value>Submit problem report</value></data>
+  <data name="Support_Export" xml:space="preserve"><value>Export offline support report</value></data>
+  <data name="Support_Sent" xml:space="preserve"><value>Report submitted.</value></data>
+  <data name="Support_ConsentRequired" xml:space="preserve"><value>Review the report and give consent before uploading.</value></data>
+  <data name="Support_Failed" xml:space="preserve"><value>Could not submit the report. You can export it for offline support.</value></data>
+  <data name="License_RecordsOnly" xml:space="preserve"><value>This installation needs activation. Existing records remain available; business changes are disabled.</value></data>
+  <data name="License_OpenRecords" xml:space="preserve"><value>Open existing records</value></data>
+  <data name="Recovery_Code" xml:space="preserve"><value>Owner recovery code</value></data>
+  <data name="Recovery_Reset" xml:space="preserve"><value>Reset password</value></data>
+  <data name="Recovery_Done" xml:space="preserve"><value>Password reset. Sign in with your new password.</value></data>
+  <data name="Recovery_Open" xml:space="preserve"><value>Recover owner access</value></data>
+  <data name="Recovery_Generate" xml:space="preserve"><value>Generate a new recovery code</value></data>
+  <data name="Documents_Invalid" xml:space="preserve"><value>Choose a PDF, PNG or JPG document up to 10 MB.</value></data>
+  <data name="Documents_Add" xml:space="preserve"><value>Attach a local document</value></data>
+  <data name="Documents_Export" xml:space="preserve"><value>Export selected document</value></data>
+  <data name="Documents_LocalOnly" xml:space="preserve"><value>Documents stay encrypted on this PC. They are never sent to the licensing server.</value></data>
+  <data name="Tax_ApplyCatalog" xml:space="preserve"><value>Apply this rate and price to the current product</value></data>
+  <data name="Tax_Exclusive" xml:space="preserve"><value>Entered price excludes tax</value></data>
+  <data name="Tax_PriceInput" xml:space="preserve"><value>Product price (PKR)</value></data>
+  <data name="Tax_ViewRules" xml:space="preserve"><value>View saved tax rules</value></data>
+  <data name="Tax_EndRule" xml:space="preserve"><value>End selected tax rule</value></data>
+  <data name="Storage_ChangeFolder" xml:space="preserve"><value>Change data folder on next start</value></data>
+  <data name="Storage_FolderStaged" xml:space="preserve"><value>The data folder will change on the next start. The original folder is retained.</value></data>
+  <data name="Storage_FolderScheduleFailed" xml:space="preserve"><value>Setup was saved. Choose the data folder again in Settings → Business setup → Storage.</value></data>
+  <data name="Storage_InvalidFolder" xml:space="preserve"><value>Choose a writable local folder outside the application folder.</value></data>
+  <data name="Storage_EmptyFolder" xml:space="preserve"><value>Choose an empty destination folder.</value></data>
+  <data name="Storage_IncompatibleBackup" xml:space="preserve"><value>This backup requires a newer POS version. Update the POS before restoring it.</value></data>
+  <data name="Storage_RestoreConfirm" xml:space="preserve"><value>Restore this backup on the next start? The current database and media will be backed up first. Finish your work and restart after confirming.</value></data>
+  <data name="Setup_MigrationRecovered" xml:space="preserve"><value>The database upgrade failed. Your previous database was restored and the failed copy was retained in Backups. Contact support before trying the update again.</value></data>
+  <data name="Setup_StartupFailed" xml:space="preserve"><value>The POS could not start safely. Your records have not been removed. Check the data folder permissions or contact support.</value></data>
+  <data name="Setup_UnexpectedError" xml:space="preserve"><value>Something went wrong. You can review a technical report in Help &amp; Support.</value></data>
+  <data name="Setup_Paper58" xml:space="preserve"><value>58 mm</value></data>
+  <data name="Setup_Paper80" xml:space="preserve"><value>80 mm</value></data>
+  <data name="Setup_PaperA4" xml:space="preserve"><value>A4</value></data>
+  <data name="Language_English" xml:space="preserve"><value>English</value></data>
+  <data name="Language_Urdu" xml:space="preserve"><value>اردو — Urdu</value></data>
+  <data name="Updates_Notes" xml:space="preserve"><value>Release notes</value></data>
+  <data name="Updates_Later" xml:space="preserve"><value>Remind me later</value></data>
+  <data name="Updates_Notice" xml:space="preserve"><value>A verified update is available. Open Software Updates to download it when convenient.</value></data>
+  <data name="Fbr_TestMapping" xml:space="preserve"><value>Validate latest invoice mapping (sandbox only)</value></data>
+  <data name="Fbr_NoInvoice" xml:space="preserve"><value>Complete a permitted test sale before validating the stored invoice mapping.</value></data>
+  <data name="Common_Confirm" xml:space="preserve"><value>Confirm</value></data>
+  <data name="Reports_From" xml:space="preserve"><value>From</value></data>
+  <data name="Reports_To" xml:space="preserve"><value>To</value></data>
+  <data name="Setup_RegisteredChoiceHelp" xml:space="preserve"><value>My business is formally registered. Tax registration will be configured separately.</value></data>
+  <data name="Setup_UnregisteredChoiceHelp" xml:space="preserve"><value>Set up a small shop with simple local invoices. This choice does not determine legal tax obligations.</value></data>
+  <data name="Documents_Attached" xml:space="preserve"><value>Attached local documents</value></data>
+  <data name="Validation_Required" xml:space="preserve"><value>This field is required.</value></data>
+  <data name="Validation_Text" xml:space="preserve"><value>Enter text within this field’s character limit, without control characters.</value></data>
+  <data name="Validation_Phone" xml:space="preserve"><value>Enter 7–15 digits. +, spaces, parentheses and hyphens are allowed.</value></data>
+  <data name="Validation_Email" xml:space="preserve"><value>Enter an email such as name@example.com.</value></data>
+  <data name="Validation_Postal" xml:space="preserve"><value>Enter a five-digit postal code.</value></data>
+  <data name="Validation_Prefix" xml:space="preserve"><value>Use up to 12 English letters, digits or hyphens.</value></data>
+  <data name="Validation_Choice" xml:space="preserve"><value>Choose one of the available options.</value></data>
+  <data name="Validation_Endpoint" xml:space="preserve"><value>Enter a complete HTTPS URL without a username or password.</value></data>
+  <data name="Validation_Mock" xml:space="preserve"><value>For local sandbox testing, select POS or Digital Invoicing and enter mock as the provider.</value></data>
+  <data name="Validation_LicenseKey" xml:space="preserve"><value>Enter the complete key: POS- followed by 48 hexadecimal characters.</value></data>
+  <data name="Validation_Credentials" xml:space="preserve"><value>Check your existing username and password, then try again.</value></data>
+  <data name="Help_LicenseKey" xml:space="preserve"><value>Paste the purchased key from your software provider. This local development build allows an empty key; test text never activates a license.</value></data>
+  <data name="Help_DeviceLabel" xml:space="preserve"><value>A name for this PC, such as Main counter. Use 1–100 characters.</value></data>
+  <data name="Help_Ntn" xml:space="preserve"><value>Optional if not assigned. Copy the identifier from your registration: 7 digits (optionally - and a check digit), or a 13-digit individual identifier. This checks format only.</value></data>
+  <data name="Help_Strn" xml:space="preserve"><value>Required when sales-tax registered. Enter the 13 digits from your sales-tax registration. NTN and STRN are different identifiers.</value></data>
+  <data name="Help_SalesTax" xml:space="preserve"><value>Select only if registered for federal sales tax; an NTN alone does not establish this.</value></data>
+  <data name="Help_Entity" xml:space="preserve"><value>Choose the legal form shown on your registration documents.</value></data>
+  <data name="Help_FbrRequired" xml:space="preserve"><value>If reporting is mandatory, setup requires an authorized production integration. Local sandbox tests do not meet that requirement.</value></data>
+  <data name="Help_FbrRoute" xml:space="preserve"><value>POS and Digital Invoicing are separate routes. Follow your authorized provider, or leave Not configured.</value></data>
+  <data name="Help_FbrProvider" xml:space="preserve"><value>Use mock for local sandbox tests. Production requires a separately authorized integration; production credentials are not needed here.</value></data>
+  <data name="Help_FbrStatus" xml:space="preserve"><value>Sandbox means local validation only, without an official FBR number.</value></data>
+  <data name="Help_BackupFolder" xml:space="preserve"><value>Optional. Enter a full writable local path, such as D:\POS Backups.</value></data>
+  <data name="Help_DataFolder" xml:space="preserve"><value>Database and managed images stay here. A changed destination must be an empty local folder; safe relocation runs on the next start.</value></data>
+  <data name="Help_Branch" xml:space="preserve"><value>Optional identifier supplied by your business. Do not invent an official FBR identifier.</value></data>
+  <data name="Help_Terminal" xml:space="preserve"><value>Optional name for this checkout counter, for example COUNTER-1.</value></data>
+  <data name="Help_Prefix" xml:space="preserve"><value>Optional prefix for local receipts: up to 12 English letters, digits or hyphens.</value></data>
+  <data name="Help_Printer" xml:space="preserve"><value>Optional printer preference. Receipt preview and PDF export work without a printer.</value></data>
+  <data name="Help_Jurisdiction" xml:space="preserve"><value>Optional tax jurisdiction from your registration or authorized provider’s guidance.</value></data>
+  <data name="Help_Formation" xml:space="preserve"><value>Optional tax office shown on your registration; leave blank if not assigned.</value></data>
+  <data name="Help_Postal" xml:space="preserve"><value>Optional Pakistan postal code: five digits.</value></data>
+  <data name="Setup_FullPreview" xml:space="preserve"><value>Sample invoice preview</value></data>
+  <data name="Setup_Your" xml:space="preserve"><value>Your</value></data>
+  <data name="Setup_Logo" xml:space="preserve"><value>logo</value></data>
+  <data name="Setup_PreviewOnly" xml:space="preserve"><value>SAMPLE — not a recorded sale</value></data>
+  <data name="Setup_PreviewReceipt" xml:space="preserve"><value>Receipt number</value></data>
+  <data name="Setup_PreviewItem" xml:space="preserve"><value>Sample product</value></data>
+  <data name="Setup_PreviewPayment" xml:space="preserve"><value>Cash payment</value></data>
+  <data name="Setup_PreviewThankYou" xml:space="preserve"><value>Thank you for shopping with us!</value></data>
+  <data name="Validation_DeviceLabel" xml:space="preserve"><value>Enter a device name with 1–100 characters, without control characters.</value></data>
+  <data name="Validation_RegistrationConflict" xml:space="preserve"><value>This draft contains sales-tax registration or mandatory FBR reporting. Choose Registered business to review and correct those details before changing the registration category.</value></data>
+  <data name="Features_Title" xml:space="preserve"><value>Business features</value></data>
+  <data name="Features_StoreType" xml:space="preserve"><value>Store type</value></data>
+  <data name="Features_Grocery" xml:space="preserve"><value>Grocery / Kiryana</value></data>
+  <data name="Features_Supermarket" xml:space="preserve"><value>Supermarket / Minimart</value></data>
+  <data name="Features_Retail" xml:space="preserve"><value>General retail</value></data>
+  <data name="Features_Pharmacy" xml:space="preserve"><value>Pharmacy</value></data>
+  <data name="Features_Electronics" xml:space="preserve"><value>Electronics</value></data>
+  <data name="Features_Mobile" xml:space="preserve"><value>Mobile shop / Recharge</value></data>
+  <data name="Features_Loose" xml:space="preserve"><value>Loose goods (weight / volume)</value></data>
+  <data name="Features_Packaging" xml:space="preserve"><value>Boxes, packs and individual pieces</value></data>
+  <data name="Features_Wallet" xml:space="preserve"><value>Manual wallet services</value></data>
+  <data name="Features_Recharge" xml:space="preserve"><value>Mobile load and packages</value></data>
+  <data name="Customer_SelectExisting" xml:space="preserve"><value>Search or select existing customer</value></data>
+  <data name="Invoice_ExportFolder" xml:space="preserve"><value>Default invoice download folder</value></data>
+  <data name="Invoice_MessageTemplate" xml:space="preserve"><value>WhatsApp message template (optional)</value></data>
+  <data name="Measure_InvalidQuantity" xml:space="preserve"><value>Enter a positive whole number of pieces, or kg/litres to three decimals (1 g/ml).</value></data>
+  <data name="Measure_InvalidAmount" xml:space="preserve"><value>Enter a positive PKR amount and a selling price above zero.</value></data>
+  <data name="Measure_TooSmall" xml:space="preserve"><value>This amount is below one measurable gram or millilitre.</value></data>
+  <data name="Measure_ClearStockFirst" xml:space="preserve"><value>Clear or transfer stock before changing its base unit.</value></data>
+  <data name="Measure_InvalidPackage" xml:space="preserve"><value>Check package quantity, distinct barcode, cost and selling price. Packages require piece products without serial tracking.</value></data>
+  <data name="Measure_ChangedUnit" xml:space="preserve"><value>This product's unit configuration changed. Remove it from the cart and add it again.</value></data>
+  <data name="Measure_FeatureDisabled" xml:space="preserve"><value>Enable packaging in Business Features before using this package barcode.</value></data>
+  <data name="Measure_Method" xml:space="preserve"><value>Selling method</value></data>
+  <data name="Measure_piece" xml:space="preserve"><value>Piece</value></data>
+  <data name="Measure_weight" xml:space="preserve"><value>By weight (kg)</value></data>
+  <data name="Measure_volume" xml:space="preserve"><value>By volume (litre)</value></data>
+  <data name="Measure_pack" xml:space="preserve"><value>Pack</value></data>
+  <data name="Measure_box" xml:space="preserve"><value>Box</value></data>
+  <data name="Measure_carton" xml:space="preserve"><value>Carton</value></data>
+  <data name="Measure_kg" xml:space="preserve"><value>kg</value></data>
+  <data name="Measure_litre" xml:space="preserve"><value>litre</value></data>
+  <data name="Measure_PriceHint" xml:space="preserve"><value>Weight prices/costs/stock use kg; volume uses litres; packaged products use individual pieces. Loose-product barcode is optional.</value></data>
+  <data name="Measure_MinimumStock" xml:space="preserve"><value>Minimum stock (optional)</value></data>
+  <data name="Measure_PurchaseUnit" xml:space="preserve"><value>Purchase package</value></data>
+  <data name="Measure_UnitsPerPack" xml:space="preserve"><value>Pieces per package</value></data>
+  <data name="Measure_PackBarcode" xml:space="preserve"><value>Package barcode (optional, different from piece)</value></data>
+  <data name="Measure_PackCost" xml:space="preserve"><value>Purchase cost per package (PKR)</value></data>
+  <data name="Measure_PackPrice" xml:space="preserve"><value>Full package selling price (optional PKR)</value></data>
+  <data name="Measure_LooseItems" xml:space="preserve"><value>Loose Goods</value></data>
+  <data name="Measure_ByWeight" xml:space="preserve"><value>Sell by weight / volume</value></data>
+  <data name="Measure_ByAmount" xml:space="preserve"><value>Sell by amount</value></data>
+  <data name="Measure_SellPack" xml:space="preserve"><value>Sell full package</value></data>
+  <data name="Measure_InputUnit" xml:space="preserve"><value>Quantity input unit</value></data>
+  <data name="Measure_KgLitre" xml:space="preserve"><value>kg / litres</value></data>
+  <data name="Measure_GramMl" xml:space="preserve"><value>grams / millilitres</value></data>
+  <data name="Measure_QuantityOrAmount" xml:space="preserve"><value>Quantity or final amount (PKR)</value></data>
+  <data name="Measure_Kilo" xml:space="preserve"><value>1 kilo / litre</value></data>
+  <data name="Measure_Half" xml:space="preserve"><value>Adha — ½</value></data>
+  <data name="Measure_Pao" xml:space="preserve"><value>Pao — ¼</value></data>
+  <data name="Measure_Add" xml:space="preserve"><value>Confirm quantity &amp; add</value></data>
+  <data name="Measure_BuyPacks" xml:space="preserve"><value>Receive packages (quantity and cost per package)</value></data>
+  <data name="Service_Title" xml:space="preserve"><value>Digital services</value></data>
+  <data name="Service_ManualNotice" xml:space="preserve"><value>Manual records only. Complete the real transaction with your authorized provider first. No transfers or recharges are executed here.</value></data>
+  <data name="Service_Record" xml:space="preserve"><value>Record transaction</value></data>
+  <data name="Service_History" xml:space="preserve"><value>Transaction history</value></data>
+  <data name="Service_Providers" xml:space="preserve"><value>Providers &amp; recorded float</value></data>
+  <data name="Service_Packages" xml:space="preserve"><value>Mobile packages</value></data>
+  <data name="Service_Reports" xml:space="preserve"><value>Service reports</value></data>
+  <data name="Service_Provider" xml:space="preserve"><value>Provider / service account</value></data>
+  <data name="Service_Type" xml:space="preserve"><value>Transaction type</value></data>
+  <data name="Service_CASHIN" xml:space="preserve"><value>Cash in</value></data>
+  <data name="Service_CASHOUT" xml:space="preserve"><value>Cash out</value></data>
+  <data name="Service_LOAD" xml:space="preserve"><value>Mobile load</value></data>
+  <data name="Service_PACKAGE" xml:space="preserve"><value>Mobile package</value></data>
+  <data name="Service_REVERSAL" xml:space="preserve"><value>Reversal</value></data>
+  <data name="Service_Principal" xml:space="preserve"><value>Principal (PKR)</value></data>
+  <data name="Service_CustomerFee" xml:space="preserve"><value>Customer fee (PKR)</value></data>
+  <data name="Service_ProviderFee" xml:space="preserve"><value>Provider fee (PKR)</value></data>
+  <data name="Service_Commission" xml:space="preserve"><value>Confirmed commission (PKR)</value></data>
+  <data name="Service_ProviderCost" xml:space="preserve"><value>Provider cost (PKR)</value></data>
+  <data name="Service_Collected" xml:space="preserve"><value>Amount collected (PKR)</value></data>
+  <data name="Service_FloatChange" xml:space="preserve"><value>Actual float movement (+ / − PKR)</value></data>
+  <data name="Service_Reference" xml:space="preserve"><value>Provider reference</value></data>
+  <data name="Service_Time" xml:space="preserve"><value>Time (HH:mm)</value></data>
+  <data name="Service_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Service_Draft" xml:space="preserve"><value>Draft</value></data>
+  <data name="Service_Pending" xml:space="preserve"><value>Pending confirmation</value></data>
+  <data name="Service_Confirmed" xml:space="preserve"><value>Externally confirmed</value></data>
+  <data name="Service_Failed" xml:space="preserve"><value>Failed</value></data>
+  <data name="Service_Reversed" xml:space="preserve"><value>Reversed</value></data>
+  <data name="Service_ExternalConfirmed" xml:space="preserve"><value>I verified the result with the authorized provider</value></data>
+  <data name="Service_SettlementHelp" xml:space="preserve"><value>Enter the actual signed float change from settlement; it is not fetched live. Provider cost excludes separately entered commission. Never record the same commission twice.</value></data>
+  <data name="Service_Save" xml:space="preserve"><value>Save manual record</value></data>
+  <data name="Service_Saved" xml:space="preserve"><value>Service record saved</value></data>
+  <data name="Service_Receipt" xml:space="preserve"><value>Service receipt</value></data>
+  <data name="Service_CashChange" xml:space="preserve"><value>Net physical cash movement</value></data>
+  <data name="Service_Income" xml:space="preserve"><value>Net service income</value></data>
+  <data name="Service_ActionConfirmed" xml:space="preserve"><value>Confirm external result</value></data>
+  <data name="Service_ActionFailed" xml:space="preserve"><value>Mark failed</value></data>
+  <data name="Service_ActionReversed" xml:space="preserve"><value>Record confirmed reversal</value></data>
+  <data name="Service_SelectTransaction" xml:space="preserve"><value>Select a transaction first.</value></data>
+  <data name="Service_SelectCompleted" xml:space="preserve"><value>Select a completed service receipt.</value></data>
+  <data name="Service_EditProvider" xml:space="preserve"><value>Select provider to edit, or enter a new account below</value></data>
+  <data name="Service_OpeningFloat" xml:space="preserve"><value>Opening recorded float (PKR)</value></data>
+  <data name="Service_FeePolicy" xml:space="preserve"><value>Fee policy / notes</value></data>
+  <data name="Service_CommissionPolicy" xml:space="preserve"><value>Commission policy / notes</value></data>
+  <data name="Service_ProviderSuggestions" xml:space="preserve"><value>Examples: JazzCash, Easypaisa, Jazz, Zong, Ufone, Telenor or Other. Enter your own authorized account and actual terms; no tariffs are assumed.</value></data>
+  <data name="Service_PackageName" xml:space="preserve"><value>Package name</value></data>
+  <data name="Service_EditPackage" xml:space="preserve"><value>Select package to edit (optional)</value></data>
+  <data name="Service_PackageType" xml:space="preserve"><value>Package type</value></data>
+  <data name="Service_Validity" xml:space="preserve"><value>Validity</value></data>
+  <data name="Service_RechargeCollected" xml:space="preserve"><value>Load / package cash collected</value></data>
+  <data name="Service_FailedReversed" xml:space="preserve"><value>Failed / reversed records</value></data>
+  <data name="Service_RecordedFloat" xml:space="preserve"><value>Recorded float — not a live verified balance</value></data>
+  <data name="Service_Invalid" xml:space="preserve"><value>Check provider, type, date, reference and required fields.</value></data>
+  <data name="Service_InvalidAmount" xml:space="preserve"><value>Use positive principal and nonnegative fees/costs with up to two decimals.</value></data>
+  <data name="Service_ReferenceRequired" xml:space="preserve"><value>A provider reference is required for confirmed transactions.</value></data>
+  <data name="Service_ExternalRequired" xml:space="preserve"><value>Confirm the actual provider result and enter a reference first.</value></data>
+  <data name="Service_FloatShort" xml:space="preserve"><value>Recorded float is insufficient. Review the actual settlement and float movement.</value></data>
+  <data name="Service_OpeningLocked" xml:space="preserve"><value>Opening float cannot change after transactions. Keep adjustments as auditable records.</value></data>
+  <data name="Service_ConfirmationConflict" xml:space="preserve"><value>This confirmation belongs to a different record.</value></data>
+  <data name="Service_Immutable" xml:space="preserve"><value>Completed or failed records cannot be rewritten. Use an auditable reversal where applicable.</value></data>
+  <data name="Service_SelectProvider" xml:space="preserve"><value>Select an existing provider.</value></data>
+  <data name="Service_SignIn" xml:space="preserve"><value>Sign in before recording a service.</value></data>
+  <data name="Service_Disabled" xml:space="preserve"><value>Enable the relevant module in Settings → Business Features. History is retained.</value></data>
+  <data name="Service_Error" xml:space="preserve"><value>The service record could not be saved. Check the details and try again.</value></data>
+  <data name="Service_PhysicalRevenue" xml:space="preserve"><value>Physical product revenue</value></data>
+  <data name="Service_LooseRevenue" xml:space="preserve"><value>Loose goods revenue</value></data>
+  <data name="Invoice_Print" xml:space="preserve"><value>Print Receipt</value></data>
+  <data name="Invoice_WhatsApp" xml:space="preserve"><value>WhatsApp</value></data>
+  <data name="Invoice_Download" xml:space="preserve"><value>Download</value></data>
+  <data name="Invoice_NewSale" xml:space="preserve"><value>New sale</value></data>
+  <data name="Invoice_Retry" xml:space="preserve"><value>Retry print</value></data>
+  <data name="Invoice_PrinterSettings" xml:space="preserve"><value>Printer Settings</value></data>
+  <data name="Invoice_AddNumber" xml:space="preserve"><value>Add / correct customer number</value></data>
+  <data name="Invoice_Browser" xml:space="preserve"><value>Open in Browser</value></data>
+  <data name="Invoice_ViewPdf" xml:space="preserve"><value>View Invoice PDF</value></data>
+  <data name="Invoice_PdfLocation" xml:space="preserve"><value>Open PDF Location</value></data>
+  <data name="Invoice_CopyDetails" xml:space="preserve"><value>Copy invoice details</value></data>
+  <data name="Invoice_AttachmentNote" xml:space="preserve"><value>Use Download to save and attach the PDF in WhatsApp. Review the draft before sending.</value></data>
+  <data name="Invoice_PhoneInvalid" xml:space="preserve"><value>Enter a valid international phone number, or a Pakistani mobile number such as 03XXXXXXXXX.</value></data>
+  <data name="Invoice_CountryCode" xml:space="preserve"><value>Country calling code (for local-format numbers)</value></data>
+  <data name="Invoice_SaveNumber" xml:space="preserve"><value>Save this corrected number to the invoice/customer record</value></data>
+  <data name="Invoice_NumberReady" xml:space="preserve"><value>Customer number is ready for this invoice.</value></data>
+  <data name="Invoice_NumberSaveFailed" xml:space="preserve"><value>The number could not be saved. Review customer/account details, or use it without saving.</value></data>
+  <data name="Invoice_PrinterMissing" xml:space="preserve"><value>Select a configured Windows receipt printer in Printer Settings.</value></data>
+  <data name="Invoice_PrinterUnavailable" xml:space="preserve"><value>The printer is missing, offline, paused or needs attention. Check it, retry, or choose another printer. The invoice remains saved.</value></data>
+  <data name="Invoice_PrintFailed" xml:space="preserve"><value>Printing failed. Check the printer and retry or open Printer Settings. The invoice remains saved.</value></data>
+  <data name="Invoice_PrintSubmitted" xml:space="preserve"><value>Print job submitted. Verify the paper output at the printer.</value></data>
+  <data name="Invoice_Offline" xml:space="preserve"><value>No network connection is available. The invoice is saved; share it when connected.</value></data>
+  <data name="Invoice_DesktopOpened" xml:space="preserve"><value>Opened a WhatsApp Desktop draft for review. Nothing has been sent automatically.</value></data>
+  <data name="Invoice_BrowserOpened" xml:space="preserve"><value>Opened WhatsApp Web for review. Sign in/link your device if requested. Delivery is unverified.</value></data>
+  <data name="Invoice_OpenFailed" xml:space="preserve"><value>Could not open the selected action. Retry or use Open in Browser. The saved invoice is unchanged.</value></data>
+  <data name="Invoice_DownloadFailed" xml:space="preserve"><value>Could not save the PDF. Choose a writable folder and try again.</value></data>
+  <data name="Invoice_Copied" xml:space="preserve"><value>Invoice details copied.</value></data>
+  <data name="Invoice_DefaultMessage" xml:space="preserve"><value>Hello {CustomerName},&#10;&#10;Thank you for shopping at {StoreName}.&#10;Invoice: {InvoiceNumber}&#10;Date: {InvoiceDate}&#10;Total: PKR {InvoiceTotal}&#10;&#10;Your invoice is ready. Thank you!</value></data>
+  <data name="Service_FinishDraft" xml:space="preserve"><value>Finish or save the current service draft before changing transaction type.</value></data>
+  <data name="Service_Active" xml:space="preserve"><value>Active</value></data>
+  <data name="Service_SaveConfig" xml:space="preserve"><value>Save configuration</value></data>
+  <data name="Service_DuplicateReference" xml:space="preserve"><value>This provider reference is already recorded as completed. Open its history instead of recording it again.</value></data>
+  <data name="Measure_ExistingPrice" xml:space="preserve"><value>This product already has an edited price in the cart. Adjust that line directly, or remove it before using the measured-sale calculator.</value></data>
+  <data name="Help_StoreName" xml:space="preserve"><value>This trading/store name appears in the menu and ordinary invoice header. Both settings screens update the same local store profile.</value></data>
+  <data name="Help_LegalName" xml:space="preserve"><value>The registered legal name can differ from the trading/store name. A leftover Demo Account store name is replaced with this name when setup is saved.</value></data>
+  <data name="Help_InvoiceTemplate" xml:space="preserve"><value>Optional message text. Supported placeholders: {CustomerName}, {StoreName}, {InvoiceNumber}, {InvoiceDate}, {InvoiceTotal}. Leave empty for the localized default. The cashier still reviews and sends in WhatsApp.</value></data>
+  <data name="Common_Continue" xml:space="preserve"><value>Continue</value></data>
+  <data name="Measure_Grams" xml:space="preserve"><value>grams</value></data>
+  <data name="Measure_Millilitres" xml:space="preserve"><value>millilitres</value></data>
+  <data name="Service_Config" xml:space="preserve"><value>Digital service configuration</value></data>
+  <data name="Service_Prepaid" xml:space="preserve"><value>Prepaid</value></data>
+  <data name="Service_Postpaid" xml:space="preserve"><value>Postpaid</value></data>
+  <data name="Service_AccountType" xml:space="preserve"><value>Account type</value></data>
+  <data name="Service_PackageId" xml:space="preserve"><value>Provider package identifier</value></data>
+  <data name="Service_Benefits" xml:space="preserve"><value>Benefits / description</value></data>
+  <data name="Service_SearchPackages" xml:space="preserve"><value>Search configured packages…</value></data>
+  <data name="Service_NoPackages" xml:space="preserve"><value>No active packages configured for this network and account type.</value></data>
+  <data name="Service_ChangePackage" xml:space="preserve"><value>Choose another package</value></data>
+  <data name="Service_ProviderResult" xml:space="preserve"><value>Provider result</value></data>
+  <data name="Service_DefaultCustomerFee" xml:space="preserve"><value>Default customer fee (PKR)</value></data>
+  <data name="Service_DefaultProviderFee" xml:space="preserve"><value>Default provider fee (PKR)</value></data>
+  <data name="Service_DefaultCommission" xml:space="preserve"><value>Default commission (PKR)</value></data>
+  <data name="Service_LoadCostRate" xml:space="preserve"><value>Recharge cost multiplier (1 = face value)</value></data>
+  <data name="Service_SettlementDefaults" xml:space="preserve"><value>Fees and commission are flat PKR amounts per transaction. Float moves by principal (wallet) or provider cost (recharge), plus commission less provider fee. Configure these from your authorized provider settlement agreement.</value></data>
+  <data name="Service_CatalogChanged" xml:space="preserve"><value>The package price or charges changed. Choose the package again before recording.</value></data>
+  <data name="Service_ToPay" xml:space="preserve"><value>Cash to pay</value></data>
+  <data name="Service_ToCollect" xml:space="preserve"><value>Cash to collect</value></data>
+  <data name="Service_FeeShort" xml:space="preserve"><value>Fee</value></data>
+  <data name="Service_CommissionShort" xml:space="preserve"><value>Commission</value></data>
+  <data name="Measure_Amount" xml:space="preserve"><value>Amount (PKR)</value></data>
+  <data name="Service_ResultConfirmed" xml:space="preserve"><value>Confirmed</value></data>
+  <data name="Service_ResultPending" xml:space="preserve"><value>Pending</value></data>
+  <data name="Window_Minimize" xml:space="preserve"><value>Minimize</value></data>
+  <data name="Window_Maximize" xml:space="preserve"><value>Maximize / Restore</value></data>
+  <data name="Pharmacy_Template" xml:space="preserve"><value>Medicine reference template</value></data>
+  <data name="Pharmacy_NoTemplate" xml:space="preserve"><value>No reference template</value></data>
+  <data name="Pharmacy_DrapTemplate" xml:space="preserve"><value>Pakistan medicines — 10,068 reference entries</value></data>
+  <data name="Pharmacy_Catalog" xml:space="preserve"><value>Medicine catalog</value></data>
+  <data name="Pharmacy_CatalogCount" xml:space="preserve"><value>Reference rows imported</value></data>
+  <data name="Pharmacy_LoadTemplate" xml:space="preserve"><value>Load supplied medicine template</value></data>
+  <data name="Pharmacy_ImportCatalog" xml:space="preserve"><value>Import reference CSV</value></data>
+  <data name="Pharmacy_CatalogReady" xml:space="preserve"><value>Reference catalog ready</value></data>
+  <data name="Pharmacy_CatalogReferenceOnly" xml:space="preserve"><value>Names and registration references only. Prices, stock, batches and expiry are set by this store; loading this template creates no inventory.</value></data>
+  <data name="Pharmacy_CatalogRights" xml:space="preserve"><value>Source: user-supplied CSV. Registration references do not establish current approval or dispensing rules. Redistribution permission has not been verified.</value></data>
+  <data name="Pharmacy_CatalogUnavailable" xml:space="preserve"><value>The reference dataset is not included in this build. Import an authorized CSV locally.</value></data>
+  <data name="Pharmacy_InvalidCatalog" xml:space="preserve"><value>Check the reference CSV: valid row/registration identifiers, medicine names and unique source rows are required.</value></data>
+  <data name="Pharmacy_CatalogOnly" xml:space="preserve"><value>Catalog only</value></data>
+  <data name="Pharmacy_StockUntracked" xml:space="preserve"><value>Stock untracked</value></data>
+  <data name="Pharmacy_NeedsSetup" xml:space="preserve"><value>Needs setup</value></data>
+  <data name="Pharmacy_InStock" xml:space="preserve"><value>In stock</value></data>
+  <data name="Pharmacy_OutOfStock" xml:space="preserve"><value>Out of stock</value></data>
+  <data name="Pharmacy_UseEnteredName" xml:space="preserve"><value>Use entered name</value></data>
+  <data name="Pharmacy_SellingUnit" xml:space="preserve"><value>Selling unit</value></data>
+  <data name="Pharmacy_RulesReviewed" xml:space="preserve"><value>I have checked this medicine’s dispensing and traceability requirements.</value></data>
+  <data name="Pharmacy_RequiresPrescription" xml:space="preserve"><value>Prescription check required</value></data>
+  <data name="Pharmacy_RequiresReference" xml:space="preserve"><value>Dispensing / controlled-medicine reference required</value></data>
+  <data name="Pharmacy_PrescriptionChecked" xml:space="preserve"><value>Required prescription checked</value></data>
+  <data name="Pharmacy_DispensingReference" xml:space="preserve"><value>Prescription / dispensing reference</value></data>
+  <data name="Pharmacy_TraceabilityRequired" xml:space="preserve"><value>Review and complete this medicine’s required dispensing, batch and traceability checks.</value></data>
+  <data name="Pharmacy_CannotUntrack" xml:space="preserve"><value>Established inventory cannot be changed to untracked stock.</value></data>
+  <data name="Pharmacy_VerifyStockFirst" xml:space="preserve"><value>Verify the physical opening stock before receiving tracked stock or batches.</value></data>
+  <data name="Pharmacy_InvalidUnits" xml:space="preserve"><value>Enter valid medicine units and exact pack / strip conversions.</value></data>
+  <data name="Pharmacy_ConfirmUnitPrice" xml:space="preserve"><value>Confirm a positive selling price for this unit.</value></data>
+  <data name="Pharmacy_InvalidBarcode" xml:space="preserve"><value>Enter a valid product barcode; location codes cannot identify products.</value></data>
+  <data name="Pharmacy_InvalidReference" xml:space="preserve"><value>Enter a valid reference within the allowed length.</value></data>
+  <data name="Pharmacy_InvalidProduct" xml:space="preserve"><value>Enter a medicine name, positive selling price and whole quantity.</value></data>
+  <data name="Pharmacy_ResolutionRequired" xml:space="preserve"><value>Enter the reason and verification details for this stock reconciliation.</value></data>
+  <data name="Pharmacy_AlreadyResolved" xml:space="preserve"><value>This stock reconciliation is already resolved.</value></data>
+  <data name="Pharmacy_Only" xml:space="preserve"><value>This workflow is available for pharmacies only.</value></data>
+  <data name="Pharmacy_SearchError" xml:space="preserve"><value>Medicine search failed. Please try again.</value></data>
+  <data name="Pharmacy_SaveError" xml:space="preserve"><value>The medicine could not be saved. Please try again.</value></data>
+  <data name="Measure_tablet" xml:space="preserve"><value>Tablet</value></data>
+  <data name="Measure_capsule" xml:space="preserve"><value>Capsule</value></data>
+  <data name="Measure_strip" xml:space="preserve"><value>Strip</value></data>
+  <data name="Measure_bottle" xml:space="preserve"><value>Bottle</value></data>
+  <data name="Measure_tube" xml:space="preserve"><value>Tube</value></data>
+  <data name="Measure_sachet" xml:space="preserve"><value>Sachet</value></data>
+  <data name="Measure_vial" xml:space="preserve"><value>Vial</value></data>
+  <data name="Measure_other" xml:space="preserve"><value>Other unit</value></data>
+  <data name="Pharmacy_QuickAdd" xml:space="preserve"><value>Quick add medicine</value></data>
+  <data name="Pharmacy_FullDetails" xml:space="preserve"><value>Complete full details</value></data>
+  <data name="Pharmacy_UnitsPerStrip" xml:space="preserve"><value>Base units per strip (1 when not applicable)</value></data>
+  <data name="Pharmacy_StripPrice" xml:space="preserve"><value>Verified strip selling price (optional)</value></data>
+  <data name="Pharmacy_MissingPrice" xml:space="preserve"><value>Selling price missing</value></data>
+  <data name="Pharmacy_MissingCost" xml:space="preserve"><value>Purchase cost missing</value></data>
+  <data name="Pharmacy_UnverifiedStock" xml:space="preserve"><value>Physical stock unverified</value></data>
+  <data name="Pharmacy_MissingRules" xml:space="preserve"><value>Dispensing rules not reviewed</value></data>
+  <data name="Pharmacy_VerifyPhysicalStock" xml:space="preserve"><value>Verify physical stock</value></data>
+  <data name="Pharmacy_VerificationNote" xml:space="preserve"><value>Count verification and reconciliation note</value></data>
+  <data name="Pos_ConfirmClear" xml:space="preserve"><value>Clear all items from this cart?</value></data>
+  <data name="Pharmacy_LocationNameRequired" xml:space="preserve"><value>Enter a rack or shelf name (up to 100 characters).</value></data>
+  <data name="Pharmacy_LocationStockShortage" xml:space="preserve"><value>There is not enough verified stock in this location.</value></data>
+  <data name="Pharmacy_SelectRack" xml:space="preserve"><value>Select an active rack as the shelf’s parent.</value></data>
+  <data name="Pharmacy_DuplicateLocation" xml:space="preserve"><value>This rack or shelf name is already in use.</value></data>
+  <data name="Pharmacy_SelectStockLocation" xml:space="preserve"><value>Choose which location’s stock to sell; stock is not moved between shelves automatically.</value></data>
+  <data name="Pharmacy_StockLocation" xml:space="preserve"><value>Rack / shelf stock</value></data>
+  <data name="Pharmacy_Unassigned" xml:space="preserve"><value>Unassigned location</value></data>
+  <data name="Pharmacy_Locations" xml:space="preserve"><value>Racks and shelves</value></data>
+  <data name="Pharmacy_NewRack" xml:space="preserve"><value>New rack (no parent)</value></data>
+  <data name="Pharmacy_ParentRack" xml:space="preserve"><value>Parent rack (for a shelf)</value></data>
+  <data name="Pharmacy_PrintLocationLabels" xml:space="preserve"><value>Download rack / shelf labels</value></data>
+  <data name="Pharmacy_BaseQuantity" xml:space="preserve"><value>Quantity in base units</value></data>
+  <data name="Pharmacy_AssignLocation" xml:space="preserve"><value>Assign counted stock to selected location</value></data>
+  <data name="Pharmacy_CardView" xml:space="preserve"><value>Card view</value></data>
+  <data name="Invoice_SecondPhone" xml:space="preserve"><value>Second store contact number (optional)</value></data>
+  <data name="Invoice_Notes" xml:space="preserve"><value>Receipt notes (order and enable each line)</value></data>
+  <data name="Invoice_AddNote" xml:space="preserve"><value>Add receipt note</value></data>
+  <data name="Pharmacy_AllCategories" xml:space="preserve"><value>All categories</value></data>
+  <data name="Pharmacy_AllStock" xml:space="preserve"><value>All stock states</value></data>
+  <data name="Pharmacy_AllExpiry" xml:space="preserve"><value>All expiry states</value></data>
+  <data name="Pharmacy_ClearLocation" xml:space="preserve"><value>Clear rack / shelf filter</value></data>
+  <data name="Pharmacy_ReceivingUnit" xml:space="preserve"><value>Receiving unit</value></data>
+  <data name="Pharmacy_DestinationSelected" xml:space="preserve"><value>Receiving destination selected</value></data>
+  <data name="Pharmacy_LocationNotProduct" xml:space="preserve"><value>This is a rack or shelf label, not a sellable product.</value></data>
+  <data name="Pharmacy_ZeroOpeningVerified" xml:space="preserve"><value>I verified that existing opening stock is zero before this first receipt.</value></data>
+  <data name="Trade_DueDate" xml:space="preserve"><value>Payment due date (optional)</value></data>
+  <data name="Trade_InternalNote" xml:space="preserve"><value>Internal lending note (optional)</value></data>
+  <data name="Storage_DailyBackups" xml:space="preserve"><value>Create a verified daily backup while the POS is running</value></data>
+  <data name="Storage_LastBackup" xml:space="preserve"><value>Last successful automatic backup</value></data>
+  <data name="Storage_NoAutoBackup" xml:space="preserve"><value>No automatic backup has completed yet. The POS checks at startup and every 30 minutes.</value></data>
+  <data name="Storage_AutoFailed" xml:space="preserve"><value>Automatic backup failed. Check the backup folder and available space; your live data was not changed.</value></data>
+  <data name="Storage_AutoStatusInvalid" xml:space="preserve"><value>Backup status could not be read. Verify or create a new backup.</value></data>
+  <data name="Pharmacy_BatchHeld" xml:space="preserve"><value>Batch quarantined / on hold</value></data>
+  <data name="Pharmacy_HoldReason" xml:space="preserve"><value>Reason for this hold or release</value></data>
+  <data name="Pharmacy_HoldBatch" xml:space="preserve"><value>Quarantine / hold batch</value></data>
+  <data name="Pharmacy_ReleaseBatch" xml:space="preserve"><value>Release batch hold</value></data>
+  <data name="Pharmacy_SelectBatch" xml:space="preserve"><value>Select a batch first.</value></data>
+  <data name="Pharmacy_OnHandAvailable" xml:space="preserve"><value>On hand: {0:0.###} · Available: {1:0.###}</value></data>
+  <data name="Pharmacy_MissingRack" xml:space="preserve"><value>Rack / shelf unassigned</value></data>
+  <data name="Pharmacy_MissingBatch" xml:space="preserve"><value>Batch / expiry allocation missing</value></data>
+  <data name="Pharmacy_PackedOnly" xml:space="preserve"><value>Pharmacy sales use packed medicine units; grocery weight / volume products cannot be sold here.</value></data>
+  <data name="Pharmacy_AllBarcodes" xml:space="preserve"><value>All barcodes</value></data>
+  <data name="Pharmacy_AllBatches" xml:space="preserve"><value>All batches</value></data>
+  <data name="Pharmacy_AllForms" xml:space="preserve"><value>All formulations</value></data>
+  <data name="Pharmacy_AllLocations" xml:space="preserve"><value>All racks and shelves</value></data>
+  <data name="Pharmacy_AllManufacturers" xml:space="preserve"><value>All companies</value></data>
+  <data name="Pharmacy_ClearFilters" xml:space="preserve"><value>Clear filters</value></data>
+  <data name="Pharmacy_DefaultLocation" xml:space="preserve"><value>Default receiving location (optional)</value></data>
+  <data name="Pharmacy_FilterSummary" xml:space="preserve"><value>{0} medicines · {1} batches</value></data>
+  <data name="Pharmacy_Form" xml:space="preserve"><value>Formulation</value></data>
+  <data name="Pharmacy_Generic" xml:space="preserve"><value>Generic / composition</value></data>
+  <data name="Pharmacy_HasBarcode" xml:space="preserve"><value>Has barcode</value></data>
+  <data name="Pharmacy_IdentityDetails" xml:space="preserve"><value>Medicine details (optional)</value></data>
+  <data name="Pharmacy_LabelFormat" xml:space="preserve"><value>Label barcode format</value></data>
+  <data name="Pharmacy_LabelScope" xml:space="preserve"><value>Labels to print</value></data>
+  <data name="Pharmacy_Manufacturer" xml:space="preserve"><value>Company / manufacturer</value></data>
+  <data name="Pharmacy_MarginWarning" xml:space="preserve"><value>The entered cost exceeds the confirmed selling price excluding tax. Check both prices before receiving.</value></data>
+  <data name="Pharmacy_MissingBarcode" xml:space="preserve"><value>Missing barcode</value></data>
+  <data name="Pharmacy_RackLabels" xml:space="preserve"><value>Selected rack and its shelves</value></data>
+  <data name="Pharmacy_Ready" xml:space="preserve"><value>Ready for sale</value></data>
+  <data name="Pharmacy_SelectedLabels" xml:space="preserve"><value>Selected locations</value></data>
+  <data name="Pharmacy_Strength" xml:space="preserve"><value>Strength</value></data>
+  <data name="Pharmacy_Filters" xml:space="preserve"><value>Inventory filters</value></data>
+</root>

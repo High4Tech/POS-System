@@ -1,0 +1,1036 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="App_Title"><value>ٹیک اسٹور پی او ایس</value></data>
+  <data name="Login_Title"><value>سائن ان</value></data>
+  <data name="Login_Username"><value>صارف کا نام</value></data>
+  <data name="Login_Password"><value>پاس ورڈ</value></data>
+  <data name="Login_Button"><value>سائن ان کریں</value></data>
+  <data name="Nav_Dashboard"><value>ڈیش بورڈ</value></data>
+  <data name="Nav_Pos"><value>کاؤنٹر</value></data>
+  <data name="Nav_Products"><value>مصنوعات اور اسٹاک</value></data>
+  <data name="Nav_Reports"><value>فروخت اور رپورٹیں</value></data>
+  <data name="Nav_Settings"><value>اسٹور پروفائل</value></data>
+  <data name="Nav_Logout"><value>سائن آؤٹ</value></data>
+  <data name="Nav_CollapseSidebar"><value>نیویگیشن سمیٹیں</value></data>
+  <data name="Nav_ExpandSidebar"><value>نیویگیشن پھیلائیں</value></data>
+  <data name="Nav_ResizeSidebar"><value>نیویگیشن کی چوڑائی بدلیں</value></data>
+  <data name="Nav_WidenToExpand"><value>نیویگیشن پھیلانے کے لیے ونڈو چوڑی کریں</value></data>
+  <data name="Pos_ScanPrompt"><value>بارکوڈ اسکین کریں یا نام سے تلاش کریں…</value></data>
+  <data name="Pos_Cart"><value>خریداری کی ٹوکری</value></data>
+  <data name="Pos_Product"><value>مصنوعہ</value></data>
+  <data name="Pos_UnitPrice"><value>فی اکائی قیمت</value></data>
+  <data name="Pos_Qty"><value>مقدار</value></data>
+  <data name="Table_FitColumns"><value>کالم ٹیبل کی چوڑائی میں فٹ کریں</value></data>
+  <data name="Pos_IncreaseQty"><value>کارٹ کی مقدار بڑھائیں</value></data>
+  <data name="Pos_DecreaseQty"><value>کارٹ کی مقدار کم کریں</value></data>
+  <data name="Pos_LineTotal"><value>کل</value></data>
+  <data name="Pos_Remove"><value>ہٹائیں</value></data>
+  <data name="Pos_Total"><value>کل رقم</value></data>
+  <data name="Pos_ItemCount"><value>اشیا کی تعداد</value></data>
+  <data name="Pos_VatBreakdown"><value>سیلز ٹیکس کی تفصیل</value></data>
+  <data name="Pos_Cash"><value>نقد (F1)</value></data>
+  <data name="Pos_Card"><value>کارڈ (F2)</value></data>
+  <data name="Pos_Clear"><value>کارٹ خالی کریں (F4)</value></data>
+  <data name="Pos_Tendered"><value>وصول شدہ رقم</value></data>
+  <data name="Pos_Change"><value>بقایا رقم</value></data>
+  <data name="Pos_Pay"><value>ادائیگی مکمل کریں</value></data>
+  <data name="Pos_CartDiscount"><value>مجموعی رعایت</value></data>
+  <data name="Pos_LineDiscount"><value>مصنوعے پر رعایت</value></data>
+  <data name="Pos_Empty"><value>ٹوکری خالی ہے</value></data>
+  <data name="Pos_NotFound"><value>مصنوعہ نہیں ملا</value></data>
+  <data name="Pos_DiscountPercent"><value>فیصد (%)</value></data>
+  <data name="Pos_DiscountAmount"><value>رقم (PKR)</value></data>
+  <data name="Pos_Apply"><value>لاگو کریں</value></data>
+  <data name="Common_Save"><value>محفوظ کریں</value></data>
+  <data name="Common_Cancel"><value>منسوخ کریں</value></data>
+  <data name="Common_Add"><value>شامل کریں</value></data>
+  <data name="Common_Edit"><value>ترمیم کریں</value></data>
+  <data name="Common_Delete"><value>حذف کریں</value></data>
+  <data name="Common_Close"><value>بند کریں</value></data>
+  <data name="Common_Error"><value>خرابی</value></data>
+  <data name="Common_Success"><value>کامیابی</value></data>
+  <data name="Products_Title"><value>مصنوعات اور اسٹاک</value></data>
+  <data name="Products_Barcode"><value>بارکوڈ</value></data>
+  <data name="Products_Name"><value>نام</value></data>
+  <data name="Products_Price"><value>قیمت (PKR، ٹیکس سمیت)</value></data>
+  <data name="Products_Vat"><value>سیلز ٹیکس %</value></data>
+  <data name="Products_Unit"><value>اکائی</value></data>
+  <data name="Products_Stock"><value>اسٹاک</value></data>
+  <data name="Products_Category"><value>زمرہ</value></data>
+  <data name="Products_Restock"><value>اسٹاک بڑھائیں</value></data>
+  <data name="Products_New"><value>نئی مصنوعہ</value></data>
+  <data name="Products_EditTitle"><value>پروڈکٹ میں ترمیم کریں</value></data>
+  <data name="Products_Piece"><value>عدد</value></data>
+  <data name="Products_Kilogram"><value>کلوگرام</value></data>
+  <data name="Products_LowStockOnly"><value>صرف کم اسٹاک</value></data>
+  <data name="Products_Status"><value>حالت</value></data>
+  <data name="Products_ShelfLabels"><value>شیلف لیبل (PDF)</value></data>
+  <data name="Products_ChooseImage"><value>تصویر منتخب کریں</value></data>
+  <data name="Products_InStock"><value>دستیاب</value></data>
+  <data name="Products_LowStock"><value>کم اسٹاک</value></data>
+  <data name="Reports_Title"><value>فروخت اور رپورٹیں</value></data>
+  <data name="Reports_XReport"><value>عبوری رپورٹ (X)</value></data>
+  <data name="Reports_ZReport"><value>اختتامی رپورٹ (Z)</value></data>
+  <data name="Reports_Day"><value>دن</value></data>
+  <data name="Reports_Generate"><value>بنائیں</value></data>
+  <data name="Reports_History"><value>فروخت کا ریکارڈ</value></data>
+  <data name="Reports_SaleCount"><value>فروخت کی تعداد</value></data>
+  <data name="Reports_Gross"><value>ٹیکس سمیت کل</value></data>
+  <data name="Reports_Net"><value>ٹیکس کے بغیر کل</value></data>
+  <data name="Reports_Vat"><value>کل سیلز ٹیکس</value></data>
+  <data name="Reports_ExportPdf"><value>PDF محفوظ کریں</value></data>
+  <data name="Reports_OpenReceipt"><value>رسید کھولیں</value></data>
+  <data name="Reports_CashTotal"><value>کل نقد</value></data>
+  <data name="Reports_CardTotal"><value>کل کارڈ</value></data>
+  <data name="Reports_ReceiptNo"><value>رسید نمبر</value></data>
+  <data name="Reports_Date"><value>تاریخ</value></data>
+  <data name="Reports_Cashier"><value>آپریٹر</value></data>
+  <data name="Reports_Payment"><value>ادائیگی</value></data>
+  <data name="Reports_PaymentSplit"><value>ادائیگیوں کی تفصیل</value></data>
+  <data name="Settings_Title"><value>اسٹور پروفائل</value></data>
+  <data name="Settings_StoreName"><value>دکان کا نام</value></data>
+  <data name="Settings_StoreAddress"><value>دکان کا پتہ</value></data>
+  <data name="Settings_Language"><value>زبان</value></data>
+  <data name="Settings_LowStockThreshold"><value>کم اسٹاک کی حد</value></data>
+  <data name="Settings_VatRates"><value>سیلز ٹیکس کی شرحیں (کاما سے الگ کریں)</value></data>
+  <data name="Settings_Saved"><value>اسٹور پروفائل محفوظ ہو گیا۔</value></data>
+  <data name="Msg_SaleComplete"><value>فروخت مکمل ہو گئی۔ رسید نمبر {0}۔</value></data>
+  <data name="Msg_ReceiptSaved"><value>رسید PDF میں محفوظ ہو گئی۔</value></data>
+  <data name="Msg_PrintReceipt"><value>رسید پرنٹ یا محفوظ کریں</value></data>
+  <data name="Storage_PdfFolder"><value>PDF فائلیں اس فولڈر میں محفوظ کریں: {0}</value></data>
+  <data name="Nav_Purchases"><value>خریداری</value></data>
+  <data name="Login_Invalid"><value>سائن ان نہیں ہو سکا۔ صارف کا نام اور پاس ورڈ چیک کریں۔</value></data>
+  <data name="Dash_Title"><value>ڈیش بورڈ</value></data>
+  <data name="Dash_Revenue"><value>آمدنی</value></data>
+  <data name="Dash_Sales"><value>فروخت</value></data>
+  <data name="Dash_Vat"><value>وصول شدہ سیلز ٹیکس</value></data>
+  <data name="Dash_Catalog"><value>کیٹلاگ</value></data>
+  <data name="Dash_Products"><value>کل مصنوعات</value></data>
+  <data name="Dash_Categories"><value>زمرے</value></data>
+  <data name="Dash_LowStock"><value>کم اسٹاک</value></data>
+  <data name="Dash_Morning"><value>صبح بخیر، {0}</value></data>
+  <data name="Dash_Afternoon"><value>آداب، {0}</value></data>
+  <data name="Dash_Evening"><value>شام بخیر، {0}</value></data>
+  <data name="Common_From"><value>سے</value></data>
+  <data name="Common_To"><value>تک</value></data>
+  <data name="Common_Ok"><value>ٹھیک ہے</value></data>
+  <data name="Common_InvalidNumber"><value>درست عدد درج کریں۔</value></data>
+  <data name="Unit_Kg"><value>کلو</value></data>
+  <data name="Unit_Piece"><value>عدد</value></data>
+  <data name="Payment_Cash"><value>نقد</value></data>
+  <data name="Payment_Card"><value>کارڈ</value></data>
+  <data name="Payment_Title"><value>ادائیگی</value></data>
+  <data name="Discount_PercentPrompt"><value>رعایت کا فیصد</value></data>
+  <data name="Receipt_ThankYou"><value>خریداری کا شکریہ!</value></data>
+  <data name="Receipt_Received"><value>وصول شدہ نقد رقم</value></data>
+  <data name="Report_Created"><value>رپورٹ بننے کا وقت</value></data>
+  <data name="Report_Rate"><value>شرح</value></data>
+  <data name="Report_GrossShort"><value>ٹیکس سمیت</value></data>
+  <data name="Purchase_Title"><value>خریداری</value></data>
+  <data name="Purchase_Receive"><value>اسٹاک وصول کریں</value></data>
+  <data name="Purchase_History"><value>خریداری کا ریکارڈ</value></data>
+  <data name="Purchase_Supplier"><value>سپلائر</value></data>
+  <data name="Purchase_Reference"><value>انوائس حوالہ (اختیاری)</value></data>
+  <data name="Purchase_ReferenceShort"><value>انوائس حوالہ</value></data>
+  <data name="Purchase_UnitCost"><value>فی اکائی لاگت (PKR)</value></data>
+  <data name="Purchase_AddLine"><value>آئٹم شامل کریں</value></data>
+  <data name="Purchase_RemoveLine"><value>آئٹم ہٹائیں</value></data>
+  <data name="Purchase_Save"><value>خریداری درج کریں</value></data>
+  <data name="Purchase_Empty"><value>خریداری میں مصنوعات شامل کریں۔</value></data>
+  <data name="Purchase_HistoryEmpty"><value>درج شدہ خریداری یہاں نظر آئے گی۔</value></data>
+  <data name="Purchase_SelectHistory"><value>اشیا دیکھنے کے لیے خریداری منتخب کریں۔</value></data>
+  <data name="Purchase_ReceivedBy"><value>وصول کنندہ</value></data>
+  <data name="Purchase_Recorded"><value>خریداری نمبر {0} درج ہو گئی۔ اسٹاک اپ ڈیٹ ہو گیا۔</value></data>
+  <data name="Purchase_ProductRequired"><value>مصنوعہ منتخب کریں۔</value></data>
+  <data name="Purchase_QuantityInvalid"><value>عدد کے لیے مکمل عدد اور کلوگرام کے لیے زیادہ سے زیادہ تین اعشاری ہندسے درج کریں۔</value></data>
+  <data name="Purchase_CostInvalid"><value>صفر یا اس سے زیادہ لاگت درج کریں، زیادہ سے زیادہ دو اعشاری ہندسوں کے ساتھ۔</value></data>
+  <data name="Purchase_SaveError"><value>خریداری درج نہیں ہو سکی۔ آپ کا مسودہ موجود ہے۔</value></data>
+  <data name="Purchase_LoadError"><value>خریداری کا ریکارڈ تازہ نہیں ہو سکا۔ دوبارہ کوشش کے لیے خریداری کھولیں۔</value></data>
+  <data name="Purchase_Total"><value>خریداری کی کل رقم</value></data>
+  <data name="Dash_Today"><value>آج</value></data>
+  <data name="Dash_Earnings"><value>آمدنی</value></data>
+  <data name="Profile_Logo"><value>اسٹور کا لوگو</value></data>
+  <data name="Profile_ChooseLogo"><value>لوگو منتخب کریں</value></data>
+  <data name="Profile_RemoveLogo"><value>لوگو ہٹائیں</value></data>
+  <data name="Profile_Save"><value>پروفائل محفوظ کریں</value></data>
+  <data name="Profile_ChangePassword"><value>پاس ورڈ تبدیل کریں</value></data>
+  <data name="Profile_CurrentPassword"><value>موجودہ پاس ورڈ</value></data>
+  <data name="Profile_NewPassword"><value>نیا پاس ورڈ</value></data>
+  <data name="Profile_ConfirmPassword"><value>نیا پاس ورڈ دوبارہ درج کریں</value></data>
+  <data name="Profile_PasswordLength"><value>زیادہ سے زیادہ 72 بائٹس کا نیا پاس ورڈ درج کریں۔</value></data>
+  <data name="Profile_PasswordMismatch"><value>نئے پاس ورڈ آپس میں نہیں ملتے۔</value></data>
+  <data name="Profile_PasswordChanged"><value>آپ کا پاس ورڈ تبدیل ہو گیا۔</value></data>
+  <data name="Profile_CurrentInvalid"><value>موجودہ پاس ورڈ درست نہیں ہے۔</value></data>
+  <data name="Profile_PasswordError"><value>پاس ورڈ تبدیل نہیں ہو سکا۔ دوبارہ کوشش کریں۔</value></data>
+  <data name="Receipt_Preview"><value>رسید کا پیش منظر</value></data>
+  <data name="Receipt_Download"><value>PDF ڈاؤن لوڈ کریں</value></data>
+  <data name="Bulk_Search"><value>نام، بارکوڈ یا زمرہ</value></data>
+  <data name="Bulk_SelectVisible"><value>نظر آنے والی اشیا منتخب کریں</value></data>
+  <data name="Bulk_SelectAllVisible"><value>تمام نظر آنے والی اشیا منتخب کریں</value></data>
+  <data name="Bulk_Clear"><value>انتخاب صاف کریں</value></data>
+  <data name="Bulk_Selected"><value>{0} منتخب</value></data>
+  <data name="Bulk_Edit"><value>منتخب اشیا میں ترمیم</value></data>
+  <data name="Bulk_Delete"><value>منتخب اشیا حذف کریں</value></data>
+  <data name="Bulk_ConfirmDelete"><value>اسٹاک سے {0} منتخب مصنوعات حذف کریں؟ فروخت اور خریداری کا ریکارڈ محفوظ رہے گا۔</value></data>
+  <data name="Bulk_Optional"><value>جن خانوں میں تبدیلی چاہیے انہیں بھریں۔ خالی خانوں کی موجودہ قدریں برقرار رہیں گی۔</value></data>
+  <data name="Bulk_NoChange"><value>موجودہ زمرہ برقرار رکھیں</value></data>
+  <data name="Bulk_ChangeRequired"><value>کم از کم ایک تبدیلی درج کریں۔</value></data>
+  <data name="Bulk_Apply"><value>تبدیلیاں لاگو کریں</value></data>
+  <data name="Bulk_NumberFormat"><value>کاما کے بغیر عدد درج کریں، مثلاً 1250 یا 1250.50۔</value></data>
+  <data name="Category_Manage"><value>زمرے</value></data>
+  <data name="Category_Existing"><value>موجودہ زمرے میں ترمیم</value></data>
+  <data name="Category_New"><value>نیا زمرہ</value></data>
+  <data name="Category_ChooseColor"><value>رنگ منتخب کریں</value></data>
+  <data name="Category_NameRequired"><value>زمرے کا نام درج کریں۔</value></data>
+  <data name="Category_Duplicate"><value>یہ نام پہلے سے استعمال میں ہے۔</value></data>
+  <data name="Category_SaveError"><value>زمرہ محفوظ نہیں ہو سکا۔</value></data>
+  <data name="Products_InvalidVat"><value>سیلز ٹیکس کی شرح 0 سے 100 فیصد تک درج کریں۔</value></data>
+  <data name="Pos_SalePrice"><value>فی اکائی قیمت (PKR)</value></data>
+  <data name="Pos_InvalidPrice"><value>صفر یا اس سے زیادہ قیمت درج کریں، زیادہ سے زیادہ دو اعشاری ہندسوں کے ساتھ۔</value></data>
+  <data name="Profile_OperatorName"><value>آپریٹر کا نام</value></data>
+  <data name="Profile_SaveOperator"><value>آپریٹر محفوظ کریں</value></data>
+  <data name="Profile_OperatorRequired"><value>آپریٹر کا نام درج کریں۔</value></data>
+  <data name="Profile_OperatorSaved"><value>آپریٹر کا نام محفوظ ہو گیا۔</value></data>
+  <data name="Dash_ApplyRange"><value>لاگو کریں</value></data>
+  <data name="Dash_InvalidRange"><value>دونوں تاریخیں منتخب کریں۔ آغاز کی تاریخ اختتامی تاریخ سے پہلے یا اسی دن ہونی چاہیے۔</value></data>
+  <data name="Dash_PreviewInvoice"><value>انوائس کا پیش منظر</value></data>
+  <data name="Dash_InvoiceItems"><value>انوائس کی اشیا</value></data>
+  <data name="Dash_NoSales"><value>منتخب تاریخوں کے درمیان کوئی فروخت نہیں ہوئی۔</value></data>
+  <data name="Dash_LoadError"><value>منتخب تاریخوں کی فروخت لوڈ نہیں ہو سکی۔</value></data>
+  <data name="Control_OpenCalendar"><value>کیلنڈر کھولیں</value></data>
+  <data name="Control_PreviousMonth"><value>گزشتہ مہینہ</value></data>
+  <data name="Control_NextMonth"><value>اگلا مہینہ</value></data>
+  <data name="Products_TablePrice"><value>قیمت (PKR)</value></data>
+  <data name="Scanner_Start" xml:space="preserve"><value>بارکوڈ اسکین کریں</value></data>
+  <data name="Settings_TextSize" xml:space="preserve"><value>ایپ کا ڈسپلے سائز</value></data>
+  <data name="Settings_ApplyTextSize" xml:space="preserve"><value>ڈسپلے سائز لاگو کریں</value></data>
+  <data name="Settings_TextSizeSaved" xml:space="preserve"><value>ایپ کا ڈسپلے سائز تبدیل ہو گیا۔</value></data>
+  <data name="Scanner_Stop" xml:space="preserve"><value>اسکین روکیں</value></data>
+  <data name="Scanner_BarcodeLookup" xml:space="preserve"><value>بارکوڈ تلاش کریں</value></data>
+  <data name="Scanner_EditPaused" xml:space="preserve"><value>پروڈکٹ شامل کرتے وقت اسکیننگ رکی ہوئی ہے۔</value></data>
+  <data name="Scanner_CheckoutPaused" xml:space="preserve"><value>ادائیگی کے دوران اسکیننگ رکی ہوئی ہے۔</value></data>
+  <data name="Scanner_UnknownPaused" xml:space="preserve"><value>نامعلوم بارکوڈ کا فیصلہ ہونے تک اسکیننگ رکی ہوئی ہے۔</value></data>
+  <data name="Scanner_PairInstruction" xml:space="preserve"><value>فون پر پی او ایس اسکینر کھولیں اور یہ کیو آر کوڈ اسکین کریں۔</value></data>
+  <data name="Scanner_Disconnected" xml:space="preserve"><value>کوئی فون منسلک نہیں۔</value></data>
+  <data name="Scanner_Reconnecting" xml:space="preserve"><value>فون کا رابطہ ٹوٹ گیا۔ دوبارہ رابطے کا انتظار ہے۔</value></data>
+  <data name="Scanner_Ready" xml:space="preserve"><value>فون منسلک ہے۔ اسکیننگ کے لیے تیار ہے۔</value></data>
+  <data name="Scanner_Idle" xml:space="preserve"><value>فون منسلک ہے۔ اسکیننگ بند ہے۔</value></data>
+  <data name="Scanner_NoNetwork" xml:space="preserve"><value>اس کمپیوٹر کو مقامی وائی فائی یا ایتھرنیٹ نیٹ ورک سے جوڑ کر دوبارہ کوشش کریں۔</value></data>
+  <data name="Scanner_ListenError" xml:space="preserve"><value>اسکینر شروع نہیں ہو سکا۔ نیٹ ورک چیک کرکے دوبارہ کوشش کریں۔</value></data>
+  <data name="Scanner_LookupError" xml:space="preserve"><value>بارکوڈ تلاش نہیں ہو سکا۔ دوبارہ کوشش کریں۔</value></data>
+  <data name="Scanner_Added" xml:space="preserve"><value>{0} کارٹ میں شامل کر دیا گیا۔</value></data>
+  <data name="Scanner_Inactive" xml:space="preserve"><value>{0} غیر فعال ہے اور اسے فروخت نہیں کیا جا سکتا۔</value></data>
+  <data name="Scanner_Stock" xml:space="preserve"><value>{0} کا اسٹاک کافی نہیں ہے۔</value></data>
+  <data name="Scanner_Rescan" xml:space="preserve"><value>پروڈکٹ محفوظ ہو گئی۔ کارٹ میں شامل کرنے کے لیے اس کا بارکوڈ دوبارہ اسکین کریں۔</value></data>
+  <data name="Scanner_ProductSaveError" xml:space="preserve"><value>پروڈکٹ محفوظ نہیں ہو سکی۔ تفصیلات چیک کرکے دوبارہ کوشش کریں۔</value></data>
+  <data name="Scanner_Forget" xml:space="preserve"><value>فون کا رابطہ ختم کریں</value></data>
+  <data name="Scanner_PairQr" xml:space="preserve"><value>فون جوڑنے کا کیو آر کوڈ</value></data>
+  <data name="Scanner_PairTitle" xml:space="preserve"><value>فون جوڑیں</value></data>
+  <data name="Scanner_Network" xml:space="preserve"><value>مقامی نیٹ ورک</value></data>
+  <data name="Scanner_NewQr" xml:space="preserve"><value>کیو آر کوڈ بنائیں</value></data>
+  <data name="Scanner_NotFoundTitle" xml:space="preserve"><value>بارکوڈ نہیں ملا</value></data>
+  <data name="Scanner_NotFoundHelp" xml:space="preserve"><value>اسکیننگ جاری ہے۔ آپ اس بارکوڈ کو انوینٹری میں شامل کر سکتے ہیں یا یہ اطلاع بند کر سکتے ہیں۔</value></data>
+  <data name="Scanner_AdditionalNotices" xml:space="preserve"><value>فہرست سے باہر دیگر بارکوڈز: {0}</value></data>
+  <data name="Scanner_LastStock" xml:space="preserve"><value>{0} کی آخری دستیاب اکائی کارٹ میں ہے۔</value></data>
+  <data name="Scanner_LowStock" xml:space="preserve"><value>{0} کا اسٹاک کم ہے۔ اس فروخت کے بعد {1:0.###} اکائیاں باقی رہیں گی۔</value></data>
+  <data name="Scanner_OutOfStock" xml:space="preserve"><value>{0} کا مزید اسٹاک دستیاب نہیں۔</value></data>
+  <data name="Scanner_StockRemaining" xml:space="preserve"><value>{0} کی صرف {1:0.###} مزید اکائیاں شامل ہو سکتی ہیں۔</value></data>
+  <data name="Scanner_StockQuantity" xml:space="preserve"><value>{0} کا دستیاب اسٹاک {1:0.###} ہے۔</value></data>
+  <data name="Scanner_AddInventory" xml:space="preserve"><value>انوینٹری میں شامل کریں</value></data>
+  <data name="Scanner_Dismiss" xml:space="preserve"><value>بند کریں</value></data>
+  <data name="Scanner_CardTerminal" xml:space="preserve"><value>یہاں تصدیق کرنے سے پہلے کارڈ ٹرمینل پر ادائیگی مکمل کریں۔</value></data>
+  <data name="Scanner_ProductActive" xml:space="preserve"><value>فروخت کے لیے دستیاب</value></data>
+  <data name="Scanner_Return" xml:space="preserve"><value>رجسٹر پر واپس جائیں</value></data>
+  <data name="Scanner_SaveProduct" xml:space="preserve"><value>پروڈکٹ محفوظ کریں</value></data>
+  <data name="Scanner_ProductFields" xml:space="preserve"><value>نام، بارکوڈ، درست قیمتیں، وی اے ٹی اور ابتدائی اسٹاک درج کریں اور زمرہ منتخب کریں۔</value></data>
+  <data name="Scanner_DuplicateBarcode" xml:space="preserve"><value>یہ بارکوڈ پہلے سے کسی اور پروڈکٹ کو تفویض ہے۔</value></data>
+  <data name="Scanner_CopyLink" xml:space="preserve"><value>جوڑنے کا لنک کاپی کریں</value></data>
+  <data name="Scanner_Method" xml:space="preserve"><value>کنکشن کا طریقہ</value></data>
+  <data name="Scanner_Wifi" xml:space="preserve"><value>وائی فائی</value></data>
+  <data name="Scanner_Bluetooth" xml:space="preserve"><value>بلوٹوتھ</value></data>
+  <data name="Scanner_Usb" xml:space="preserve"><value>یو ایس بی کیبل</value></data>
+  <data name="Scanner_WaitingForPair" xml:space="preserve"><value>فون کے منسلک ہونے کا انتظار ہے۔</value></data>
+  <data name="Scanner_BluetoothSetup" xml:space="preserve"><value>بلوٹوتھ ترتیبات میں آلات جوڑیں، فون پر بلوٹوتھ ٹیتھرنگ فعال کریں، اور ونڈوز پر اس کے ذاتی نیٹ ورک سے جڑیں۔ پھر یہ کیو آر کوڈ اسکین کریں۔</value></data>
+  <data name="Scanner_UsbSetup" xml:space="preserve"><value>ڈیٹا والی یو ایس بی کیبل لگائیں اور فون پر یو ایس بی ٹیتھرنگ فعال کریں۔ پھر یہ کیو آر کوڈ اسکین کریں۔</value></data>
+  <data name="Scanner_NoBluetooth" xml:space="preserve"><value>بلوٹوتھ نیٹ ورک منسلک نہیں۔ آلات جوڑیں، بلوٹوتھ ٹیتھرنگ فعال کریں، ونڈوز پر فون کے نیٹ ورک سے جڑیں، پھر دوبارہ کوشش کریں۔</value></data>
+  <data name="Scanner_NoUsb" xml:space="preserve"><value>یو ایس بی ٹیتھرنگ اڈاپٹر منسلک نہیں۔ ڈیٹا کیبل چیک کریں، فون پر یو ایس بی ٹیتھرنگ فعال کریں، پھر دوبارہ کوشش کریں۔</value></data>
+  <data name="Scanner_ManualDetails" xml:space="preserve"><value>دستی طور پر جوڑنے کی تفصیلات</value></data>
+  <data name="Scanner_Host" xml:space="preserve"><value>آئی پی پتہ</value></data>
+  <data name="Scanner_Port" xml:space="preserve"><value>پورٹ</value></data>
+  <data name="Scanner_Fingerprint" xml:space="preserve"><value>سرٹیفکیٹ فنگر پرنٹ</value></data>
+  <data name="Scanner_PairCode" xml:space="preserve"><value>یک بار استعمال کا کوڈ</value></data>
+  <data name="Category_Image" xml:space="preserve"><value>زمرے کی تصویر</value></data>
+  <data name="Category_ChooseImage" xml:space="preserve"><value>تصویر منتخب کریں</value></data>
+  <data name="Category_RemoveImage" xml:space="preserve"><value>تصویر ہٹائیں</value></data>
+  <data name="Category_ImageError" xml:space="preserve"><value>یہ تصویر نہیں کھل سکی۔ PNG، JPG، BMP یا GIF فائل منتخب کریں۔</value></data>
+  <data name="Scanner_Panel" xml:space="preserve"><value>فون اسکینر</value></data>
+  <data name="Scanner_StatusConnected"><value>منسلک</value></data>
+  <data name="Scanner_StatusDisconnected"><value>رابطہ منقطع</value></data>
+  <data name="Scanner_Connected" xml:space="preserve"><value>فون منسلک ہے۔</value></data>
+  <data name="Scanner_ManualDisconnected" xml:space="preserve"><value>رابطہ منقطع ہے۔ دوبارہ جوڑنے کا بٹن دبائیں۔</value></data>
+  <data name="Scanner_ReconnectAction" xml:space="preserve"><value>دوبارہ جوڑیں</value></data>
+  <data name="Scanner_DisconnectAction" xml:space="preserve"><value>رابطہ ختم کریں</value></data>
+  <data name="Scanner_Capture" xml:space="preserve"><value>بارکوڈ اسکین کریں</value></data>
+  <data name="Scanner_WaitingBarcode" xml:space="preserve"><value>بارکوڈ کا انتظار ہے…</value></data>
+  <data name="Scanner_DuplicateNamed" xml:space="preserve"><value>یہ بارکوڈ {0} کا ہے۔</value></data>
+  <data name="Scanner_ViewMatching" xml:space="preserve"><value>موجودہ پروڈکٹ دیکھیں</value></data>
+  <data name="Purchase_New" xml:space="preserve"><value>نئی خریداری</value></data>
+  <data name="Purchase_ScanProducts" xml:space="preserve"><value>پروڈکٹس اسکین کریں</value></data>
+  <data name="Purchase_Unknown" xml:space="preserve"><value>نئی پروڈکٹ ملی</value></data>
+  <data name="Purchase_ScanAdded" xml:space="preserve"><value>{0} خریداری کے مسودے میں شامل ہو گیا۔</value></data>
+  <data name="Purchase_Rescan" xml:space="preserve"><value>پروڈکٹ محفوظ ہو گئی۔ خریداری میں شامل کرنے کے لیے اسے دوبارہ اسکین کریں۔</value></data>
+  <data name="Purchase_AddSupplier" xml:space="preserve"><value>سپلائر شامل کریں</value></data>
+  <data name="Purchase_SupplierName" xml:space="preserve"><value>نئے سپلائر کا نام</value></data>
+  <data name="Purchase_SupplierRequired" xml:space="preserve"><value>پہلے سپلائر منتخب یا شامل کریں۔</value></data>
+  <data name="Purchase_SupplierError" xml:space="preserve"><value>سپلائر محفوظ نہیں ہو سکا۔</value></data>
+  <data name="Purchase_Date" xml:space="preserve"><value>خریداری کی تاریخ</value></data>
+  <data name="Purchase_DateRequired" xml:space="preserve"><value>خریداری کی تاریخ منتخب کریں۔</value></data>
+  <data name="Purchase_Notes" xml:space="preserve"><value>نوٹس</value></data>
+  <data name="Purchase_AllSuppliers" xml:space="preserve"><value>تمام سپلائرز</value></data>
+  <data name="Sounds_Title" xml:space="preserve"><value>آواز اور ردعمل</value></data>
+  <data name="Sounds_Enabled" xml:space="preserve"><value>آواز فعال کریں</value></data>
+  <data name="Sounds_Success" xml:space="preserve"><value>کامیاب اسکین</value></data>
+  <data name="Sounds_Warning" xml:space="preserve"><value>غلطیاں اور اسکین کی تنبیہات</value></data>
+  <data name="Sounds_Test" xml:space="preserve"><value>آواز آزمائیں</value></data>
+  <data name="Stock_History" xml:space="preserve"><value>اسٹاک کی نقل و حرکت</value></data>
+  <data name="Stock_LoadError" xml:space="preserve"><value>اسٹاک کی تاریخ حاصل نہیں ہو سکی۔</value></data>
+  <data name="Stock_Type" xml:space="preserve"><value>نقل و حرکت کی قسم</value></data>
+  <data name="Stock_Change" xml:space="preserve"><value>مقدار کی تبدیلی</value></data>
+  <data name="Stock_OpeningStock" xml:space="preserve"><value>ابتدائی اسٹاک</value></data>
+  <data name="Stock_PurchaseReceipt" xml:space="preserve"><value>خریداری کی وصولی</value></data>
+  <data name="Stock_Sale" xml:space="preserve"><value>فروخت</value></data>
+  <data name="Stock_ManualAdjustment" xml:space="preserve"><value>دستی تبدیلی</value></data>
+  <data name="Purchase_Received" xml:space="preserve"><value>وصول ہو گیا</value></data>
+  <data name="Customer_Include" xml:space="preserve"><value>گاہک کی تفصیلات شامل کریں</value></data>
+  <data name="Customer_Details" xml:space="preserve"><value>گاہک کی تفصیلات</value></data>
+  <data name="Customer_Name" xml:space="preserve"><value>گاہک کا نام</value></data>
+  <data name="Customer_Phone" xml:space="preserve"><value>فون</value></data>
+  <data name="Customer_Email" xml:space="preserve"><value>ای میل</value></data>
+  <data name="Customer_Address" xml:space="preserve"><value>پتا</value></data>
+  <data name="Supplier_None" xml:space="preserve"><value>کوئی سپلائر نہیں</value></data>
+  <data name="Supplier_Optional" xml:space="preserve"><value>سپلائر (اختیاری)</value></data>
+  <data name="Supplier_Kind" xml:space="preserve"><value>سپلائر کی قسم</value></data>
+  <data name="Supplier_Unspecified" xml:space="preserve"><value>غیر متعین</value></data>
+  <data name="Supplier_Company" xml:space="preserve"><value>کمپنی</value></data>
+  <data name="Supplier_Individual" xml:space="preserve"><value>فرد</value></data>
+  <data name="Supplier_Contact" xml:space="preserve"><value>رابطہ کرنے والا شخص</value></data>
+  <data name="Supplier_Edit" xml:space="preserve"><value>سپلائر کی تفصیل بدلیں</value></data>
+  <data name="Purchase_SearchProduct" xml:space="preserve"><value>پروڈکٹ کا نام یا بارکوڈ</value></data>
+  <data name="Purchase_AddNewProduct" xml:space="preserve"><value>نئی پروڈکٹ شامل کریں</value></data>
+  <data name="Bulk_Template" xml:space="preserve"><value>CSV ٹیمپلیٹ ڈاؤن لوڈ کریں</value></data>
+  <data name="Bulk_Import" xml:space="preserve"><value>CSV درآمد کریں</value></data>
+  <data name="Bulk_ImportProducts" xml:space="preserve"><value>پروڈکٹس درآمد کریں</value></data>
+  <data name="Bulk_ImportSales" xml:space="preserve"><value>فروخت کی تاریخ درآمد کریں</value></data>
+  <data name="Bulk_ProductHelp" xml:space="preserve"><value>موجودہ کیٹیگری کا نام دیں۔ وی اے ٹی فیصد میں، اکائی piece یا kg اور بارکوڈ بطور متن درج کریں۔ قیمتِ خرید اور سپلائر اختیاری ہیں۔</value></data>
+  <data name="Bulk_SaleHelp" xml:space="preserve"><value>ہر فروخت شدہ آئٹم کے لیے ایک قطار استعمال کریں۔ ایک ہی رسید کی قطاروں میں رسید کا حوالہ، تاریخ، ادائیگی اور گاہک کی تفصیلات ایک جیسی رکھیں۔ تاریخ YYYY-MM-DD HH:mm میں لکھیں۔ درآمد سے موجودہ اسٹاک میں تبدیلی نہیں ہوتی۔</value></data>
+  <data name="Bulk_ProductsImported" xml:space="preserve"><value>{0} پروڈکٹس درآمد ہو گئیں۔</value></data>
+  <data name="Bulk_SalesImported" xml:space="preserve"><value>{0} فروختیں تاریخ میں شامل ہو گئیں۔</value></data>
+  <data name="History_RecordSale" xml:space="preserve"><value>گزشتہ فروخت درج کریں</value></data>
+  <data name="History_SourceReceipt" xml:space="preserve"><value>اصل رسید کا حوالہ</value></data>
+  <data name="History_Time" xml:space="preserve"><value>وقت (HH:mm)</value></data>
+  <data name="History_OptionalTender" xml:space="preserve"><value>وصول شدہ نقد (اختیاری)</value></data>
+  <data name="History_ChargedTotal" xml:space="preserve"><value>وصول شدہ کل رقم</value></data>
+  <data name="History_RecordingHelp" xml:space="preserve"><value>اصل رسید کی تفصیل اور ہر فروخت شدہ آئٹم کے لیے ایک قطار درج کریں۔ فروخت کی قیمت میں وی اے ٹی شامل ہے۔ وصول شدہ کل رقم خالی ہو تو قیمت اور مقدار سے حساب ہوگا۔ یہ اندراج صرف ریکارڈ میں شامل ہوگا۔</value></data>
+  <data name="History_DateTimeInvalid" xml:space="preserve"><value>فروخت کی تاریخ منتخب کریں اور وقت HH:mm میں لکھیں۔</value></data>
+  <data name="Payment_Transfer" xml:space="preserve"><value>بینک ٹرانسفر</value></data>
+  <data name="Payment_Wallet" xml:space="preserve"><value>موبائل والیٹ</value></data>
+  <data name="Payment_Other" xml:space="preserve"><value>دیگر ادائیگیاں</value></data>
+  <data name="Dash_GrossProfit" xml:space="preserve"><value>مجموعی منافع (وی اے ٹی کے بغیر)</value></data>
+  <data name="Dash_ProfitMissing" xml:space="preserve"><value>قیمتِ خرید دستیاب نہ ہونے کی وجہ سے {0} فروختیں حساب میں شامل نہیں۔</value></data>
+  <data name="Nav_Customers" xml:space="preserve"><value>گاہک</value></data>
+  <data name="Customers_Search" xml:space="preserve"><value>نام، رابطے یا رسید سے تلاش کریں</value></data>
+  <data name="Customers_LoadError" xml:space="preserve"><value>گاہکوں کا ریکارڈ لوڈ نہیں ہو سکا۔</value></data>
+  <data name="Stock_AlertsHeading" xml:space="preserve"><value>کم اسٹاک کی اطلاع</value></data>
+  <data name="Stock_ToggleAlerts" xml:space="preserve"><value>کم اسٹاک والی مصنوعات کی اطلاعات دکھائیں یا چھپائیں</value></data>
+  <data name="Stock_OnHand" xml:space="preserve"><value>موجودہ اسٹاک</value></data>
+  <data name="Stock_ViewAll" xml:space="preserve"><value>کم اسٹاک والی تمام مصنوعات دیکھیں</value></data>
+  <data name="Stock_RestockTitle" xml:space="preserve"><value>کم اسٹاک والی اشیا دوبارہ بھریں</value></data>
+  <data name="Stock_RestockQuantity" xml:space="preserve"><value>شامل کرنے کی مقدار</value></data>
+  <data name="Stock_Restocked" xml:space="preserve"><value>{0} کا اسٹاک اپ ڈیٹ ہوگیا۔</value></data>
+  <data name="Bulk_PhotoHelp" xml:space="preserve"><value>مقامی تصویر کے لیے PhotoPath استعمال کریں۔ فائل کا نام CSV کے فولڈر سے متعلق ہے۔ موجودہ پروڈکٹ کی تصویر بدلنے کے لیے Barcode اور PhotoPath درج کریں۔</value></data>
+  <data name="Receipt_PreviousPage" xml:space="preserve"><value>پچھلا صفحہ</value></data>
+  <data name="Receipt_NextPage" xml:space="preserve"><value>اگلا صفحہ</value></data>
+  <data name="Receipt_PageNumber" xml:space="preserve"><value>صفحہ {0} از {1}</value></data>
+  <data name="Batch_Track" xml:space="preserve"><value>میعاد کی تاریخ رکھیں</value></data>
+  <data name="Batch_Lot" xml:space="preserve"><value>بیچ / لاٹ نمبر</value></data>
+  <data name="Batch_Expiry" xml:space="preserve"><value>میعاد ختم ہونے کی تاریخ</value></data>
+  <data name="Batch_DateHelp" xml:space="preserve"><value>کیلنڈر استعمال کریں یا مقامی فارمیٹ میں تاریخ درج کریں۔</value></data>
+  <data name="Batch_ExpiryRequired" xml:space="preserve"><value>بیچ نمبر اور درست میعاد درج کریں۔</value></data>
+  <data name="Batch_Opening" xml:space="preserve"><value>بیچ کی ابتدائی مقدار</value></data>
+  <data name="Batch_Assign" xml:space="preserve"><value>موجودہ اسٹاک سے مختص کرنے کی مقدار</value></data>
+  <data name="Batch_PositiveQuantity" xml:space="preserve"><value>بیچ کی مثبت مقدار درج کریں۔</value></data>
+  <data name="Batch_Details" xml:space="preserve"><value>بیچ دیکھیں</value></data>
+  <data name="Batch_Summary" xml:space="preserve"><value>کل اسٹاک {0:0.###} · {1} بیچ · اگلی میعاد {2} · غیر مختص {3:0.###}</value></data>
+  <data name="Batch_Depleted" xml:space="preserve"><value>اسٹاک نہیں</value></data>
+  <data name="Batch_ExpiredStatus" xml:space="preserve"><value>میعاد ختم</value></data>
+  <data name="Batch_ExpiringSoon" xml:space="preserve"><value>میعاد ۳۰ دن کے اندر ختم ہوگی</value></data>
+  <data name="Batch_Ready" xml:space="preserve"><value>دستیاب</value></data>
+  <data name="Batch_InvalidBarcode" xml:space="preserve"><value>بارکوڈ استعمال نہیں ہو سکا۔ GTIN اور بیچ کی معلومات دیکھیں۔</value></data>
+  <data name="Batch_EnableFirst" xml:space="preserve"><value>بیچ کی معلومات استعمال کرنے کے لیے اس پروڈکٹ کی میعاد کی ٹریکنگ فعال کریں۔</value></data>
+  <data name="Batch_NotFound" xml:space="preserve"><value>{0} کا بیچ نہیں ملا۔ اسکین شدہ بیچ {1}، میعاد {2}۔</value></data>
+  <data name="Batch_Mismatch" xml:space="preserve"><value>بیچ {0} کی میعاد مختلف ہے۔ اسکین {1:yyyy-MM-dd}، ریکارڈ {2:yyyy-MM-dd}۔</value></data>
+  <data name="Batch_Expired" xml:space="preserve"><value>پروڈکٹ کی میعاد ختم ہو گئی۔ {0} کی میعاد {1:yyyy-MM-dd} کو ختم ہوئی۔</value></data>
+  <data name="Batch_ConfirmPhysical" xml:space="preserve"><value>{0} کے پیکٹ پر درج بیچ کی تصدیق کریں۔ قریب ترین دستیاب میعاد تجویز کی گئی ہے۔</value></data>
+  <data name="Batch_NoUsable" xml:space="preserve"><value>{0} کا کوئی مماثل بیچ فروخت کے لیے دستیاب نہیں۔</value></data>
+  <data name="Batch_SerialDuplicate" xml:space="preserve"><value>سیریل {0} پہلے سے کارٹ میں ہے یا فروخت ہو چکا ہے۔</value></data>
+  <data name="Batch_NoProduct" xml:space="preserve"><value>پروڈکٹ اب دستیاب نہیں۔</value></data>
+  <data name="Batch_Confirm" xml:space="preserve"><value>بیچ کی تصدیق کریں</value></data>
+  <data name="Batch_Review" xml:space="preserve"><value>انوینٹری دیکھیں</value></data>
+  <data name="Batch_CancelScan" xml:space="preserve"><value>اسکین منسوخ کریں</value></data>
+  <data name="Batch_PurchaseEntry" xml:space="preserve"><value>{0} کا بیچ، میعاد، مقدار اور لاگت چیک کریں، پھر آئٹم شامل کریں۔</value></data>
+  <data name="Stock_BatchAssignment" xml:space="preserve"><value>موجودہ اسٹاک بیچ میں مختص کیا</value></data>
+  <data name="Trade_Credit" xml:space="preserve"><value>ادھار (F3)</value></data>
+  <data name="Trade_PaidNow" xml:space="preserve"><value>اب وصول شدہ نقد رقم (PKR)</value></data>
+  <data name="Trade_Balance" xml:space="preserve"><value>بقایا رقم (PKR)</value></data>
+  <data name="Trade_TotalPaid" xml:space="preserve"><value>ادا شدہ رقم (PKR)</value></data>
+  <data name="Trade_ReceivePayment" xml:space="preserve"><value>رقم وصول کریں</value></data>
+  <data name="Trade_PaySupplier" xml:space="preserve"><value>سپلائر کو ادائیگی کریں</value></data>
+  <data name="Trade_Payments" xml:space="preserve"><value>ادائیگیاں</value></data>
+  <data name="Trade_PaymentDate" xml:space="preserve"><value>ادائیگی کی تاریخ</value></data>
+  <data name="Trade_Reference" xml:space="preserve"><value>حوالہ / نوٹس</value></data>
+  <data name="Trade_Method" xml:space="preserve"><value>ادائیگی کا طریقہ</value></data>
+  <data name="Trade_Amount" xml:space="preserve"><value>رقم (PKR)</value></data>
+  <data name="Trade_Record" xml:space="preserve"><value>ادائیگی محفوظ کریں</value></data>
+  <data name="Trade_InitialPayment" xml:space="preserve"><value>انوائس کے وقت ادا شدہ</value></data>
+  <data name="Trade_CreditHint" xml:space="preserve"><value>مکمل ادھار کے لیے صفر یا اب وصول شدہ نقد رقم درج کریں۔ نیچے گاہک کا نام اور فون یا ای میل شامل کریں۔</value></data>
+  <data name="Trade_PurchaseCredit" xml:space="preserve"><value>سپلائر کو بعد میں / جزوی ادائیگی</value></data>
+  <data name="Trade_SupplierPaidNow" xml:space="preserve"><value>اب ادا شدہ رقم (PKR)</value></data>
+  <data name="Trade_SupplierBalances" xml:space="preserve"><value>سپلائر کے بقایا جات</value></data>
+  <data name="Trade_AmountOwed" xml:space="preserve"><value>واجب الادا رقم</value></data>
+  <data name="Trade_Invoice" xml:space="preserve"><value>انوائس</value></data>
+  <data name="Trade_SerialTrack" xml:space="preserve"><value>ہر یونٹ کا IMEI / سیریل محفوظ کریں</value></data>
+  <data name="Trade_WarrantyMonths" xml:space="preserve"><value>وارنٹی کے مہینے، بغیر وارنٹی کے لیے صفر</value></data>
+  <data name="Trade_Devices" xml:space="preserve"><value>IMEI، سیریل اور وارنٹی</value></data>
+  <data name="Trade_RegisterDevices" xml:space="preserve"><value>موجودہ اسٹاک کے سیریل درج کریں</value></data>
+  <data name="Trade_Identifiers" xml:space="preserve"><value>آلات کی شناخت</value></data>
+  <data name="Trade_SerialHelp" xml:space="preserve"><value>ہر سطر میں ایک یونٹ درج کریں۔ ترتیب سیریل | IMEI 1 | IMEI 2 ہے۔ IMEI اختیاری ہیں اور 15 ہندسوں کے ہوتے ہیں۔ صرف IMEI کے لیے سیریل خالی چھوڑ دیں۔</value></data>
+  <data name="Trade_EnterIdentifiers" xml:space="preserve"><value>سیریل / IMEI درج کریں</value></data>
+  <data name="Trade_Serial" xml:space="preserve"><value>سیریل نمبر</value></data>
+  <data name="Trade_Imei1" xml:space="preserve"><value>IMEI 1</value></data>
+  <data name="Trade_Imei2" xml:space="preserve"><value>IMEI 2</value></data>
+  <data name="Trade_WarrantyUntil" xml:space="preserve"><value>وارنٹی کی آخری تاریخ</value></data>
+  <data name="Trade_SoldDate" xml:space="preserve"><value>فروخت کی تاریخ</value></data>
+  <data name="Trade_SelectDevice" xml:space="preserve"><value>آلہ منتخب کریں</value></data>
+  <data name="Trade_UseDevice" xml:space="preserve"><value>منتخب آلہ شامل کریں</value></data>
+  <data name="Trade_Available" xml:space="preserve"><value>دستیاب</value></data>
+  <data name="Trade_Sold" xml:space="preserve"><value>فروخت شدہ</value></data>
+  <data name="Trade_InWarranty" xml:space="preserve"><value>وارنٹی جاری ہے</value></data>
+  <data name="Trade_WarrantyExpired" xml:space="preserve"><value>وارنٹی ختم ہو گئی</value></data>
+  <data name="Trade_NoWarranty" xml:space="preserve"><value>وارنٹی نہیں</value></data>
+  <data name="Trade_SearchDevice" xml:space="preserve"><value>سیریل، IMEI، مصنوعہ، رسید یا گاہک تلاش کریں</value></data>
+  <data name="Trade_NoDevices" xml:space="preserve"><value>کوئی متعلقہ آلہ نہیں۔ انوینٹری میں موجودہ یونٹ درج کریں یا خریداری میں وصول کریں۔</value></data>
+  <data name="Trade_Close" xml:space="preserve"><value>بند کریں</value></data>
+  <data name="Trade_SaveUnits" xml:space="preserve"><value>آلات محفوظ کریں</value></data>
+  <data name="Trade_BalanceHelp" xml:space="preserve"><value>ادائیگی درج کرنے کے لیے انوائس منتخب کریں۔ بقایا رقم کل رقم میں سے تمام ادائیگیاں منہا کر کے ملتی ہے۔</value></data>
+  <data name="Trade_SerialsPrompt" xml:space="preserve"><value>اسٹاک وصول کرنے سے پہلے ہر یونٹ کا سیریل یا IMEI درج کریں۔</value></data>
+  <data name="Payment_Credit" xml:space="preserve"><value>ادھار</value></data>
+  <data name="Trade_UnitCount" xml:space="preserve"><value>آلات</value></data>
+  <data name="Trade_ReceiptDue" xml:space="preserve"><value>بقایا رقم</value></data>
+  <data name="Trade_ReceiptPaid" xml:space="preserve"><value>اب تک ادا شدہ</value></data>
+  <data name="Trade_ReceiptWarranty" xml:space="preserve"><value>وارنٹی کی آخری تاریخ</value></data>
+  <data name="Trade_InitialMethod" xml:space="preserve"><value>ادا شدہ رقم کی ادائیگی کا طریقہ</value></data>
+  <data name="Trade_DeviceRegistered" xml:space="preserve"><value>آلات محفوظ ہو گئے۔</value></data>
+  <data name="Setup_Title" xml:space="preserve"><value>کاروبار کی ترتیب</value></data>
+  <data name="Setup_Back" xml:space="preserve"><value>واپس</value></data>
+  <data name="Setup_Next" xml:space="preserve"><value>جاری رکھیں</value></data>
+  <data name="Setup_Finish" xml:space="preserve"><value>ترتیب مکمل کریں</value></data>
+  <data name="Setup_Start" xml:space="preserve"><value>پی او ایس شروع کریں</value></data>
+  <data name="Setup_Step0" xml:space="preserve"><value>اپنی زبان منتخب کریں · Choose Your Language</value></data>
+  <data name="Setup_Help0" xml:space="preserve"><value>ترتیب اور پی او ایس کی زبان منتخب کریں۔ بعد میں اسٹور پروفائل سے تبدیل کی جا سکتی ہے۔</value></data>
+  <data name="Setup_Step1" xml:space="preserve"><value>اپنا پی او ایس فعال کریں</value></data>
+  <data name="Setup_Help1" xml:space="preserve"><value>خریدے گئے لائسنس کو آن لائن فعال کریں یا آف لائن درخواست برآمد کر کے ناشر کا دستخط شدہ جواب درآمد کریں۔</value></data>
+  <data name="Setup_Step2" xml:space="preserve"><value>اسٹور منتظم</value></data>
+  <data name="Setup_Help2" xml:space="preserve"><value>موجودہ اسٹور کے منتظم اکاؤنٹ سے داخل ہوں۔ سابقہ ریکارڈ اور پاس ورڈ محفوظ رہیں گے۔</value></data>
+  <data name="Setup_Step3" xml:space="preserve"><value>کیا آپ کا کاروبار رجسٹرڈ ہے؟</value></data>
+  <data name="Setup_Help3" xml:space="preserve"><value>کاروباری رجسٹریشن، این ٹی این اور سیلز ٹیکس رجسٹریشن الگ ہیں۔ یہ انتخاب آپ کی قانونی ٹیکس ذمہ داریوں کا فیصلہ نہیں کرتا۔</value></data>
+  <data name="Setup_Step4" xml:space="preserve"><value>آپ کا اسٹور</value></data>
+  <data name="Setup_Help4" xml:space="preserve"><value>اسٹور کا نام اور اختیاری رابطہ درج کریں۔ کرنسی پاکستانی روپیہ ہے؛ نقد اور کارڈ دستیاب رہیں گے۔</value></data>
+  <data name="Setup_Step5" xml:space="preserve"><value>رجسٹریشن اور ٹیکس کی تفصیل</value></data>
+  <data name="Setup_Help5" xml:space="preserve"><value>صرف اپنے کاروبار کو سرکاری طور پر دیے گئے شناختی نمبر درج کریں۔ صرف این ٹی این سیلز ٹیکس رجسٹریشن نہیں ہے۔</value></data>
+  <data name="Setup_Step6" xml:space="preserve"><value>رسیدیں اور مقامی ذخیرہ</value></data>
+  <data name="Setup_Help6" xml:space="preserve"><value>آپ کا کاروباری ڈیٹا اسی کمپیوٹر پر رہتا ہے۔ رسید اور مقامی بیک اپ کی ترجیحات منتخب کریں۔</value></data>
+  <data name="Setup_Step7" xml:space="preserve"><value>مالک کی محفوظ رسائی</value></data>
+  <data name="Setup_Help7" xml:space="preserve"><value>نئے اسٹور کے لیے کم از کم ۱۲ حروف کا پاس ورڈ رکھیں جس میں حرف اور عدد ہوں۔ موجودہ منتظم کا پاس ورڈ برقرار رہے گا۔</value></data>
+  <data name="Setup_Step8" xml:space="preserve"><value>کاروباری ترتیب کا جائزہ</value></data>
+  <data name="Setup_Help8" xml:space="preserve"><value>اپنے انتخاب کا جائزہ لیں۔ اس ترتیب سے کوئی ایف بی آر نمبر یا تصدیقی نشان جاری نہیں ہوتا۔</value></data>
+  <data name="Setup_English" xml:space="preserve"><value>English</value></data>
+  <data name="Setup_Urdu" xml:space="preserve"><value>اردو — Urdu</value></data>
+  <data name="Setup_Registration" xml:space="preserve"><value>کاروباری رجسٹریشن</value></data>
+  <data name="Setup_Registered" xml:space="preserve"><value>رجسٹرڈ کاروبار</value></data>
+  <data name="Setup_Unregistered" xml:space="preserve"><value>غیر رجسٹرڈ</value></data>
+  <data name="Setup_UnregisteredNotice" xml:space="preserve"><value>آپ ایف بی آر اسناد کے بغیر عام رسیدیں استعمال کر سکتے ہیں۔ قابل اطلاق قانونی ذمہ داریوں کی الگ تصدیق کریں۔</value></data>
+  <data name="Setup_Owner" xml:space="preserve"><value>مالک / منتظم</value></data>
+  <data name="Setup_City" xml:space="preserve"><value>شہر</value></data>
+  <data name="Setup_Province" xml:space="preserve"><value>صوبہ</value></data>
+  <data name="Setup_Postal" xml:space="preserve"><value>پوسٹل کوڈ</value></data>
+  <data name="Setup_LegalName" xml:space="preserve"><value>قانونی کاروباری نام</value></data>
+  <data name="Setup_Entity" xml:space="preserve"><value>کاروبار کی نوعیت</value></data>
+  <data name="Setup_Sole" xml:space="preserve"><value>واحد ملکیت</value></data>
+  <data name="Setup_Aop" xml:space="preserve"><value>شراکت / اے او پی</value></data>
+  <data name="Setup_Private" xml:space="preserve"><value>پرائیویٹ لمیٹڈ کمپنی</value></data>
+  <data name="Setup_Public" xml:space="preserve"><value>پبلک لمیٹڈ کمپنی</value></data>
+  <data name="Setup_Ntn" xml:space="preserve"><value>این ٹی این / فرد کا رجسٹریشن نمبر</value></data>
+  <data name="Setup_Strn" xml:space="preserve"><value>ایس ٹی آر این (سیلز ٹیکس رجسٹریشن کی صورت میں)</value></data>
+  <data name="Setup_SalesTaxRegistered" xml:space="preserve"><value>وفاقی سیلز ٹیکس میں رجسٹرڈ</value></data>
+  <data name="Setup_Jurisdiction" xml:space="preserve"><value>ٹیکس دائرہ اختیار</value></data>
+  <data name="Setup_Formation" xml:space="preserve"><value>ٹیکس دفتر</value></data>
+  <data name="Setup_FbrRequired" xml:space="preserve"><value>میرے کاروبار پر ایف بی آر کو رسیدیں بھیجنا لازم ہے</value></data>
+  <data name="Setup_Paper" xml:space="preserve"><value>رسید کا کاغذ</value></data>
+  <data name="Setup_58" xml:space="preserve"><value>۵۸ ملی میٹر</value></data>
+  <data name="Setup_80" xml:space="preserve"><value>۸۰ ملی میٹر</value></data>
+  <data name="Setup_A4" xml:space="preserve"><value>اے ۴</value></data>
+  <data name="Setup_InvoiceLanguage" xml:space="preserve"><value>رسید کی زبان</value></data>
+  <data name="Setup_Printer" xml:space="preserve"><value>رسید پرنٹر (اختیاری)</value></data>
+  <data name="Setup_BackupFolder" xml:space="preserve"><value>مقامی بیک اپ فولڈر</value></data>
+  <data name="Setup_DataFolder" xml:space="preserve"><value>موجودہ ڈیٹا فولڈر</value></data>
+  <data name="Setup_StorageNote" xml:space="preserve"><value>ذخیرہ کی تبدیلی محفوظ دوبارہ آغاز پر لاگو ہوتی ہے۔ جاری لین دین کے دوران ڈیٹا بیس نقل نہیں ہوتا۔ بیک اپ میں تصاویر اور اسکینر کی ترتیبات شامل ہیں۔</value></data>
+  <data name="Setup_Branch" xml:space="preserve"><value>برانچ شناخت</value></data>
+  <data name="Setup_Terminal" xml:space="preserve"><value>ٹرمینل شناخت</value></data>
+  <data name="Setup_InvoicePrefix" xml:space="preserve"><value>رسید کا سابقہ</value></data>
+  <data name="Setup_InvoiceTitle" xml:space="preserve"><value>رسید کا عنوان</value></data>
+  <data name="Setup_HeaderPreview" xml:space="preserve"><value>رسید کے سرنامے کا پیش منظر</value></data>
+  <data name="Setup_OwnerReady" xml:space="preserve"><value>آپ کی مقامی منتظم رسائی تیار ہے۔</value></data>
+  <data name="Setup_RecoveryTitle" xml:space="preserve"><value>مالک کا بازیابی کوڈ محفوظ کریں</value></data>
+  <data name="Setup_RecoveryHelp" xml:space="preserve"><value>یہ کوڈ کمپیوٹر سے باہر محفوظ مقام پر رکھیں۔ اس سے مالک کا پاس ورڈ ایک بار بحال کیا جا سکتا ہے۔ یہ ناشر کو نہیں بھیجا جاتا۔</value></data>
+  <data name="Setup_RecoveryLocked" xml:space="preserve"><value>کوششیں زیادہ ہو گئیں۔ ۱۵ منٹ بعد دوبارہ کوشش کریں۔</value></data>
+  <data name="Setup_RecoveryInvalid" xml:space="preserve"><value>مالک کی بازیابی کی تفصیل درست نہیں ہے۔</value></data>
+  <data name="Setup_PasswordStrength" xml:space="preserve"><value>کم از کم ۱۲ حروف میں حرف اور عدد شامل کریں، اور حد ۷۲ یو ٹی ایف ۸ بائٹس رکھیں۔</value></data>
+  <data name="Setup_UsernameRequired" xml:space="preserve"><value>۶۴ حروف تک صارف نام درج کریں۔</value></data>
+  <data name="Setup_NameRequired" xml:space="preserve"><value>اپنے اسٹور کا نام درج کریں۔</value></data>
+  <data name="Setup_RegisteredRequired" xml:space="preserve"><value>قانونی کاروباری نام، پتہ اور شہر درج کریں۔</value></data>
+  <data name="Setup_NtnInvalid" xml:space="preserve"><value>سرکاری ۷ عددی این ٹی این (اختیاری چیک ہندسہ) یا فرد کا ۱۳ عددی رجسٹریشن نمبر درج کریں۔</value></data>
+  <data name="Setup_StrnInvalid" xml:space="preserve"><value>صرف وفاقی سیلز ٹیکس رجسٹریشن کی صورت میں سرکاری ۱۳ عددی ایس ٹی آر این درج کریں۔</value></data>
+  <data name="Setup_RequiredIntegration" xml:space="preserve"><value>اس کاروبار نے لازمی ایف بی آر ترسیل ظاہر کی ہے۔ فروخت کے لیے مجاز پیداواری انضمام یا قابل اطلاق منظور شدہ طریقہ درکار ہے۔ سینڈ باکس اسے فعال نہیں کر سکتا۔</value></data>
+  <data name="Setup_ProductionPending" xml:space="preserve"><value>مجاز پیداواری فراہم کنندہ ترتیب نہیں دیا گیا۔ جانچ کے لیے سینڈ باکس استعمال کریں اور اپنے لائسنس یافتہ انٹیگریٹر سے رابطہ کریں۔</value></data>
+  <data name="Setup_Invalid" xml:space="preserve"><value>درج کی گئی ترتیب اور شناختی نمبروں کی ساخت چیک کریں۔</value></data>
+  <data name="Setup_SaveFailed" xml:space="preserve"><value>یہ مرحلہ محفوظ نہیں ہو سکا۔ اندراجات، رسائی اور مقامی ذخیرہ چیک کر کے دوبارہ کوشش کریں۔</value></data>
+  <data name="Setup_Restart" xml:space="preserve"><value>کاروباری ترتیب دوبارہ شروع کریں</value></data>
+  <data name="Business_Settings" xml:space="preserve"><value>کاروبار، لائسنس اور مدد</value></data>
+  <data name="Business_SettingsHelp" xml:space="preserve"><value>رجسٹریشن، ٹیکس ترتیب، فعالیت، محفوظ تازہ کاریاں، بیک اپ اور اختیاری مسئلہ رپورٹس۔</value></data>
+  <data name="Business_Audit" xml:space="preserve"><value>ترتیب کی تبدیلیوں کی تاریخ</value></data>
+  <data name="Fbr_Title" xml:space="preserve"><value>ایف بی آر ترتیب</value></data>
+  <data name="Fbr_Route" xml:space="preserve"><value>انضمام کا راستہ</value></data>
+  <data name="Fbr_Pos" xml:space="preserve"><value>ایف بی آر پی او ایس نظام</value></data>
+  <data name="Fbr_Digital" xml:space="preserve"><value>ڈیجیٹل رسید / لائسنس یافتہ انٹیگریٹر</value></data>
+  <data name="Fbr_NotConfigured" xml:space="preserve"><value>ترتیب نہیں دیا گیا</value></data>
+  <data name="Fbr_Pending" xml:space="preserve"><value>ترتیب جاری ہے</value></data>
+  <data name="Fbr_Sandbox" xml:space="preserve"><value>سینڈ باکس / جانچ</value></data>
+  <data name="Fbr_Production" xml:space="preserve"><value>پیداواری (مجاز فراہم کنندہ درکار)</value></data>
+  <data name="Fbr_Attention" xml:space="preserve"><value>توجہ درکار</value></data>
+  <data name="Fbr_Explanation" xml:space="preserve"><value>ٹیکس حساب اور سرکاری رسید کی ترسیل الگ ہیں۔ ایف بی آر پی او ایس اور ڈیجیٹل رسید الگ نظام ہیں۔ سرکاری انضمام کے لیے مناسب اجازت درکار ہے۔ مقامی جانچ کے لیے فراہم کنندہ میں mock درج کریں؛ یہ ایف بی آر تصدیق نہیں ہے۔</value></data>
+  <data name="Fbr_Status" xml:space="preserve"><value>انضمام کی حالت</value></data>
+  <data name="Fbr_Provider" xml:space="preserve"><value>لائسنس یافتہ انٹیگریٹر / فراہم کنندہ</value></data>
+  <data name="Fbr_PosId" xml:space="preserve"><value>تفویض شدہ پی او ایس / آؤٹ لیٹ شناخت</value></data>
+  <data name="Fbr_Endpoint" xml:space="preserve"><value>مجاز اے پی آئی پتہ</value></data>
+  <data name="Fbr_Schema" xml:space="preserve"><value>رسید اسکیما ورژن</value></data>
+  <data name="Fbr_Environment" xml:space="preserve"><value>ماحول</value></data>
+  <data name="Fbr_SandboxToken" xml:space="preserve"><value>سینڈ باکس سند (مقامی طور پر محفوظ)</value></data>
+  <data name="Fbr_Test" xml:space="preserve"><value>سینڈ باکس نقشہ بندی کی جانچ</value></data>
+  <data name="Fbr_TestPassed" xml:space="preserve"><value>نمونہ سینڈ باکس کی جانچ کامیاب۔ کوئی رسید ایف بی آر کو نہیں بھیجی گئی۔</value></data>
+  <data name="Tax_Title" xml:space="preserve"><value>مصنوعات کے ٹیکس قواعد</value></data>
+  <data name="Tax_HsCode" xml:space="preserve"><value>ایچ ایس کوڈ</value></data>
+  <data name="Tax_SaleType" xml:space="preserve"><value>فروخت کی قسم</value></data>
+  <data name="Tax_Classification" xml:space="preserve"><value>ٹیکس درجہ بندی</value></data>
+  <data name="Tax_Standard" xml:space="preserve"><value>عام شرح</value></data>
+  <data name="Tax_Exempt" xml:space="preserve"><value>مستثنیٰ</value></data>
+  <data name="Tax_Zero" xml:space="preserve"><value>صفر شرح</value></data>
+  <data name="Tax_Special" xml:space="preserve"><value>خصوصی رعایت</value></data>
+  <data name="Tax_RateFraction" xml:space="preserve"><value>شرح کا کسر (مثال: 0.18 = ۱۸٪)</value></data>
+  <data name="Tax_Sro" xml:space="preserve"><value>ایس آر او / استثنا حوالہ</value></data>
+  <data name="Tax_Authority" xml:space="preserve"><value>تصدیق شدہ قاعدے / اختیار کا حوالہ</value></data>
+  <data name="Tax_History" xml:space="preserve"><value>قواعد کی تاریخ</value></data>
+  <data name="Tax_RuleCount" xml:space="preserve"><value>محفوظ قواعد:</value></data>
+  <data name="Tax_RulesHelp" xml:space="preserve"><value>ہر متعلقہ چیز کے لیے تصدیق شدہ شرحیں اور تاریخیں درج کریں۔ قیمتیں ٹیکس سمیت ہیں۔ فروخت سے پہلے مصنوعات کا ٹیکس مؤثر قاعدے کے مطابق ہونا چاہیے۔ این ٹی این سے شرح کا اندازہ نہیں لگایا جاتا۔</value></data>
+  <data name="Tax_InvalidRule" xml:space="preserve"><value>درست چیز، شرح، تاریخیں اور تصدیق شدہ اختیار کا حوالہ درج کریں۔</value></data>
+  <data name="Tax_Overlap" xml:space="preserve"><value>اس چیز کے لیے ان تاریخوں کا قاعدہ پہلے سے موجود ہے۔</value></data>
+  <data name="Tax_RateMismatch" xml:space="preserve"><value>مصنوعات کا ٹیکس مؤثر قاعدے سے مختلف ہے۔ فروخت سے پہلے چیز کا ٹیکس درست کریں۔</value></data>
+  <data name="Tax_MappingInvalid" xml:space="preserve"><value>رسید کی نقشہ بندی درست نہیں ہے۔</value></data>
+  <data name="License_Title" xml:space="preserve"><value>لائسنس اور فعالیت</value></data>
+  <data name="License_Key" xml:space="preserve"><value>لائسنس کلید</value></data>
+  <data name="License_DeviceLabel" xml:space="preserve"><value>کمپیوٹر کا نام</value></data>
+  <data name="License_Status" xml:space="preserve"><value>لائسنس کی حالت</value></data>
+  <data name="License_Online" xml:space="preserve"><value>آن لائن فعال کریں</value></data>
+  <data name="License_ExportRequest" xml:space="preserve"><value>آف لائن فعالیت کی درخواست برآمد کریں</value></data>
+  <data name="License_ImportResponse" xml:space="preserve"><value>دستخط شدہ فعالیت کا جواب درآمد کریں</value></data>
+  <data name="License_Activated" xml:space="preserve"><value>دائمی لائسنس فعال ہے</value></data>
+  <data name="License_Required" xml:space="preserve"><value>جاری رکھنے کے لیے خریدا گیا لائسنس فعال کریں۔</value></data>
+  <data name="License_Development" xml:space="preserve"><value>مقامی ترقیاتی نسخہ — تجارتی لائسنس لاگو نہیں ہے۔</value></data>
+  <data name="License_Invalid" xml:space="preserve"><value>یہ سند اس کمپیوٹر یا ورژن کے لیے درست نہیں ہے۔</value></data>
+  <data name="License_ServicePending" xml:space="preserve"><value>ناشر کی خدمت ترتیب نہیں دی گئی۔ مقامی جانچ اور آف لائن درآمد دستیاب ہیں۔</value></data>
+  <data name="License_ActivationFailed" xml:space="preserve"><value>فعالیت مکمل نہیں ہوئی۔ کلید، آلات کی نشستیں یا رابطہ چیک کریں اور ناشر سے رابطہ کریں۔</value></data>
+  <data name="License_ProtectedStorage" xml:space="preserve"><value>ونڈوز اس صارف کے لیے محفوظ فعالیت ڈیٹا نہیں کھول سکا۔</value></data>
+  <data name="License_DeviceUnavailable" xml:space="preserve"><value>ونڈوز آلے کی شناخت دستیاب نہیں ہے۔</value></data>
+  <data name="License_Transfer" xml:space="preserve"><value>آلے کی منتقلی کی درخواست</value></data>
+  <data name="License_TransferPending" xml:space="preserve"><value>منتقلی کی درخواست محفوظ ہوئی۔ متبادل آلے کی ناشر سے اجازت ضروری ہے۔</value></data>
+  <data name="License_UpdatesUntil" xml:space="preserve"><value>تازہ کاریاں شامل ہیں تا</value></data>
+  <data name="License_PerpetualHelp" xml:space="preserve"><value>لائسنس شدہ ورژن کا آف لائن استعمال تازہ کاری کی مدت کے ساتھ ختم نہیں ہوتا۔ منتقلی کے لیے ناشر کی اجازت درکار ہے؛ پرانی آف لائن سند کو دور سے منسوخ نہیں کیا جا سکتا۔</value></data>
+  <data name="Updates_Title" xml:space="preserve"><value>سافٹ ویئر تازہ کاریاں</value></data>
+  <data name="Updates_Current" xml:space="preserve"><value>موجودہ ورژن / چینل</value></data>
+  <data name="Updates_LastCheck" xml:space="preserve"><value>آخری کامیاب جانچ</value></data>
+  <data name="Updates_NotChecked" xml:space="preserve"><value>جانچ نہیں ہوئی</value></data>
+  <data name="Updates_Check" xml:space="preserve"><value>تازہ کاریاں چیک کریں</value></data>
+  <data name="Updates_Download" xml:space="preserve"><value>تازہ کاری ڈاؤن لوڈ کریں</value></data>
+  <data name="Updates_Install" xml:space="preserve"><value>ڈاؤن لوڈ شدہ تازہ کاری نصب کریں</value></data>
+  <data name="Updates_Offline" xml:space="preserve"><value>آف لائن تازہ کاری درآمد کریں</value></data>
+  <data name="Updates_History" xml:space="preserve"><value>تازہ کاری کی تاریخ</value></data>
+  <data name="Updates_NoHistory" xml:space="preserve"><value>ابھی کوئی تازہ کاری نصب نہیں ہوئی۔</value></data>
+  <data name="Updates_Available" xml:space="preserve"><value>اہل تازہ کاری دستیاب ہے:</value></data>
+  <data name="Updates_None" xml:space="preserve"><value>کوئی اہل تازہ کاری دستیاب نہیں ہے۔</value></data>
+  <data name="Updates_Downloaded" xml:space="preserve"><value>تازہ کاری ڈاؤن لوڈ اور تصدیق ہو گئی۔</value></data>
+  <data name="Updates_CheckFailed" xml:space="preserve"><value>تازہ کاری کی خدمت سے رابطہ نہیں ہو سکا۔ آپ کا آف لائن پی او ایس لائسنس درست ہے۔</value></data>
+  <data name="Updates_Ineligible" xml:space="preserve"><value>یہ تازہ کاری آپ کے ورژن، چینل، اسکیما یا استحقاق سے مطابقت نہیں رکھتی۔</value></data>
+  <data name="Updates_Untrusted" xml:space="preserve"><value>تازہ کاری کی اصلیت یا پیکیج کی سالمیت کی تصدیق ناکام ہوئی۔</value></data>
+  <data name="Updates_FinishDrafts" xml:space="preserve"><value>جاری رکھنے سے پہلے زیر التوا فروخت اور خریداری مکمل یا خالی کریں۔</value></data>
+  <data name="Updates_InstallerRequired" xml:space="preserve"><value>یہ نسخہ ویلوپیک سے نصب نہیں ہوا۔ خودکار تنصیب سے پہلے ناشر کا دستخط شدہ انسٹالر درکار ہے۔</value></data>
+  <data name="Updates_Safety" xml:space="preserve"><value>تنصیب فروخت اور خریداری کے اختتام کا انتظار، ناشر کے دستخط کی تصدیق اور درست مقامی بیک اپ کرتی ہے۔ تازہ کاری کی مدت ختم ہونے سے دائمی پی او ایس بند نہیں ہوتا۔</value></data>
+  <data name="Storage_Title" xml:space="preserve"><value>ڈیٹا اور بیک اپ</value></data>
+  <data name="Storage_Backup" xml:space="preserve"><value>مکمل مقامی بیک اپ بنائیں</value></data>
+  <data name="Storage_Restore" xml:space="preserve"><value>دوبارہ آغاز پر بیک اپ بحال کریں</value></data>
+  <data name="Storage_BackupCreated" xml:space="preserve"><value>مقامی بیک اپ بن گیا اور ڈیٹا بیس کی سالمیت کی تصدیق ہو گئی۔</value></data>
+  <data name="Storage_RestoreStaged" xml:space="preserve"><value>بیک اپ کی تصدیق ہو گئی۔ ڈیٹا بیس کھولنے سے پہلے بحالی کے لیے پی او ایس دوبارہ شروع کریں۔ موجودہ حالت کا بیک اپ محفوظ رکھا جائے گا۔</value></data>
+  <data name="Storage_InvalidBackup" xml:space="preserve"><value>یہ بیک اپ درست یا بحالی کے لیے محفوظ نہیں ہے۔</value></data>
+  <data name="Storage_DiskSpace" xml:space="preserve"><value>محفوظ تازہ کاری کے لیے ڈسک پر کافی خالی جگہ نہیں ہے۔</value></data>
+  <data name="Help_Support" xml:space="preserve"><value>مدد اور معاونت</value></data>
+  <data name="Support_Description" xml:space="preserve"><value>مسئلہ بیان کریں (ذاتی یا کاروباری ریکارڈ شامل نہ کریں)</value></data>
+  <data name="Support_Review" xml:space="preserve"><value>تشخیصی معلومات کا جائزہ</value></data>
+  <data name="Support_Consent" xml:space="preserve"><value>میں یہ تفصیل اور دکھائی گئی تشخیصی معلومات سافٹ ویئر ناشر کو بھیجنے پر متفق ہوں۔</value></data>
+  <data name="Support_Send" xml:space="preserve"><value>مسئلے کی رپورٹ بھیجیں</value></data>
+  <data name="Support_Export" xml:space="preserve"><value>آف لائن معاونت رپورٹ برآمد کریں</value></data>
+  <data name="Support_Sent" xml:space="preserve"><value>رپورٹ بھیج دی گئی۔</value></data>
+  <data name="Support_ConsentRequired" xml:space="preserve"><value>اپ لوڈ سے پہلے رپورٹ کا جائزہ لیں اور رضامندی دیں۔</value></data>
+  <data name="Support_Failed" xml:space="preserve"><value>رپورٹ نہیں بھیجی جا سکی۔ آپ آف لائن معاونت کے لیے برآمد کر سکتے ہیں۔</value></data>
+  <data name="License_RecordsOnly" xml:space="preserve"><value>اس کمپیوٹر پر ایکٹیویشن درکار ہے۔ موجودہ ریکارڈ دستیاب ہیں؛ کاروباری تبدیلیاں بند ہیں۔</value></data>
+  <data name="License_OpenRecords" xml:space="preserve"><value>موجودہ ریکارڈ کھولیں</value></data>
+  <data name="Recovery_Code" xml:space="preserve"><value>مالک کا بازیابی کوڈ</value></data>
+  <data name="Recovery_Reset" xml:space="preserve"><value>پاس ورڈ بحال کریں</value></data>
+  <data name="Recovery_Done" xml:space="preserve"><value>پاس ورڈ بحال ہو گیا۔ نئے پاس ورڈ سے سائن ان کریں۔</value></data>
+  <data name="Recovery_Open" xml:space="preserve"><value>مالک کی رسائی بحال کریں</value></data>
+  <data name="Recovery_Generate" xml:space="preserve"><value>نیا بازیابی کوڈ بنائیں</value></data>
+  <data name="Documents_Invalid" xml:space="preserve"><value>۱۰ ایم بی تک کی پی ڈی ایف، پی این جی یا جے پی جی دستاویز منتخب کریں۔</value></data>
+  <data name="Documents_Add" xml:space="preserve"><value>مقامی دستاویز منسلک کریں</value></data>
+  <data name="Documents_Export" xml:space="preserve"><value>منتخب دستاویز برآمد کریں</value></data>
+  <data name="Documents_LocalOnly" xml:space="preserve"><value>دستاویزات اس کمپیوٹر پر خفیہ محفوظ رہتی ہیں۔ انہیں لائسنس سرور پر نہیں بھیجا جاتا۔</value></data>
+  <data name="Tax_ApplyCatalog" xml:space="preserve"><value>اس شرح اور قیمت کو موجودہ پروڈکٹ پر لاگو کریں</value></data>
+  <data name="Tax_Exclusive" xml:space="preserve"><value>درج کردہ قیمت ٹیکس کے بغیر ہے</value></data>
+  <data name="Tax_PriceInput" xml:space="preserve"><value>پروڈکٹ کی قیمت (PKR)</value></data>
+  <data name="Tax_ViewRules" xml:space="preserve"><value>محفوظ ٹیکس قواعد دیکھیں</value></data>
+  <data name="Tax_EndRule" xml:space="preserve"><value>منتخب ٹیکس قاعدہ ختم کریں</value></data>
+  <data name="Storage_ChangeFolder" xml:space="preserve"><value>اگلی بار کھولنے پر ڈیٹا فولڈر بدلیں</value></data>
+  <data name="Storage_FolderStaged" xml:space="preserve"><value>اگلی بار کھولنے پر ڈیٹا فولڈر بدل جائے گا۔ اصل فولڈر برقرار رہے گا۔</value></data>
+  <data name="Storage_FolderScheduleFailed" xml:space="preserve"><value>سیٹ اپ محفوظ ہے۔ ترتیبات میں کاروباری سیٹ اپ کے ڈیٹا حصے سے فولڈر دوبارہ منتخب کریں۔</value></data>
+  <data name="Storage_InvalidFolder" xml:space="preserve"><value>ایپ کے فولڈر سے باہر قابل تحریر مقامی فولڈر منتخب کریں۔</value></data>
+  <data name="Storage_EmptyFolder" xml:space="preserve"><value>خالی منزل فولڈر منتخب کریں۔</value></data>
+  <data name="Storage_IncompatibleBackup" xml:space="preserve"><value>اس بیک اپ کے لیے نیا پی او ایس درکار ہے۔ بحالی سے پہلے اپ ڈیٹ کریں۔</value></data>
+  <data name="Storage_RestoreConfirm" xml:space="preserve"><value>اگلی بار کھولنے پر یہ بیک اپ بحال کریں؟ پہلے موجودہ ڈیٹابیس اور تصاویر کا بیک اپ بنے گا۔ تصدیق کے بعد کام مکمل کرکے دوبارہ کھولیں۔</value></data>
+  <data name="Setup_MigrationRecovered" xml:space="preserve"><value>ڈیٹابیس اپ گریڈ ناکام ہوا۔ پچھلا ڈیٹابیس بحال کر دیا گیا اور ناکام نقل بیک اپ میں موجود ہے۔ دوبارہ اپ ڈیٹ کرنے سے پہلے سپورٹ سے رابطہ کریں۔</value></data>
+  <data name="Setup_StartupFailed" xml:space="preserve"><value>پی او ایس محفوظ طریقے سے شروع نہیں ہو سکا۔ ریکارڈ حذف نہیں کیے گئے۔ ڈیٹا فولڈر کی اجازت دیکھیں یا سپورٹ سے رابطہ کریں۔</value></data>
+  <data name="Setup_UnexpectedError" xml:space="preserve"><value>ایک خرابی پیش آئی۔ مدد اور سپورٹ میں تکنیکی رپورٹ دیکھ سکتے ہیں۔</value></data>
+  <data name="Setup_Paper58" xml:space="preserve"><value>۵۸ ملی میٹر</value></data>
+  <data name="Setup_Paper80" xml:space="preserve"><value>۸۰ ملی میٹر</value></data>
+  <data name="Setup_PaperA4" xml:space="preserve"><value>اے فور</value></data>
+  <data name="Language_English" xml:space="preserve"><value>English</value></data>
+  <data name="Language_Urdu" xml:space="preserve"><value>اردو</value></data>
+  <data name="Updates_Notes" xml:space="preserve"><value>ریلیز کی تفصیل</value></data>
+  <data name="Updates_Later" xml:space="preserve"><value>بعد میں یاد دلائیں</value></data>
+  <data name="Updates_Notice" xml:space="preserve"><value>تصدیق شدہ اپ ڈیٹ دستیاب ہے۔ موزوں وقت پر ڈاؤن لوڈ کے لیے سافٹ ویئر اپ ڈیٹس کھولیں۔</value></data>
+  <data name="Fbr_TestMapping" xml:space="preserve"><value>آخری انوائس کی میپنگ چیک کریں (صرف سینڈ باکس)</value></data>
+  <data name="Fbr_NoInvoice" xml:space="preserve"><value>محفوظ انوائس میپنگ چیک کرنے سے پہلے اجازت یافتہ ٹیسٹ فروخت مکمل کریں۔</value></data>
+  <data name="Common_Confirm" xml:space="preserve"><value>تصدیق کریں</value></data>
+  <data name="Reports_From" xml:space="preserve"><value>سے</value></data>
+  <data name="Reports_To" xml:space="preserve"><value>تک</value></data>
+  <data name="Setup_RegisteredChoiceHelp" xml:space="preserve"><value>میرا کاروبار باضابطہ رجسٹرڈ ہے۔ ٹیکس رجسٹریشن الگ ترتیب دی جائے گی۔</value></data>
+  <data name="Setup_UnregisteredChoiceHelp" xml:space="preserve"><value>سادہ مقامی رسیدوں کے ساتھ چھوٹی دکان ترتیب دیں۔ یہ انتخاب قانونی ٹیکس ذمہ داریاں طے نہیں کرتا۔</value></data>
+  <data name="Documents_Attached" xml:space="preserve"><value>منسلک مقامی دستاویزات</value></data>
+  <data name="Validation_Required" xml:space="preserve"><value>یہ خانہ پُر کرنا ضروری ہے۔</value></data>
+  <data name="Validation_Text" xml:space="preserve"><value>مقررہ حد کے اندر متن لکھیں، کنٹرول حروف استعمال نہ کریں۔</value></data>
+  <data name="Validation_Phone" xml:space="preserve"><value>۷ سے ۱۵ ہندسے لکھیں۔ +، خالی جگہ، قوسین اور ہائفن استعمال کر سکتے ہیں۔</value></data>
+  <data name="Validation_Email" xml:space="preserve"><value>درست ای میل لکھیں، مثلاً name@example.com۔</value></data>
+  <data name="Validation_Postal" xml:space="preserve"><value>پانچ ہندسوں کا پوسٹل کوڈ لکھیں۔</value></data>
+  <data name="Validation_Prefix" xml:space="preserve"><value>زیادہ سے زیادہ ۱۲ انگریزی حروف، ہندسے یا ہائفن استعمال کریں۔</value></data>
+  <data name="Validation_Choice" xml:space="preserve"><value>دستیاب اختیارات میں سے ایک منتخب کریں۔</value></data>
+  <data name="Validation_Endpoint" xml:space="preserve"><value>یوزر نام یا پاس ورڈ کے بغیر مکمل HTTPS پتہ لکھیں۔</value></data>
+  <data name="Validation_Mock" xml:space="preserve"><value>مقامی سینڈباکس ٹیسٹ کے لیے POS یا ڈیجیٹل انوائسنگ چنیں اور فراہم کنندہ میں mock لکھیں۔</value></data>
+  <data name="Validation_LicenseKey" xml:space="preserve"><value>مکمل کلید لکھیں: POS- کے بعد ۴۸ ہیکسا ڈیسیمل حروف۔</value></data>
+  <data name="Validation_Credentials" xml:space="preserve"><value>اپنا موجودہ یوزر نام اور پاس ورڈ چیک کر کے دوبارہ کوشش کریں۔</value></data>
+  <data name="Help_LicenseKey" xml:space="preserve"><value>سافٹ ویئر فراہم کنندہ کی خریدی ہوئی کلید چسپاں کریں۔ مقامی ڈیولپمنٹ بلڈ میں اسے خالی چھوڑ سکتے ہیں؛ فرضی متن لائسنس فعال نہیں کرتا۔</value></data>
+  <data name="Help_DeviceLabel" xml:space="preserve"><value>اس کمپیوٹر کا نام، مثلاً مرکزی کاؤنٹر۔ ۱ سے ۱۰۰ حروف لکھیں۔</value></data>
+  <data name="Help_Ntn" xml:space="preserve"><value>اگر جاری نہیں ہوا تو خالی چھوڑیں۔ رجسٹریشن سے نقل کریں: ۷ ہندسے (اختیاری - اور چیک ہندسہ)، یا فرد کا ۱۳ ہندسوں کا شناختی نمبر۔ یہ صرف فارمیٹ چیک کرتا ہے۔</value></data>
+  <data name="Help_Strn" xml:space="preserve"><value>سیلز ٹیکس رجسٹریشن منتخب ہو تو ضروری ہے۔ اپنی رجسٹریشن کے ۱۳ ہندسے لکھیں۔ NTN اور STRN مختلف شناختی نمبر ہیں۔</value></data>
+  <data name="Help_SalesTax" xml:space="preserve"><value>صرف وفاقی سیلز ٹیکس میں رجسٹرڈ کاروبار کے لیے چنیں؛ صرف NTN ہونا کافی نہیں ہے۔</value></data>
+  <data name="Help_Entity" xml:space="preserve"><value>رجسٹریشن دستاویزات پر درج قانونی نوعیت چنیں۔</value></data>
+  <data name="Help_FbrRequired" xml:space="preserve"><value>اگر رپورٹنگ لازمی ہے تو مجاز پروڈکشن انضمام ضروری ہے۔ مقامی سینڈباکس ٹیسٹ اس شرط کو پورا نہیں کرتا۔</value></data>
+  <data name="Help_FbrRoute" xml:space="preserve"><value>POS اور ڈیجیٹل انوائسنگ الگ طریقے ہیں۔ مجاز فراہم کنندہ کا بتایا ہوا طریقہ چنیں یا غیر مرتب رہنے دیں۔</value></data>
+  <data name="Help_FbrProvider" xml:space="preserve"><value>مقامی سینڈباکس ٹیسٹ کے لیے mock لکھیں۔ پروڈکشن کے لیے الگ مجاز انضمام درکار ہے؛ یہاں پروڈکشن اسناد ضروری نہیں۔</value></data>
+  <data name="Help_FbrStatus" xml:space="preserve"><value>سینڈباکس صرف مقامی ٹیسٹ ہے؛ سرکاری FBR نمبر جاری نہیں ہوتا۔</value></data>
+  <data name="Help_BackupFolder" xml:space="preserve"><value>اختیاری۔ قابلِ تحریر مکمل مقامی پتہ لکھیں، مثلاً D:\POS Backups۔</value></data>
+  <data name="Help_DataFolder" xml:space="preserve"><value>ڈیٹابیس اور تصاویر یہاں محفوظ ہوں گی۔ نیا مقامی فولڈر خالی ہونا چاہیے؛ محفوظ منتقلی اگلی بار ایپ شروع ہونے پر ہوگی۔</value></data>
+  <data name="Help_Branch" xml:space="preserve"><value>کاروبار کا دیا ہوا اختیاری شناختی نمبر۔ فرضی سرکاری FBR نمبر نہ بنائیں۔</value></data>
+  <data name="Help_Terminal" xml:space="preserve"><value>اس کاؤنٹر کا اختیاری نام، مثلاً COUNTER-1۔</value></data>
+  <data name="Help_Prefix" xml:space="preserve"><value>مقامی رسید کا اختیاری سابقہ: زیادہ سے زیادہ ۱۲ انگریزی حروف، ہندسے یا ہائفن۔</value></data>
+  <data name="Help_Printer" xml:space="preserve"><value>پرنٹر کی اختیاری ترجیح۔ پرنٹر کے بغیر رسید کا پیش نظارہ اور PDF برآمد دستیاب ہیں۔</value></data>
+  <data name="Help_Jurisdiction" xml:space="preserve"><value>رجسٹریشن یا مجاز فراہم کنندہ کی ہدایت کے مطابق اختیاری ٹیکس دائرہ اختیار۔</value></data>
+  <data name="Help_Formation" xml:space="preserve"><value>رجسٹریشن پر درج اختیاری ٹیکس دفتر؛ اگر مقرر نہیں تو خالی چھوڑیں۔</value></data>
+  <data name="Help_Postal" xml:space="preserve"><value>اختیاری پاکستانی پوسٹل کوڈ: پانچ ہندسے۔</value></data>
+  <data name="Setup_FullPreview" xml:space="preserve"><value>نمونہ رسید کا پیش نظارہ</value></data>
+  <data name="Setup_Your" xml:space="preserve"><value>آپ کا</value></data>
+  <data name="Setup_Logo" xml:space="preserve"><value>لوگو</value></data>
+  <data name="Setup_PreviewOnly" xml:space="preserve"><value>نمونہ — فروخت کا ریکارڈ نہیں</value></data>
+  <data name="Setup_PreviewReceipt" xml:space="preserve"><value>رسید نمبر</value></data>
+  <data name="Setup_PreviewItem" xml:space="preserve"><value>نمونہ پروڈکٹ</value></data>
+  <data name="Setup_PreviewPayment" xml:space="preserve"><value>نقد ادائیگی</value></data>
+  <data name="Setup_PreviewThankYou" xml:space="preserve"><value>خریداری کا شکریہ!</value></data>
+  <data name="Validation_DeviceLabel" xml:space="preserve"><value>کمپیوٹر کا نام ۱ سے ۱۰۰ حروف میں لکھیں، کنٹرول حروف استعمال نہ کریں۔</value></data>
+  <data name="Validation_RegistrationConflict" xml:space="preserve"><value>اس مسودے میں سیلز ٹیکس رجسٹریشن یا لازمی FBR رپورٹنگ موجود ہے۔ کاروبار کی نوعیت بدلنے سے پہلے رجسٹرڈ کاروبار منتخب کر کے یہ تفصیلات درست کریں۔</value></data>
+  <data name="Features_Title" xml:space="preserve"><value>کاروباری سہولیات</value></data>
+  <data name="Features_StoreType" xml:space="preserve"><value>دکان کی نوعیت</value></data>
+  <data name="Features_Grocery" xml:space="preserve"><value>کریانہ</value></data>
+  <data name="Features_Supermarket" xml:space="preserve"><value>سپر مارکیٹ / منی مارٹ</value></data>
+  <data name="Features_Retail" xml:space="preserve"><value>عام پرچون</value></data>
+  <data name="Features_Pharmacy" xml:space="preserve"><value>میڈیکل اسٹور</value></data>
+  <data name="Features_Electronics" xml:space="preserve"><value>الیکٹرانکس</value></data>
+  <data name="Features_Mobile" xml:space="preserve"><value>موبائل شاپ / ریچارج</value></data>
+  <data name="Features_Loose" xml:space="preserve"><value>کھلی اشیا (وزن / حجم)</value></data>
+  <data name="Features_Packaging" xml:space="preserve"><value>ڈبے، پیک اور الگ عدد</value></data>
+  <data name="Features_Wallet" xml:space="preserve"><value>والیٹ کا دستی ریکارڈ</value></data>
+  <data name="Features_Recharge" xml:space="preserve"><value>موبائل لوڈ اور پیکیجز</value></data>
+  <data name="Customer_SelectExisting" xml:space="preserve"><value>موجودہ گاہک تلاش یا منتخب کریں</value></data>
+  <data name="Invoice_ExportFolder" xml:space="preserve"><value>رسید ڈاؤن لوڈ کا فولڈر</value></data>
+  <data name="Invoice_MessageTemplate" xml:space="preserve"><value>واٹس ایپ پیغام کا نمونہ (اختیاری)</value></data>
+  <data name="Measure_InvalidQuantity" xml:space="preserve"><value>عدد مکمل لکھیں یا کلو/لیٹر تین اعشاری جگہ تک (۱ گرام/ملی لیٹر) لکھیں۔</value></data>
+  <data name="Measure_InvalidAmount" xml:space="preserve"><value>مثبت روپے اور صفر سے زیادہ فروخت کی قیمت لکھیں۔</value></data>
+  <data name="Measure_TooSmall" xml:space="preserve"><value>یہ رقم ایک گرام یا ملی لیٹر کی قیمت سے کم ہے۔</value></data>
+  <data name="Measure_ClearStockFirst" xml:space="preserve"><value>بنیادی اکائی بدلنے سے پہلے اسٹاک درست یا منتقل کریں۔</value></data>
+  <data name="Measure_InvalidPackage" xml:space="preserve"><value>پیک کی تعداد، الگ بارکوڈ، لاگت اور قیمت چیک کریں۔ پیک کے لیے بغیر سیریل ٹریکنگ کے عددی پروڈکٹ ضروری ہے۔</value></data>
+  <data name="Measure_ChangedUnit" xml:space="preserve"><value>پروڈکٹ کی اکائی بدل گئی ہے۔ کارٹ سے ہٹا کر دوبارہ شامل کریں۔</value></data>
+  <data name="Measure_FeatureDisabled" xml:space="preserve"><value>پیک بارکوڈ سے پہلے کاروباری سہولیات میں پیکنگ فعال کریں۔</value></data>
+  <data name="Measure_Method" xml:space="preserve"><value>فروخت کا طریقہ</value></data>
+  <data name="Measure_piece" xml:space="preserve"><value>عدد</value></data>
+  <data name="Measure_weight" xml:space="preserve"><value>وزن کے مطابق (کلو)</value></data>
+  <data name="Measure_volume" xml:space="preserve"><value>حجم کے مطابق (لیٹر)</value></data>
+  <data name="Measure_pack" xml:space="preserve"><value>پیک</value></data>
+  <data name="Measure_box" xml:space="preserve"><value>ڈبہ</value></data>
+  <data name="Measure_carton" xml:space="preserve"><value>کارٹن</value></data>
+  <data name="Measure_kg" xml:space="preserve"><value>کلو</value></data>
+  <data name="Measure_litre" xml:space="preserve"><value>لیٹر</value></data>
+  <data name="Measure_PriceHint" xml:space="preserve"><value>وزن کی قیمت، لاگت اور اسٹاک کلو میں، حجم لیٹر میں اور پیک والی اشیا عدد میں ہیں۔ کھلی اشیا کا بارکوڈ اختیاری ہے۔</value></data>
+  <data name="Measure_MinimumStock" xml:space="preserve"><value>کم از کم اسٹاک (اختیاری)</value></data>
+  <data name="Measure_PurchaseUnit" xml:space="preserve"><value>خریداری کا پیک</value></data>
+  <data name="Measure_UnitsPerPack" xml:space="preserve"><value>فی پیک عدد</value></data>
+  <data name="Measure_PackBarcode" xml:space="preserve"><value>پیک کا بارکوڈ (اختیاری، عدد سے مختلف)</value></data>
+  <data name="Measure_PackCost" xml:space="preserve"><value>فی پیک خرید لاگت (روپے)</value></data>
+  <data name="Measure_PackPrice" xml:space="preserve"><value>پورے پیک کی فروخت قیمت (اختیاری روپے)</value></data>
+  <data name="Measure_LooseItems" xml:space="preserve"><value>کھلی اشیا</value></data>
+  <data name="Measure_ByWeight" xml:space="preserve"><value>وزن / حجم کے مطابق فروخت</value></data>
+  <data name="Measure_ByAmount" xml:space="preserve"><value>رقم کے مطابق فروخت</value></data>
+  <data name="Measure_SellPack" xml:space="preserve"><value>پورا پیک فروخت کریں</value></data>
+  <data name="Measure_InputUnit" xml:space="preserve"><value>مقدار کی اکائی</value></data>
+  <data name="Measure_KgLitre" xml:space="preserve"><value>کلو / لیٹر</value></data>
+  <data name="Measure_GramMl" xml:space="preserve"><value>گرام / ملی لیٹر</value></data>
+  <data name="Measure_QuantityOrAmount" xml:space="preserve"><value>مقدار یا آخری رقم (روپے)</value></data>
+  <data name="Measure_Kilo" xml:space="preserve"><value>۱ کلو / لیٹر</value></data>
+  <data name="Measure_Half" xml:space="preserve"><value>آدھا — ½</value></data>
+  <data name="Measure_Pao" xml:space="preserve"><value>پاؤ — ¼</value></data>
+  <data name="Measure_Add" xml:space="preserve"><value>مقدار کی تصدیق اور شامل کریں</value></data>
+  <data name="Measure_BuyPacks" xml:space="preserve"><value>پیک وصول کریں (تعداد اور لاگت فی پیک)</value></data>
+  <data name="Service_Title" xml:space="preserve"><value>ڈیجیٹل سہولیات</value></data>
+  <data name="Service_ManualNotice" xml:space="preserve"><value>صرف دستی ریکارڈ۔ اصل لین دین مجاز فراہم کنندہ سے مکمل کریں۔ یہاں رقم منتقل یا ریچارج نہیں ہوتا۔</value></data>
+  <data name="Service_Record" xml:space="preserve"><value>لین دین درج کریں</value></data>
+  <data name="Service_History" xml:space="preserve"><value>لین دین کی تاریخ</value></data>
+  <data name="Service_Providers" xml:space="preserve"><value>فراہم کنندگان اور درج شدہ فلوٹ</value></data>
+  <data name="Service_Packages" xml:space="preserve"><value>موبائل پیکیجز</value></data>
+  <data name="Service_Reports" xml:space="preserve"><value>سروس رپورٹ</value></data>
+  <data name="Service_Provider" xml:space="preserve"><value>فراہم کنندہ / سروس اکاؤنٹ</value></data>
+  <data name="Service_Type" xml:space="preserve"><value>لین دین کی قسم</value></data>
+  <data name="Service_CASHIN" xml:space="preserve"><value>کیش اِن</value></data>
+  <data name="Service_CASHOUT" xml:space="preserve"><value>کیش آؤٹ</value></data>
+  <data name="Service_LOAD" xml:space="preserve"><value>موبائل لوڈ</value></data>
+  <data name="Service_PACKAGE" xml:space="preserve"><value>موبائل پیکیج</value></data>
+  <data name="Service_REVERSAL" xml:space="preserve"><value>واپسی کا اندراج</value></data>
+  <data name="Service_Principal" xml:space="preserve"><value>اصل رقم (روپے)</value></data>
+  <data name="Service_CustomerFee" xml:space="preserve"><value>گاہک کی فیس (روپے)</value></data>
+  <data name="Service_ProviderFee" xml:space="preserve"><value>فراہم کنندہ کی فیس (روپے)</value></data>
+  <data name="Service_Commission" xml:space="preserve"><value>تصدیق شدہ کمیشن (روپے)</value></data>
+  <data name="Service_ProviderCost" xml:space="preserve"><value>فراہم کنندہ کی لاگت (روپے)</value></data>
+  <data name="Service_Collected" xml:space="preserve"><value>وصول شدہ رقم (روپے)</value></data>
+  <data name="Service_FloatChange" xml:space="preserve"><value>اصل فلوٹ تبدیلی (+ / − روپے)</value></data>
+  <data name="Service_Reference" xml:space="preserve"><value>فراہم کنندہ کا حوالہ</value></data>
+  <data name="Service_Time" xml:space="preserve"><value>وقت (HH:mm)</value></data>
+  <data name="Service_Status" xml:space="preserve"><value>حالت</value></data>
+  <data name="Service_Draft" xml:space="preserve"><value>مسودہ</value></data>
+  <data name="Service_Pending" xml:space="preserve"><value>تصدیق کا انتظار</value></data>
+  <data name="Service_Confirmed" xml:space="preserve"><value>بیرونی تصدیق شدہ</value></data>
+  <data name="Service_Failed" xml:space="preserve"><value>ناکام</value></data>
+  <data name="Service_Reversed" xml:space="preserve"><value>واپس شدہ</value></data>
+  <data name="Service_ExternalConfirmed" xml:space="preserve"><value>میں نے مجاز فراہم کنندہ سے نتیجے کی تصدیق کی ہے</value></data>
+  <data name="Service_SettlementHelp" xml:space="preserve"><value>سیٹلمنٹ کی اصل مثبت یا منفی فلوٹ تبدیلی لکھیں؛ یہ لائیو وصول نہیں ہوتی۔ الگ درج کمیشن لاگت میں شامل نہ کریں، کمیشن دو بار درج نہ کریں۔</value></data>
+  <data name="Service_Save" xml:space="preserve"><value>دستی ریکارڈ محفوظ کریں</value></data>
+  <data name="Service_Saved" xml:space="preserve"><value>سروس ریکارڈ محفوظ ہوا</value></data>
+  <data name="Service_Receipt" xml:space="preserve"><value>سروس رسید</value></data>
+  <data name="Service_CashChange" xml:space="preserve"><value>نقد رقم کی خالص تبدیلی</value></data>
+  <data name="Service_Income" xml:space="preserve"><value>خالص سروس آمدنی</value></data>
+  <data name="Service_ActionConfirmed" xml:space="preserve"><value>بیرونی نتیجہ تصدیق کریں</value></data>
+  <data name="Service_ActionFailed" xml:space="preserve"><value>ناکام درج کریں</value></data>
+  <data name="Service_ActionReversed" xml:space="preserve"><value>تصدیق شدہ واپسی درج کریں</value></data>
+  <data name="Service_SelectTransaction" xml:space="preserve"><value>پہلے لین دین منتخب کریں۔</value></data>
+  <data name="Service_SelectCompleted" xml:space="preserve"><value>مکمل سروس کی رسید منتخب کریں۔</value></data>
+  <data name="Service_EditProvider" xml:space="preserve"><value>ترمیم کے لیے فراہم کنندہ چنیں یا نیچے نیا اکاؤنٹ لکھیں</value></data>
+  <data name="Service_OpeningFloat" xml:space="preserve"><value>ابتدائی درج شدہ فلوٹ (روپے)</value></data>
+  <data name="Service_FeePolicy" xml:space="preserve"><value>فیس کی پالیسی / نوٹ</value></data>
+  <data name="Service_CommissionPolicy" xml:space="preserve"><value>کمیشن کی پالیسی / نوٹ</value></data>
+  <data name="Service_ProviderSuggestions" xml:space="preserve"><value>مثالیں: جاز کیش، ایزی پیسہ، جاز، زونگ، یوفون، ٹیلی نار یا دیگر۔ اپنا مجاز اکاؤنٹ اور اصل شرائط لکھیں؛ کوئی نرخ فرض نہیں کیے جاتے۔</value></data>
+  <data name="Service_PackageName" xml:space="preserve"><value>پیکیج کا نام</value></data>
+  <data name="Service_EditPackage" xml:space="preserve"><value>ترمیم کے لیے پیکیج چنیں (اختیاری)</value></data>
+  <data name="Service_PackageType" xml:space="preserve"><value>پیکیج کی قسم</value></data>
+  <data name="Service_Validity" xml:space="preserve"><value>مدت</value></data>
+  <data name="Service_RechargeCollected" xml:space="preserve"><value>لوڈ / پیکیج کی وصول شدہ رقم</value></data>
+  <data name="Service_FailedReversed" xml:space="preserve"><value>ناکام / واپس شدہ ریکارڈ</value></data>
+  <data name="Service_RecordedFloat" xml:space="preserve"><value>درج شدہ فلوٹ — لائیو تصدیق شدہ بیلنس نہیں</value></data>
+  <data name="Service_Invalid" xml:space="preserve"><value>فراہم کنندہ، قسم، تاریخ، حوالہ اور ضروری خانے چیک کریں۔</value></data>
+  <data name="Service_InvalidAmount" xml:space="preserve"><value>مثبت اصل رقم اور غیر منفی فیس / لاگت دو اعشاری جگہ تک لکھیں۔</value></data>
+  <data name="Service_ReferenceRequired" xml:space="preserve"><value>تصدیق شدہ لین دین کے لیے فراہم کنندہ کا حوالہ ضروری ہے۔</value></data>
+  <data name="Service_ExternalRequired" xml:space="preserve"><value>پہلے اصل نتیجے کی تصدیق کریں اور حوالہ لکھیں۔</value></data>
+  <data name="Service_FloatShort" xml:space="preserve"><value>درج شدہ فلوٹ ناکافی ہے۔ اصل سیٹلمنٹ اور تبدیلی چیک کریں۔</value></data>
+  <data name="Service_OpeningLocked" xml:space="preserve"><value>لین دین کے بعد ابتدائی فلوٹ نہیں بدل سکتا۔ تبدیلی قابلِ آڈٹ ریکارڈ میں درج کریں۔</value></data>
+  <data name="Service_ConfirmationConflict" xml:space="preserve"><value>یہ تصدیق کسی مختلف ریکارڈ کی ہے۔</value></data>
+  <data name="Service_Immutable" xml:space="preserve"><value>مکمل یا ناکام ریکارڈ دوبارہ نہیں لکھ سکتے۔ جہاں مناسب ہو واپسی کا اندراج کریں۔</value></data>
+  <data name="Service_SelectProvider" xml:space="preserve"><value>موجودہ فراہم کنندہ چنیں۔</value></data>
+  <data name="Service_SignIn" xml:space="preserve"><value>سروس درج کرنے سے پہلے سائن اِن کریں۔</value></data>
+  <data name="Service_Disabled" xml:space="preserve"><value>متعلقہ سہولت سیٹنگز میں فعال کریں۔ تاریخ محفوظ رہتی ہے۔</value></data>
+  <data name="Service_Error" xml:space="preserve"><value>سروس ریکارڈ محفوظ نہیں ہوا۔ تفصیلات چیک کر کے دوبارہ کوشش کریں۔</value></data>
+  <data name="Service_PhysicalRevenue" xml:space="preserve"><value>عام اشیا کی فروخت</value></data>
+  <data name="Service_LooseRevenue" xml:space="preserve"><value>کھلی اشیا کی فروخت</value></data>
+  <data name="Invoice_Print" xml:space="preserve"><value>رسید پرنٹ کریں</value></data>
+  <data name="Invoice_WhatsApp" xml:space="preserve"><value>واٹس ایپ</value></data>
+  <data name="Invoice_Download" xml:space="preserve"><value>ڈاؤن لوڈ</value></data>
+  <data name="Invoice_NewSale" xml:space="preserve"><value>نئی فروخت</value></data>
+  <data name="Invoice_Retry" xml:space="preserve"><value>پرنٹ دوبارہ کریں</value></data>
+  <data name="Invoice_PrinterSettings" xml:space="preserve"><value>پرنٹر سیٹنگز</value></data>
+  <data name="Invoice_AddNumber" xml:space="preserve"><value>گاہک کا نمبر شامل / درست کریں</value></data>
+  <data name="Invoice_Browser" xml:space="preserve"><value>براؤزر میں کھولیں</value></data>
+  <data name="Invoice_ViewPdf" xml:space="preserve"><value>رسید PDF دیکھیں</value></data>
+  <data name="Invoice_PdfLocation" xml:space="preserve"><value>PDF کا فولڈر کھولیں</value></data>
+  <data name="Invoice_CopyDetails" xml:space="preserve"><value>رسید کی تفصیل نقل کریں</value></data>
+  <data name="Invoice_AttachmentNote" xml:space="preserve"><value>ڈاؤن لوڈ سے PDF محفوظ کر کے واٹس ایپ میں منسلک کریں۔ بھیجنے سے پہلے مسودہ دیکھیں۔</value></data>
+  <data name="Invoice_PhoneInvalid" xml:space="preserve"><value>درست بین الاقوامی نمبر یا پاکستانی موبائل نمبر مثلاً 03XXXXXXXXX درج کریں۔</value></data>
+  <data name="Invoice_CountryCode" xml:space="preserve"><value>مقامی نمبر کے لیے ملک کا کالنگ کوڈ</value></data>
+  <data name="Invoice_SaveNumber" xml:space="preserve"><value>درست نمبر رسید / گاہک کے ریکارڈ میں محفوظ کریں</value></data>
+  <data name="Invoice_NumberReady" xml:space="preserve"><value>اس رسید کے لیے گاہک کا نمبر تیار ہے۔</value></data>
+  <data name="Invoice_NumberSaveFailed" xml:space="preserve"><value>نمبر محفوظ نہیں ہوا۔ گاہک / اکاؤنٹ کی تفصیل چیک کریں یا محفوظ کیے بغیر استعمال کریں۔</value></data>
+  <data name="Invoice_PrinterMissing" xml:space="preserve"><value>پرنٹر سیٹنگز میں ونڈوز رسید پرنٹر منتخب کریں۔</value></data>
+  <data name="Invoice_PrinterUnavailable" xml:space="preserve"><value>پرنٹر موجود نہیں، آف لائن، موقوف یا توجہ کا محتاج ہے۔ چیک کر کے دوبارہ کوشش کریں یا دوسرا پرنٹر چنیں۔ رسید محفوظ ہے۔</value></data>
+  <data name="Invoice_PrintFailed" xml:space="preserve"><value>پرنٹ نہیں ہوا۔ پرنٹر چیک کر کے دوبارہ کوشش کریں یا سیٹنگز کھولیں۔ رسید محفوظ ہے۔</value></data>
+  <data name="Invoice_PrintSubmitted" xml:space="preserve"><value>پرنٹ جاب بھیج دی گئی۔ پرنٹر سے کاغذ نکلنے کی تصدیق کریں۔</value></data>
+  <data name="Invoice_Offline" xml:space="preserve"><value>نیٹ ورک رابطہ دستیاب نہیں۔ رسید محفوظ ہے؛ رابطہ ہونے پر شیئر کریں۔</value></data>
+  <data name="Invoice_DesktopOpened" xml:space="preserve"><value>جائزے کے لیے واٹس ایپ ڈیسک ٹاپ میں مسودہ کھولا۔ خودکار طور پر کچھ نہیں بھیجا گیا۔</value></data>
+  <data name="Invoice_BrowserOpened" xml:space="preserve"><value>جائزے کے لیے واٹس ایپ ویب کھول دیا۔ ضرورت ہو تو سائن اِن / ڈیوائس لنک کریں۔ ترسیل کی تصدیق نہیں۔</value></data>
+  <data name="Invoice_OpenFailed" xml:space="preserve"><value>منتخب کارروائی نہیں کھلی۔ دوبارہ کوشش کریں یا براؤزر میں کھولیں۔ محفوظ رسید برقرار ہے۔</value></data>
+  <data name="Invoice_DownloadFailed" xml:space="preserve"><value>PDF محفوظ نہیں ہوئی۔ قابلِ تحریر فولڈر منتخب کر کے دوبارہ کوشش کریں۔</value></data>
+  <data name="Invoice_Copied" xml:space="preserve"><value>رسید کی تفصیل نقل ہو گئی۔</value></data>
+  <data name="Invoice_DefaultMessage" xml:space="preserve"><value>السلام علیکم {CustomerName}،&#10;&#10;{StoreName} سے خریداری کا شکریہ۔&#10;رسید: {InvoiceNumber}&#10;تاریخ: {InvoiceDate}&#10;کل: PKR {InvoiceTotal}&#10;&#10;آپ کی رسید تیار ہے۔ شکریہ!</value></data>
+  <data name="Service_FinishDraft" xml:space="preserve"><value>لین دین کی قسم بدلنے سے پہلے موجودہ مسودہ مکمل یا محفوظ کریں۔</value></data>
+  <data name="Service_Active" xml:space="preserve"><value>فعال</value></data>
+  <data name="Service_SaveConfig" xml:space="preserve"><value>ترتیب محفوظ کریں</value></data>
+  <data name="Service_DuplicateReference" xml:space="preserve"><value>فراہم کنندہ کا یہ حوالہ پہلے مکمل درج ہو چکا ہے۔ دوبارہ درج کرنے کے بجائے تاریخ کھولیں۔</value></data>
+  <data name="Measure_ExistingPrice" xml:space="preserve"><value>اس پروڈکٹ کی کارٹ میں قیمت بدلی گئی ہے۔ اسی سطر کو درست کریں یا پیمائش کے حساب سے پہلے اسے ہٹائیں۔</value></data>
+  <data name="Help_StoreName" xml:space="preserve"><value>دکان کا یہ نام مینو اور عام رسید پر آتا ہے۔ دونوں سیٹنگ اسکرینیں ایک ہی مقامی پروفائل کو بدلتی ہیں۔</value></data>
+  <data name="Help_LegalName" xml:space="preserve"><value>رجسٹرڈ قانونی نام دکان کے تجارتی نام سے مختلف ہو سکتا ہے۔ سیٹ اپ محفوظ ہونے پر باقی Demo Account نام اس نام سے بدل جاتا ہے۔</value></data>
+  <data name="Help_InvoiceTemplate" xml:space="preserve"><value>اختیاری پیغام۔ خانے: {CustomerName}، {StoreName}، {InvoiceNumber}، {InvoiceDate}، {InvoiceTotal}۔ زبان کے مطابق نمونے کے لیے خالی چھوڑیں۔ گاہک کو بھیجنے سے پہلے کیشیئر واٹس ایپ میں جائزہ لیتا ہے۔</value></data>
+  <data name="Common_Continue" xml:space="preserve"><value>جاری رکھیں</value></data>
+  <data name="Measure_Grams" xml:space="preserve"><value>گرام</value></data>
+  <data name="Measure_Millilitres" xml:space="preserve"><value>ملی لیٹر</value></data>
+  <data name="Service_Config" xml:space="preserve"><value>ڈیجیٹل سروس کی ترتیبات</value></data>
+  <data name="Service_Prepaid" xml:space="preserve"><value>پری پیڈ</value></data>
+  <data name="Service_Postpaid" xml:space="preserve"><value>پوسٹ پیڈ</value></data>
+  <data name="Service_AccountType" xml:space="preserve"><value>اکاؤنٹ کی قسم</value></data>
+  <data name="Service_PackageId" xml:space="preserve"><value>پیکیج کی فراہم کنندہ شناخت</value></data>
+  <data name="Service_Benefits" xml:space="preserve"><value>فوائد / تفصیل</value></data>
+  <data name="Service_SearchPackages" xml:space="preserve"><value>محفوظ پیکیجز تلاش کریں…</value></data>
+  <data name="Service_NoPackages" xml:space="preserve"><value>اس نیٹ ورک اور اکاؤنٹ کی قسم کے لیے کوئی فعال پیکیج محفوظ نہیں۔</value></data>
+  <data name="Service_ChangePackage" xml:space="preserve"><value>دوسرا پیکیج منتخب کریں</value></data>
+  <data name="Service_ProviderResult" xml:space="preserve"><value>فراہم کنندہ کا نتیجہ</value></data>
+  <data name="Service_DefaultCustomerFee" xml:space="preserve"><value>کسٹمر کی مقررہ فیس (روپے)</value></data>
+  <data name="Service_DefaultProviderFee" xml:space="preserve"><value>فراہم کنندہ کی مقررہ فیس (روپے)</value></data>
+  <data name="Service_DefaultCommission" xml:space="preserve"><value>مقررہ کمیشن (روپے)</value></data>
+  <data name="Service_LoadCostRate" xml:space="preserve"><value>ریچارج لاگت کا تناسب (1 = پوری رقم)</value></data>
+  <data name="Service_SettlementDefaults" xml:space="preserve"><value>فیس اور کمیشن ہر لین دین کی مقررہ رقم ہیں۔ فلوٹ میں والیٹ کی اصل رقم یا ریچارج لاگت، کمیشن اور فراہم کنندہ فیس کے مطابق تبدیلی آتی ہے۔ مجاز فراہم کنندہ کے معاہدے کے مطابق ترتیب دیں۔</value></data>
+  <data name="Service_CatalogChanged" xml:space="preserve"><value>پیکیج کی قیمت یا چارجز بدل گئے ہیں۔ ریکارڈ کرنے سے پہلے پیکیج دوبارہ منتخب کریں۔</value></data>
+  <data name="Service_ToPay" xml:space="preserve"><value>نقد رقم کی ادائیگی</value></data>
+  <data name="Service_ToCollect" xml:space="preserve"><value>وصول ہونے والی رقم</value></data>
+  <data name="Service_FeeShort" xml:space="preserve"><value>فیس</value></data>
+  <data name="Service_CommissionShort" xml:space="preserve"><value>کمیشن</value></data>
+  <data name="Measure_Amount" xml:space="preserve"><value>رقم (روپے)</value></data>
+  <data name="Service_ResultConfirmed" xml:space="preserve"><value>تصدیق شدہ</value></data>
+  <data name="Service_ResultPending" xml:space="preserve"><value>زیرِ التواء</value></data>
+  <data name="Window_Minimize" xml:space="preserve"><value>چھوٹا کریں</value></data>
+  <data name="Window_Maximize" xml:space="preserve"><value>بڑا کریں / بحال کریں</value></data>
+  <data name="Pharmacy_Template" xml:space="preserve"><value>دوائیوں کا حوالہ ٹیمپلیٹ</value></data>
+  <data name="Pharmacy_NoTemplate" xml:space="preserve"><value>بغیر حوالہ ٹیمپلیٹ</value></data>
+  <data name="Pharmacy_DrapTemplate" xml:space="preserve"><value>پاکستانی دوائیاں — ۱۰،۰۶۸ حوالہ اندراجات</value></data>
+  <data name="Pharmacy_Catalog" xml:space="preserve"><value>دوائیوں کی فہرست</value></data>
+  <data name="Pharmacy_CatalogCount" xml:space="preserve"><value>حوالہ اندراجات کی تعداد</value></data>
+  <data name="Pharmacy_LoadTemplate" xml:space="preserve"><value>فراہم کردہ دوائیوں کا ٹیمپلیٹ لوڈ کریں</value></data>
+  <data name="Pharmacy_ImportCatalog" xml:space="preserve"><value>حوالہ سی ایس وی درآمد کریں</value></data>
+  <data name="Pharmacy_CatalogReady" xml:space="preserve"><value>حوالہ فہرست تیار ہے</value></data>
+  <data name="Pharmacy_CatalogReferenceOnly" xml:space="preserve"><value>صرف نام اور رجسٹریشن کے حوالے۔ قیمت، اسٹاک، بیچ اور میعاد یہ دکان مقرر کرتی ہے؛ ٹیمپلیٹ لوڈ کرنے سے اسٹاک نہیں بنتا۔</value></data>
+  <data name="Pharmacy_CatalogRights" xml:space="preserve"><value>ماخذ: فراہم کردہ سی ایس وی۔ رجسٹریشن کا حوالہ موجودہ منظوری یا فروخت کے ضوابط کی تصدیق نہیں کرتا۔ دوبارہ تقسیم کی اجازت کی تصدیق نہیں ہوئی۔</value></data>
+  <data name="Pharmacy_CatalogUnavailable" xml:space="preserve"><value>اس نسخے میں حوالہ ڈیٹا شامل نہیں۔ اجازت یافتہ سی ایس وی مقامی طور پر درآمد کریں۔</value></data>
+  <data name="Pharmacy_InvalidCatalog" xml:space="preserve"><value>حوالہ سی ایس وی دیکھیں: درست اندراج اور رجسٹریشن شناخت، دوائیوں کے نام اور منفرد قطاریں ضروری ہیں۔</value></data>
+  <data name="Pharmacy_CatalogOnly" xml:space="preserve"><value>صرف حوالہ فہرست</value></data>
+  <data name="Pharmacy_StockUntracked" xml:space="preserve"><value>اسٹاک غیر تصدیق شدہ</value></data>
+  <data name="Pharmacy_NeedsSetup" xml:space="preserve"><value>ترتیب درکار</value></data>
+  <data name="Pharmacy_InStock" xml:space="preserve"><value>اسٹاک دستیاب</value></data>
+  <data name="Pharmacy_OutOfStock" xml:space="preserve"><value>اسٹاک ختم</value></data>
+  <data name="Pharmacy_UseEnteredName" xml:space="preserve"><value>درج کردہ نام استعمال کریں</value></data>
+  <data name="Pharmacy_SellingUnit" xml:space="preserve"><value>فروخت کی اکائی</value></data>
+  <data name="Pharmacy_RulesReviewed" xml:space="preserve"><value>میں نے اس دوا کی فراہمی اور سراغ رسانی کی ضروریات کی جانچ کر لی ہے۔</value></data>
+  <data name="Pharmacy_RequiresPrescription" xml:space="preserve"><value>نسخے کی جانچ ضروری ہے</value></data>
+  <data name="Pharmacy_RequiresReference" xml:space="preserve"><value>دوا کی فراہمی کا حوالہ ضروری ہے</value></data>
+  <data name="Pharmacy_PrescriptionChecked" xml:space="preserve"><value>ضروری نسخہ چیک کر لیا</value></data>
+  <data name="Pharmacy_DispensingReference" xml:space="preserve"><value>نسخہ / فراہمی کا حوالہ</value></data>
+  <data name="Pharmacy_TraceabilityRequired" xml:space="preserve"><value>اس دوا کے ضروری نسخے، بیچ اور سراغ رسانی کی جانچ مکمل کریں۔</value></data>
+  <data name="Pharmacy_CannotUntrack" xml:space="preserve"><value>تصدیق شدہ اسٹاک کو غیر تصدیق شدہ نہیں بنایا جا سکتا۔</value></data>
+  <data name="Pharmacy_VerifyStockFirst" xml:space="preserve"><value>اسٹاک یا بیچ وصول کرنے سے پہلے موجودہ حقیقی مقدار کی تصدیق کریں۔</value></data>
+  <data name="Pharmacy_InvalidUnits" xml:space="preserve"><value>دوا کی درست اکائیاں اور پیک / پٹی کی درست تبدیلی درج کریں۔</value></data>
+  <data name="Pharmacy_ConfirmUnitPrice" xml:space="preserve"><value>اس اکائی کی مثبت فروخت قیمت کی تصدیق کریں۔</value></data>
+  <data name="Pharmacy_InvalidBarcode" xml:space="preserve"><value>درست بارکوڈ درج کریں؛ مقام کا کوڈ مصنوعات کے لیے نہیں ہے۔</value></data>
+  <data name="Pharmacy_InvalidReference" xml:space="preserve"><value>مقررہ حد میں درست حوالہ درج کریں۔</value></data>
+  <data name="Pharmacy_InvalidProduct" xml:space="preserve"><value>دوا کا نام، مثبت فروخت قیمت اور مکمل تعداد درج کریں۔</value></data>
+  <data name="Pharmacy_ResolutionRequired" xml:space="preserve"><value>اسٹاک کی تصدیق کی وجہ اور تفصیل درج کریں۔</value></data>
+  <data name="Pharmacy_AlreadyResolved" xml:space="preserve"><value>اس اسٹاک کی تصدیق پہلے ہی مکمل ہو چکی ہے۔</value></data>
+  <data name="Pharmacy_Only" xml:space="preserve"><value>یہ سہولت صرف فارمیسی کے لیے ہے۔</value></data>
+  <data name="Pharmacy_SearchError" xml:space="preserve"><value>دوا تلاش نہیں ہو سکی۔ دوبارہ کوشش کریں۔</value></data>
+  <data name="Pharmacy_SaveError" xml:space="preserve"><value>دوا محفوظ نہیں ہو سکی۔ دوبارہ کوشش کریں۔</value></data>
+  <data name="Measure_tablet" xml:space="preserve"><value>گولی</value></data>
+  <data name="Measure_capsule" xml:space="preserve"><value>کیپسول</value></data>
+  <data name="Measure_strip" xml:space="preserve"><value>پٹی</value></data>
+  <data name="Measure_bottle" xml:space="preserve"><value>بوتل</value></data>
+  <data name="Measure_tube" xml:space="preserve"><value>ٹیوب</value></data>
+  <data name="Measure_sachet" xml:space="preserve"><value>ساشے</value></data>
+  <data name="Measure_vial" xml:space="preserve"><value>شیشی</value></data>
+  <data name="Measure_other" xml:space="preserve"><value>دیگر اکائی</value></data>
+  <data name="Pharmacy_QuickAdd" xml:space="preserve"><value>دوا فوری شامل کریں</value></data>
+  <data name="Pharmacy_FullDetails" xml:space="preserve"><value>مکمل تفصیل درج کریں</value></data>
+  <data name="Pharmacy_UnitsPerStrip" xml:space="preserve"><value>ایک پٹی میں بنیادی اکائیاں (لاگو نہ ہو تو 1)</value></data>
+  <data name="Pharmacy_StripPrice" xml:space="preserve"><value>پٹی کی تصدیق شدہ قیمت (اختیاری)</value></data>
+  <data name="Pharmacy_MissingPrice" xml:space="preserve"><value>فروخت قیمت موجود نہیں</value></data>
+  <data name="Pharmacy_MissingCost" xml:space="preserve"><value>خرید لاگت موجود نہیں</value></data>
+  <data name="Pharmacy_UnverifiedStock" xml:space="preserve"><value>حقیقی اسٹاک کی تصدیق نہیں ہوئی</value></data>
+  <data name="Pharmacy_MissingRules" xml:space="preserve"><value>فراہمی کے اصول چیک نہیں ہوئے</value></data>
+  <data name="Pharmacy_VerifyPhysicalStock" xml:space="preserve"><value>حقیقی اسٹاک کی تصدیق</value></data>
+  <data name="Pharmacy_VerificationNote" xml:space="preserve"><value>گنتی کی تصدیق اور تطبیق کی تفصیل</value></data>
+  <data name="Pos_ConfirmClear" xml:space="preserve"><value>کیا کارٹ کی تمام اشیا ہٹا دیں؟</value></data>
+  <data name="Pharmacy_LocationNameRequired" xml:space="preserve"><value>ریک یا شیلف کا نام درج کریں (100 حروف تک)۔</value></data>
+  <data name="Pharmacy_LocationStockShortage" xml:space="preserve"><value>اس مقام پر کافی تصدیق شدہ اسٹاک نہیں ہے۔</value></data>
+  <data name="Pharmacy_SelectRack" xml:space="preserve"><value>شیلف کے لیے فعال ریک منتخب کریں۔</value></data>
+  <data name="Pharmacy_DuplicateLocation" xml:space="preserve"><value>یہ ریک یا شیلف کا نام پہلے سے موجود ہے۔</value></data>
+  <data name="Pharmacy_SelectStockLocation" xml:space="preserve"><value>فروخت کے لیے اسٹاک کا مقام منتخب کریں؛ شیلفوں کے درمیان اسٹاک خودکار منتقل نہیں ہوتا۔</value></data>
+  <data name="Pharmacy_StockLocation" xml:space="preserve"><value>ریک / شیلف کا اسٹاک</value></data>
+  <data name="Pharmacy_Unassigned" xml:space="preserve"><value>مقام مقرر نہیں</value></data>
+  <data name="Pharmacy_Locations" xml:space="preserve"><value>ریک اور شیلف</value></data>
+  <data name="Pharmacy_NewRack" xml:space="preserve"><value>نیا ریک</value></data>
+  <data name="Pharmacy_ParentRack" xml:space="preserve"><value>شیلف کا ریک</value></data>
+  <data name="Pharmacy_PrintLocationLabels" xml:space="preserve"><value>ریک / شیلف لیبل ڈاؤن لوڈ کریں</value></data>
+  <data name="Pharmacy_BaseQuantity" xml:space="preserve"><value>بنیادی اکائیوں میں تعداد</value></data>
+  <data name="Pharmacy_AssignLocation" xml:space="preserve"><value>گنا ہوا اسٹاک منتخب مقام پر مقرر کریں</value></data>
+  <data name="Pharmacy_CardView" xml:space="preserve"><value>کارڈ منظر</value></data>
+  <data name="Invoice_SecondPhone" xml:space="preserve"><value>دکان کا دوسرا رابطہ نمبر (اختیاری)</value></data>
+  <data name="Invoice_Notes" xml:space="preserve"><value>رسید کے نوٹس (ترتیب اور ہر سطر فعال کریں)</value></data>
+  <data name="Invoice_AddNote" xml:space="preserve"><value>رسید کا نوٹ شامل کریں</value></data>
+  <data name="Pharmacy_AllCategories" xml:space="preserve"><value>تمام اقسام</value></data>
+  <data name="Pharmacy_AllStock" xml:space="preserve"><value>اسٹاک کی تمام حالتیں</value></data>
+  <data name="Pharmacy_AllExpiry" xml:space="preserve"><value>میعاد کی تمام حالتیں</value></data>
+  <data name="Pharmacy_ClearLocation" xml:space="preserve"><value>ریک / شیلف فلٹر ہٹائیں</value></data>
+  <data name="Pharmacy_ReceivingUnit" xml:space="preserve"><value>وصولی کی اکائی</value></data>
+  <data name="Pharmacy_DestinationSelected" xml:space="preserve"><value>وصولی کا مقام منتخب ہو گیا</value></data>
+  <data name="Pharmacy_LocationNotProduct" xml:space="preserve"><value>یہ ریک یا شیلف کا لیبل ہے، فروخت کی چیز نہیں۔</value></data>
+  <data name="Pharmacy_ZeroOpeningVerified" xml:space="preserve"><value>میں نے تصدیق کی ہے کہ اس پہلی وصولی سے پہلے موجودہ اسٹاک صفر ہے۔</value></data>
+  <data name="Trade_DueDate" xml:space="preserve"><value>ادائیگی کی آخری تاریخ (اختیاری)</value></data>
+  <data name="Trade_InternalNote" xml:space="preserve"><value>ادھار کا اندرونی نوٹ (اختیاری)</value></data>
+  <data name="Storage_DailyBackups" xml:space="preserve"><value>پی او ایس چلتے وقت روزانہ تصدیق شدہ بیک اپ بنائیں</value></data>
+  <data name="Storage_LastBackup" xml:space="preserve"><value>آخری کامیاب خودکار بیک اپ</value></data>
+  <data name="Storage_NoAutoBackup" xml:space="preserve"><value>ابھی خودکار بیک اپ مکمل نہیں ہوا۔ پی او ایس آغاز پر اور ہر 30 منٹ بعد چیک کرتا ہے۔</value></data>
+  <data name="Storage_AutoFailed" xml:space="preserve"><value>خودکار بیک اپ ناکام ہوا۔ بیک اپ فولڈر اور خالی جگہ چیک کریں؛ موجودہ ڈیٹا تبدیل نہیں ہوا۔</value></data>
+  <data name="Storage_AutoStatusInvalid" xml:space="preserve"><value>بیک اپ کی حالت پڑھی نہیں جا سکی۔ بیک اپ کی تصدیق کریں یا نیا بنائیں۔</value></data>
+  <data name="Pharmacy_BatchHeld" xml:space="preserve"><value>بیچ الگ / روکا گیا ہے</value></data>
+  <data name="Pharmacy_HoldReason" xml:space="preserve"><value>روکنے یا جاری کرنے کی وجہ</value></data>
+  <data name="Pharmacy_HoldBatch" xml:space="preserve"><value>بیچ الگ / روکیں</value></data>
+  <data name="Pharmacy_ReleaseBatch" xml:space="preserve"><value>بیچ کی پابندی ختم کریں</value></data>
+  <data name="Pharmacy_SelectBatch" xml:space="preserve"><value>پہلے بیچ منتخب کریں۔</value></data>
+  <data name="Pharmacy_OnHandAvailable" xml:space="preserve"><value>موجود: {0:0.###} · دستیاب: {1:0.###}</value></data>
+  <data name="Pharmacy_MissingRack" xml:space="preserve"><value>ریک / شیلف مقرر نہیں</value></data>
+  <data name="Pharmacy_MissingBatch" xml:space="preserve"><value>بیچ / میعاد کی تقسیم نامکمل</value></data>
+  <data name="Pharmacy_PackedOnly" xml:space="preserve"><value>فارمیسی کی فروخت دوا کی پیک شدہ اکائیوں میں ہوتی ہے؛ گروسری کی وزن / حجم والی مصنوعات یہاں فروخت نہیں ہوتیں۔</value></data>
+  <data name="Pharmacy_AllBarcodes" xml:space="preserve"><value>تمام بارکوڈ</value></data>
+  <data name="Pharmacy_AllBatches" xml:space="preserve"><value>تمام بیچ</value></data>
+  <data name="Pharmacy_AllForms" xml:space="preserve"><value>تمام دوائی کی شکلیں</value></data>
+  <data name="Pharmacy_AllLocations" xml:space="preserve"><value>تمام ریک اور شیلف</value></data>
+  <data name="Pharmacy_AllManufacturers" xml:space="preserve"><value>تمام کمپنیاں</value></data>
+  <data name="Pharmacy_ClearFilters" xml:space="preserve"><value>فلٹر صاف کریں</value></data>
+  <data name="Pharmacy_DefaultLocation" xml:space="preserve"><value>وصولی کی پہلے سے منتخب جگہ (اختیاری)</value></data>
+  <data name="Pharmacy_FilterSummary" xml:space="preserve"><value>{0} ادویات · {1} بیچ</value></data>
+  <data name="Pharmacy_Form" xml:space="preserve"><value>دوائی کی شکل</value></data>
+  <data name="Pharmacy_Generic" xml:space="preserve"><value>جنیرک / اجزاء</value></data>
+  <data name="Pharmacy_HasBarcode" xml:space="preserve"><value>بارکوڈ موجود</value></data>
+  <data name="Pharmacy_IdentityDetails" xml:space="preserve"><value>دوائی کی تفصیلات (اختیاری)</value></data>
+  <data name="Pharmacy_LabelFormat" xml:space="preserve"><value>لیبل کے بارکوڈ کی قسم</value></data>
+  <data name="Pharmacy_LabelScope" xml:space="preserve"><value>پرنٹ کیے جانے والے لیبل</value></data>
+  <data name="Pharmacy_Manufacturer" xml:space="preserve"><value>کمپنی / سازندہ</value></data>
+  <data name="Pharmacy_MarginWarning" xml:space="preserve"><value>درج کردہ لاگت ٹیکس کے بغیر تصدیق شدہ فروخت کی قیمت سے زیادہ ہے۔ وصول کرنے سے پہلے دونوں قیمتیں دیکھیں۔</value></data>
+  <data name="Pharmacy_MissingBarcode" xml:space="preserve"><value>بارکوڈ موجود نہیں</value></data>
+  <data name="Pharmacy_RackLabels" xml:space="preserve"><value>منتخب ریک اور اس کے شیلف</value></data>
+  <data name="Pharmacy_Ready" xml:space="preserve"><value>فروخت کے لیے تیار</value></data>
+  <data name="Pharmacy_SelectedLabels" xml:space="preserve"><value>منتخب جگہیں</value></data>
+  <data name="Pharmacy_Strength" xml:space="preserve"><value>طاقت</value></data>
+  <data name="Pharmacy_Filters" xml:space="preserve"><value>اسٹاک کے فلٹر</value></data>
+</root>

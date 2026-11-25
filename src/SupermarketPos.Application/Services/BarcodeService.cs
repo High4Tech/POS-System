@@ -27,7 +27,7 @@ public sealed class BarcodeService : IBarcodeService
     }
 
     public bool IsWeightBarcode(string code) =>
-        !string.IsNullOrEmpty(code) && code.Length == 13 && code[0] == '2' && code.All(char.IsDigit);
+        !string.IsNullOrEmpty(code) && code.Length == 13 && code[0] == '2' && code.All(char.IsAsciiDigit);
 
     public WeightBarcode? ParseWeight(string code)
     {
@@ -46,7 +46,7 @@ public sealed class BarcodeService : IBarcodeService
 
     public int Ean13CheckDigit(string twelveDigits)
     {
-        if (twelveDigits is null || twelveDigits.Length != 12 || !twelveDigits.All(char.IsDigit))
+        if (twelveDigits is null || twelveDigits.Length != 12 || !twelveDigits.All(char.IsAsciiDigit))
             throw new ArgumentException("Exactly 12 digits are required.", nameof(twelveDigits));
 
         var sum = 0;

@@ -1,5 +1,48 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:layout="clr-namespace:SupermarketPos.Wpf.Common"
+                    xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
+                    xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
+
+    <sys:Double x:Key="TextSize12">12</sys:Double>
+    <sys:Double x:Key="TextSize13">13</sys:Double>
+    <sys:Double x:Key="TextSize14">14</sys:Double>
+    <sys:Double x:Key="TextSize15">15</sys:Double>
+    <sys:Double x:Key="TextSize16">16</sys:Double>
+    <sys:Double x:Key="TextSize17">17</sys:Double>
+    <sys:Double x:Key="TextSize18">18</sys:Double>
+    <sys:Double x:Key="TextSize19">19</sys:Double>
+    <sys:Double x:Key="TextSize20">20</sys:Double>
+    <sys:Double x:Key="TextSize21">21</sys:Double>
+    <sys:Double x:Key="TextSize22">22</sys:Double>
+    <sys:Double x:Key="TextSize26">26</sys:Double>
+    <sys:Double x:Key="TextSize28">28</sys:Double>
+    <sys:Double x:Key="TextSize32">32</sys:Double>
+    <sys:Double x:Key="TextSize44">44</sys:Double>
+    <sys:Double x:Key="TableTextSize">17</sys:Double>
+    <sys:Double x:Key="TableHeadingTextSize">16</sys:Double>
+    <sys:Double x:Key="TableSecondaryTextSize">15</sys:Double>
+    <sys:Double x:Key="TableRowHeight">52</sys:Double>
+    <sys:Double x:Key="TableLabelHeight">46</sys:Double>
+    <sys:Double x:Key="InventoryThumbnailSize">36</sys:Double>
+    <sys:Double x:Key="ProductDialogWidth">836</sys:Double>
+    <sys:Double x:Key="PaymentDialogWidth">640</sys:Double>
+    <sys:Double x:Key="CompactDialogWidth">564</sys:Double>
+    <sys:Double x:Key="SetupDialogWidth">1060</sys:Double>
+    <sys:Double x:Key="BusinessSettingsCardWidth">1180</sys:Double>
+    <sys:Double x:Key="BusinessSettingsContentWidth">1100</sys:Double>
+    <sys:Double x:Key="BusinessSettingsTabHeight">650</sys:Double>
+    <sys:Double x:Key="CategoryCardWidth">162</sys:Double>
+    <sys:Double x:Key="CategoryImageHeight">78</sys:Double>
+    <sys:Double x:Key="CategoryLabelHeight">42</sys:Double>
+    <sys:Double x:Key="ProductCardWidth">186</sys:Double>
+    <sys:Double x:Key="ProductImageHeight">92</sys:Double>
+    <sys:Double x:Key="ProductLabelHeight">54</sys:Double>
+    <sys:Double x:Key="ProductQuantityButtonSize">34</sys:Double>
+    <sys:Double x:Key="RegisterTileTextSize">14</sys:Double>
+    <sys:Double x:Key="RegisterTileIconSize">20</sys:Double>
+    <sys:Double x:Key="ProductTileInitialsSize">28</sys:Double>
 
     <!-- ============ Palette: Modern, vibrant POS (light) ============ -->
     <Color x:Key="BgColor">#FFF1F5F9</Color>        <!-- app canvas: light slate -->
@@ -9,8 +52,8 @@
     <Color x:Key="TextColor">#FF0F172A</Color>       <!-- dark slate -->
     <Color x:Key="MutedColor">#FF64748B</Color>      <!-- slate gray -->
     <Color x:Key="AccentColor">#FF2563EB</Color>     <!-- vivid blue (brand) -->
-    <Color x:Key="SuccessColor">#FF16A34A</Color>    <!-- green: cash / complete -->
-    <Color x:Key="InfoColor">#FF0EA5E9</Color>       <!-- sky blue: card -->
+    <Color x:Key="SuccessColor">#FF15803D</Color>    <!-- green: cash / complete -->
+    <Color x:Key="InfoColor">#FF0369A1</Color>       <!-- blue: card -->
     <Color x:Key="DangerColor">#FFEF4444</Color>     <!-- red -->
     <Color x:Key="WarnColor">#FFF59E0B</Color>       <!-- amber: low stock -->
 
@@ -24,58 +67,61 @@
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />
     <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource InfoColor}" />
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
+    <SolidColorBrush x:Key="StopBrush" Color="#FFB91C1C" />
     <SolidColorBrush x:Key="WarnBrush" Color="{StaticResource WarnColor}" />
 
     <!-- Brand gradient for the sidebar / hero accents -->
     <LinearGradientBrush x:Key="BrandGradient" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Color="#FF2563EB" Offset="0" />
-        <GradientStop Color="#FF4F46E5" Offset="1" />
+        <GradientStop Color="#FF1D4ED8" Offset="1" />
     </LinearGradientBrush>
 
     <FontFamily x:Key="MonoFont">Consolas</FontFamily>
-
-    <!-- Soft card shadow -->
-    <DropShadowEffect x:Key="CardShadow" BlurRadius="20" ShadowDepth="3" Direction="270"
-                      Color="#FF94A3B8" Opacity="0.28" />
+    <FontFamily x:Key="UiFont">Segoe UI</FontFamily>
 
     <!-- ============ Text ============ -->
     <Style TargetType="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-        <Setter Property="FontFamily" Value="Segoe UI" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{DynamicResource UiFont}" />
+        <Setter Property="FontSize" Value="{DynamicResource TextSize14}" />
     </Style>
 
     <Style x:Key="H1" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-        <Setter Property="FontSize" Value="26" />
+        <Setter Property="FontSize" Value="{DynamicResource TextSize26}" />
         <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
     <Style x:Key="Muted" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontSize" Value="{DynamicResource TextSize13}" />
     </Style>
 
     <Style x:Key="Money" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
         <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontSize" Value="{DynamicResource TextSize15}" />
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
     <Style x:Key="BigMoney" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
         <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
-        <Setter Property="FontSize" Value="44" />
+        <Setter Property="FontSize" Value="{DynamicResource TextSize44}" />
         <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="TextWrapping" Value="NoWrap" />
+        <Setter Property="TextTrimming" Value="None" />
+        <Setter Property="FlowDirection" Value="LeftToRight" />
     </Style>
 
     <!-- ============ Buttons ============ -->
+    <DropShadowEffect x:Key="ButtonShadow" Color="#14273B" BlurRadius="7" ShadowDepth="2" Direction="270" Opacity="0.17" />
+
     <Style x:Key="PrimaryButton" TargetType="Button">
         <Setter Property="Background" Value="{StaticResource AccentBrush}" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontSize" Value="{DynamicResource TextSize15}" />
         <Setter Property="Padding" Value="18,12" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="BorderThickness" Value="0" />
@@ -84,14 +130,27 @@
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="12"
                             Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <ContentPresenter.ContentTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                               FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=Button}}"
+                                               FontWeight="{Binding FontWeight, RelativeSource={RelativeSource AncestorType=Button}}"
+                                               TextWrapping="Wrap" TextAlignment="Center" />
+                                </DataTemplate>
+                            </ContentPresenter.ContentTemplate>
+                        </ContentPresenter>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="b" Property="Opacity" Value="0.9" />
+                            <Setter TargetName="b" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect Color="#FF0F172A" ShadowDepth="1" Opacity="0.22" BlurRadius="6" />
+                                </Setter.Value>
+                            </Setter>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="b" Property="Opacity" Value="0.78" />
+                            <Setter TargetName="b" Property="Effect" Value="{x:Null}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="b" Property="Opacity" Value="0.4" />
@@ -104,8 +163,24 @@
 
     <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
         <Setter Property="Background" Value="{StaticResource SuccessBrush}" />
-        <Setter Property="FontSize" Value="17" />
+        <Setter Property="FontSize" Value="{DynamicResource TextSize17}" />
         <Setter Property="Padding" Value="18,15" />
+    </Style>
+
+    <Style x:Key="StopButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="Background" Value="{StaticResource StopBrush}" />
+    </Style>
+
+    <Style x:Key="TableScanButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Margin" Value="0,28,0,8" />
+        <Setter Property="MinWidth" Value="172" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="Background" Value="{StaticResource StopBrush}" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="InfoButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
@@ -115,7 +190,7 @@
     <Style x:Key="GhostButton" TargetType="Button">
         <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
         <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="{DynamicResource TextSize14}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Padding" Value="14,10" />
         <Setter Property="Cursor" Value="Hand" />
@@ -124,7 +199,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="12"
-                            Padding="{TemplateBinding Padding}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1.4">
+                            Padding="{TemplateBinding Padding}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1.4"
+                            Effect="{StaticResource ButtonShadow}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
@@ -132,8 +208,12 @@
                             <Setter TargetName="b" Property="Background" Value="{StaticResource Surface2Brush}" />
                             <Setter TargetName="b" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
                         </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="b" Property="Effect" Value="{x:Null}" />
+                        </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="b" Property="Opacity" Value="0.4" />
+                            <Setter TargetName="b" Property="Effect" Value="{x:Null}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -141,60 +221,87 @@
         </Setter>
     </Style>
 
-    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource GhostButton}">
-        <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource StopButton}" />
+
+    <Style x:Key="CatalogChoiceCard" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource Surface2Brush}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+        <Setter Property="FontSize" Value="{DynamicResource TextSize15}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+            <Border x:Name="Card" Background="{TemplateBinding Background}" CornerRadius="12" Padding="12"><ContentPresenter/></Border>
+            <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Card" Property="Effect"><Setter.Value><DropShadowEffect Color="#14273B" BlurRadius="14" ShadowDepth="3" Opacity="0.23"/></Setter.Value></Setter></Trigger></ControlTemplate.Triggers>
+        </ControlTemplate></Setter.Value></Setter>
+    </Style>
+    <Style x:Key="DialogFit" TargetType="Viewbox">
+        <Setter Property="StretchDirection" Value="DownOnly" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="14" />
     </Style>
 
-    <!-- ============ Inputs ============ -->
-    <Style TargetType="TextBox">
-        <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-        <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
-        <Setter Property="BorderThickness" Value="1.4" />
-        <Setter Property="FontSize" Value="15" />
-        <Setter Property="Padding" Value="11,9" />
+    <Style x:Key="CaptionButton" TargetType="Button" BasedOn="{StaticResource GhostButton}">
+        <Setter Property="Width" Value="42"/><Setter Property="Height" Value="34"/><Setter Property="MinHeight" Value="0"/>
+        <Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="2"/>
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/><Setter Property="FontSize" Value="12"/>
+        <Setter Property="shell:WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+    </Style>
+    <Style x:Key="CaptionWindow" TargetType="Window">
+        <Setter Property="FontFamily" Value="{DynamicResource UiFont}"/>
+        <Setter Property="shell:WindowChrome.WindowChrome"><Setter.Value><shell:WindowChrome CaptionHeight="42" ResizeBorderThickness="6" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></Setter.Value></Setter>
+        <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Window">
+            <Border BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}" Background="{TemplateBinding Background}">
+                <Grid><Grid.RowDefinitions><RowDefinition Height="42"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                    <DockPanel FlowDirection="LeftToRight" Background="{DynamicResource BgBrush}">
+                        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                            <Button Style="{StaticResource CaptionButton}" layout:WindowCaption.Action="minimize" AutomationProperties.Name="{loc:T Window_Minimize}" ToolTip="{loc:T Window_Minimize}"><Path Data="M0,5 L12,5" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.4" Width="12" Height="10"/></Button>
+                            <Button Style="{StaticResource CaptionButton}" layout:WindowCaption.Action="maximize" AutomationProperties.Name="{loc:T Window_Maximize}" ToolTip="{loc:T Window_Maximize}"><Path Data="M0,0 L10,0 10,10 0,10 Z" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.4" Width="12" Height="12"/></Button>
+                            <Button Style="{StaticResource CaptionButton}" layout:WindowCaption.Action="close" AutomationProperties.Name="{loc:T Common_Close}" ToolTip="{loc:T Common_Close}"><Path Data="M0,0 L10,10 M10,0 L0,10" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.4" Width="12" Height="12"/></Button>
+                        </StackPanel>
+                        <TextBlock Text="{TemplateBinding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="12,0" FontSize="14"/>
+                    </DockPanel>
+                    <AdornerDecorator Grid.Row="1"><ContentPresenter/></AdornerDecorator>
+                </Grid>
+            </Border>
+        </ControlTemplate></Setter.Value></Setter>
+    </Style>
+    <Style TargetType="Window" BasedOn="{StaticResource CaptionWindow}"/>
+    <Style x:Key="FormDialogWindow" TargetType="Window" BasedOn="{StaticResource CaptionWindow}">
+        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+        <Setter Property="layout:DialogBounds.FitOwner" Value="True" />
+    </Style>
+
+    <!-- Content supplies initials. Tag supplies the decoded photo. -->
+    <Style x:Key="CatalogThumbnail" TargetType="ContentControl">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Focusable" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="TextBox">
-                    <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="10"
-                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" />
+                <ControlTemplate TargetType="ContentControl">
+                    <Border x:Name="ThumbnailFrame" Background="{StaticResource SurfaceBrush}" CornerRadius="8">
+                        <Grid>
+                            <Rectangle x:Name="Photo" RadiusX="8" RadiusY="8">
+                                <Rectangle.Fill>
+                                    <ImageBrush ImageSource="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" Stretch="Uniform" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <TextBlock x:Name="Initials" Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                       FontSize="{TemplateBinding FontSize}" FontWeight="{TemplateBinding FontWeight}"
+                                       Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Visibility="Collapsed" />
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="b" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="b" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                        <Trigger Property="Tag" Value="{x:Null}">
+                            <Setter TargetName="ThumbnailFrame" Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter TargetName="Photo" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="Initials" Property="Visibility" Value="Visible" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-
-    <Style TargetType="PasswordBox">
-        <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-        <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
-        <Setter Property="BorderThickness" Value="1.4" />
-        <Setter Property="FontSize" Value="15" />
-        <Setter Property="Padding" Value="11,9" />
-    </Style>
-
-    <Style TargetType="ComboBox">
-        <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="Padding" Value="9,7" />
-    </Style>
-
-    <Style TargetType="CheckBox">
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-        <Setter Property="FontSize" Value="14" />
     </Style>
 
     <!-- ============ Cards ============ -->
@@ -204,45 +311,6 @@
         <Setter Property="Padding" Value="20" />
         <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Effect" Value="{StaticResource CardShadow}" />
-    </Style>
-
-    <!-- ============ DataGrid ============ -->
-    <Style TargetType="DataGrid">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="GridLinesVisibility" Value="Horizontal" />
-        <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource BorderBrush}" />
-        <Setter Property="RowBackground" Value="Transparent" />
-        <Setter Property="AlternatingRowBackground" Value="#FFF8FAFC" />
-        <Setter Property="AutoGenerateColumns" Value="False" />
-        <Setter Property="CanUserAddRows" Value="False" />
-        <Setter Property="HeadersVisibility" Value="Column" />
-        <Setter Property="RowHeight" Value="42" />
-        <Setter Property="FontSize" Value="14" />
-    </Style>
-
-    <Style TargetType="DataGridColumnHeader">
-        <Setter Property="Background" Value="{StaticResource Surface2Brush}" />
-        <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Padding" Value="10,10" />
-        <Setter Property="BorderThickness" Value="0" />
-    </Style>
-
-    <Style TargetType="DataGridCell">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-        <Setter Property="Padding" Value="10,0" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Style.Triggers>
-            <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Background" Value="#1F2563EB" />
-                <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
     <!-- ============ Vibrant category palette (8 hues) ============ -->
@@ -262,25 +330,30 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
     <Style x:Key="BadgeText" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="{DynamicResource TextSize12}" />
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
     <!-- ============ Tappable product / category tile ============ -->
     <Style x:Key="TileButton" TargetType="Button">
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="14"
-                            Padding="{TemplateBinding Padding}" Effect="{StaticResource CardShadow}">
+                            BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"
+                            Padding="{TemplateBinding Padding}">
                         <ContentPresenter />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="b" Property="Opacity" Value="0.92" />
+                            <Setter TargetName="b" Property="BorderBrush" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="b" Property="BorderBrush" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="b" Property="RenderTransform">

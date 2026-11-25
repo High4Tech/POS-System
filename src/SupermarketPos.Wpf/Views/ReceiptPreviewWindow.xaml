@@ -1,0 +1,36 @@
+<UserControl x:Class="SupermarketPos.Wpf.Views.ReceiptPreviewWindow" FontSize="{DynamicResource TextSize14}"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
+        FlowDirection="{Binding FlowDirection, Source={x:Static loc:LocalizationManager.Instance}}"
+        Background="{StaticResource BgBrush}">
+    <DockPanel Margin="20">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
+            <Button x:Name="CloseButton" DockPanel.Dock="Right" Content="{loc:T Common_Close}" Click="ClosePreview" Style="{StaticResource GhostButton}" VerticalAlignment="Top" Margin="12,0,0,0"/>
+            <TextBlock Text="{loc:T Receipt_Preview}" Style="{StaticResource H1}" TextWrapping="Wrap" />
+        </DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Margin="0,14,0,0">
+            <WrapPanel x:Name="PageControls" HorizontalAlignment="Center" Margin="0,0,0,10" Visibility="Collapsed">
+                <Button x:Name="PreviousButton" Content="{loc:T Receipt_PreviousPage}" Click="PreviousPage" Style="{StaticResource GhostButton}" />
+                <TextBlock x:Name="PageNumber" VerticalAlignment="Center" Margin="10,0" />
+                <Button x:Name="NextButton" Content="{loc:T Receipt_NextPage}" Click="NextPage" Style="{StaticResource GhostButton}" />
+            </WrapPanel>
+            <TextBlock x:Name="SavedMessage" Text="{loc:T Msg_ReceiptSaved}" Foreground="{StaticResource SuccessBrush}"
+                       Visibility="Collapsed" Margin="0,0,0,8" TextWrapping="Wrap" />
+            <WrapPanel HorizontalAlignment="Center" Margin="0,0,0,8">
+                <Button x:Name="PrintButton" Content="{loc:T Invoice_Print}" Click="PrintReceipt" Style="{StaticResource PrimaryButton}" Margin="4"/>
+                <Button x:Name="WhatsAppButton" Content="{loc:T Invoice_WhatsApp}" Click="OpenWhatsApp" Style="{StaticResource PrimaryButton}" Margin="4"/>
+                <Button x:Name="SaveButton" Content="{loc:T Invoice_Download}" Click="SavePdf" Style="{StaticResource PrimaryButton}" Margin="4"/>
+            </WrapPanel>
+            <WrapPanel HorizontalAlignment="Center">
+                <Button x:Name="RetryPrintButton" Content="{loc:T Invoice_Retry}" Click="PrintReceipt" Style="{StaticResource GhostButton}" Visibility="Collapsed" Margin="4"/>
+            </WrapPanel>
+            <StackPanel x:Name="PromptPanel" Visibility="Collapsed" Margin="4,8"/>
+            <TextBlock x:Name="AttachmentNote" Text="{loc:T Invoice_AttachmentNote}" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="4,8,4,0" Visibility="Collapsed"/>
+        </StackPanel>
+        <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                HorizontalAlignment="Center" Padding="8" MaxWidth="580">
+            <Image x:Name="PagePreview" FlowDirection="LeftToRight" Stretch="Uniform" />
+        </Border>
+    </DockPanel>
+</UserControl>

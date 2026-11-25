@@ -3,39 +3,105 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
              Background="{StaticResource BgBrush}">
-    <Grid Margin="24">
-        <DockPanel>
-            <TextBlock Text="{loc:T Settings_Title}" Style="{StaticResource H1}" DockPanel.Dock="Top" Margin="0,0,0,18" />
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24">
+            <TextBlock Text="{loc:T Settings_Title}" Style="{StaticResource H1}" Margin="0,0,0,18" />
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16"><StackPanel>
+                <Button Content="{loc:T Business_Settings}" Command="{Binding OpenBusinessSettingsCommand}" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" />
+                <TextBlock Text="{loc:T Business_SettingsHelp}" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8,0,0" />
+            </StackPanel></Border>
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <WrapPanel>
+                    <TextBlock x:Name="TextSizeLabel" Text="{loc:T Settings_TextSize}" Style="{StaticResource FormLabel}"
+                               VerticalAlignment="Center" Margin="0,0,12,0" />
+                    <ComboBox ItemsSource="{Binding TextSizes}" DisplayMemberPath="Label" SelectedValuePath="Percent"
+                              SelectedValue="{Binding TextSizePercent}" AutomationProperties.LabeledBy="{Binding ElementName=TextSizeLabel}"
+                              MinWidth="104" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <Button Content="{loc:T Settings_ApplyTextSize}" Command="{Binding SaveTextSizeCommand}"
+                            Style="{StaticResource PrimaryButton}" Margin="0,0,12,0" />
+                    <TextBlock Text="{Binding TextSizeStatus}" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center" />
+                </WrapPanel>
+            </Border>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Text="{loc:T Profile_Logo}" Style="{StaticResource FormLabel}" Margin="0,0,0,6" />
+                        <DockPanel Margin="0,0,0,14">
+                            <Border DockPanel.Dock="Left" Width="106" Height="68" Padding="6" CornerRadius="8"
+                                    Background="{StaticResource Surface2Brush}" Margin="0,0,12,0">
+                                <Image Source="{Binding LogoPath, Converter={StaticResource PathToImage}}" Stretch="Uniform" />
+                            </Border>
+                            <WrapPanel VerticalAlignment="Center">
+                                <Button Content="{loc:T Profile_ChooseLogo}" Command="{Binding ChooseLogoCommand}" Style="{StaticResource GhostButton}" />
+                                <Button Content="{loc:T Profile_RemoveLogo}" Command="{Binding RemoveLogoCommand}" Style="{StaticResource DangerButton}"
+                                        Visibility="{Binding LogoPath, Converter={StaticResource HasImageToVis}}" />
+                            </WrapPanel>
+                        </DockPanel>
+                        <TextBlock Text="{loc:T Settings_StoreName}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding StoreName, UpdateSourceTrigger=PropertyChanged}" MaxLength="150" Margin="0,0,0,12" />
+                        <TextBlock Text="{loc:T Settings_StoreAddress}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding StoreAddress, UpdateSourceTrigger=PropertyChanged}" MaxLength="300" Margin="0,0,0,12" />
+                        <TextBlock Text="{loc:T Settings_Language}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                        <ComboBox ItemsSource="{Binding Languages}" DisplayMemberPath="Label"
+                                  SelectedValuePath="Code" SelectedValue="{Binding Language}" Margin="0,0,0,12" />
+                        <TextBlock Text="{loc:T Settings_LowStockThreshold}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding LowStockThreshold, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" Margin="0,0,0,12" />
+                        <TextBlock Text="{loc:T Settings_VatRates}" Style="{StaticResource FormLabel}" TextWrapping="Wrap" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding VatRatesCsv, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" Margin="0,0,0,16" />
+                        <Button Content="{loc:T Profile_Save}" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}"
+                                HorizontalAlignment="Left" />
+                        <TextBlock Text="{Binding ProfileStatus}" Foreground="{StaticResource SuccessBrush}" Margin="0,8,0,0"
+                                   Visibility="{Binding ProfileStatus, Converter={StaticResource StrToVis}}" />
+                    </StackPanel>
+                </Border>
 
-            <Border Style="{StaticResource Card}" Width="520" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Text="{loc:T Profile_OperatorName}" Style="{StaticResource H1}" FontSize="{DynamicResource TextSize20}" Margin="0,0,0,8" />
+                        <TextBox Text="{Binding OperatorName, UpdateSourceTrigger=PropertyChanged}" MaxLength="100"
+                                 AutomationProperties.Name="{loc:T Profile_OperatorName}" Margin="0,0,0,10" />
+                        <Button Content="{loc:T Profile_SaveOperator}" Command="{Binding SaveOperatorCommand}" Style="{StaticResource GhostButton}"
+                                HorizontalAlignment="Left" />
+                        <TextBlock Text="{Binding OperatorStatus}" Foreground="{StaticResource SuccessBrush}" TextWrapping="Wrap"
+                                   Visibility="{Binding OperatorStatus, Converter={StaticResource StrToVis}}" Margin="0,8,0,0" />
+                        <Separator Margin="0,15" />
+                        <TextBlock Text="{loc:T Profile_ChangePassword}" Style="{StaticResource H1}" FontSize="{DynamicResource TextSize20}" />
+                        <TextBlock Text="{Binding Username}" Style="{StaticResource Muted}" Margin="0,2,0,14" />
+                        <TextBlock x:Name="CurrentLabel" Text="{loc:T Profile_CurrentPassword}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                        <PasswordBox x:Name="CurrentPassword" AutomationProperties.LabeledBy="{Binding ElementName=CurrentLabel}"
+                                     FlowDirection="LeftToRight" Margin="0,0,0,12" />
+                        <TextBlock x:Name="NewLabel" Text="{loc:T Profile_NewPassword}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                        <PasswordBox x:Name="NewPassword" AutomationProperties.LabeledBy="{Binding ElementName=NewLabel}"
+                                     FlowDirection="LeftToRight" Margin="0,0,0,12" />
+                        <TextBlock x:Name="ConfirmLabel" Text="{loc:T Profile_ConfirmPassword}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                        <PasswordBox x:Name="ConfirmPassword" AutomationProperties.LabeledBy="{Binding ElementName=ConfirmLabel}"
+                                     FlowDirection="LeftToRight" Margin="0,0,0,16" />
+                        <Button x:Name="ChangePasswordButton" Content="{loc:T Profile_ChangePassword}" Style="{StaticResource PrimaryButton}"
+                                HorizontalAlignment="Left" Click="ChangePassword" />
+                        <TextBlock Text="{Binding PasswordStatus}" Foreground="{StaticResource SuccessBrush}" TextWrapping="Wrap" Margin="0,8,0,0"
+                                   Visibility="{Binding PasswordStatus, Converter={StaticResource StrToVis}}" />
+                        <TextBlock Text="{Binding PasswordError}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" Margin="0,8,0,0"
+                                   Visibility="{Binding PasswordError, Converter={StaticResource StrToVis}}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+            <Border Style="{StaticResource Card}" Margin="0,16,0,0" DataContext="{Binding Sounds}">
                 <StackPanel>
-                    <TextBlock Text="{loc:T Settings_StoreName}" Style="{StaticResource Muted}" Margin="0,0,0,4" />
-                    <TextBox Text="{Binding StoreName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,14" />
-
-                    <TextBlock Text="{loc:T Settings_StoreAddress}" Style="{StaticResource Muted}" Margin="0,0,0,4" />
-                    <TextBox Text="{Binding StoreAddress, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,14" />
-
-                    <Grid Margin="0,0,0,14">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Text="{loc:T Settings_Language}" Style="{StaticResource Muted}" Margin="0,0,0,4" />
-                            <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                            <TextBlock Text="{loc:T Settings_LowStockThreshold}" Style="{StaticResource Muted}" Margin="0,0,0,4" />
-                            <TextBox Text="{Binding LowStockThreshold, UpdateSourceTrigger=PropertyChanged}" />
-                        </StackPanel>
-                    </Grid>
-
-                    <TextBlock Text="{loc:T Settings_VatRates}" Style="{StaticResource Muted}" Margin="0,0,0,4" />
-                    <TextBox Text="{Binding VatRatesCsv, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,18" />
-
-                    <Button Content="{loc:T Common_Save}" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" />
+                    <TextBlock Text="{loc:T Sounds_Title}" Style="{StaticResource H1}" FontSize="{DynamicResource TextSize20}" Margin="0,0,0,8" />
+                    <WrapPanel Margin="0,0,0,8">
+                        <CheckBox Content="{loc:T Sounds_Enabled}" IsChecked="{Binding Enabled}" Margin="0,0,16,6" />
+                        <CheckBox Content="{loc:T Sounds_Success}" IsChecked="{Binding Success}" Margin="0,0,16,6" />
+                        <CheckBox Content="{loc:T Sounds_Warning}" IsChecked="{Binding Warning}" Margin="0,0,16,6" />
+                    </WrapPanel>
+                    <Button Content="{loc:T Sounds_Test}" Command="{Binding TestSoundCommand}" Style="{StaticResource GhostButton}"
+                            HorizontalAlignment="Left" />
                 </StackPanel>
             </Border>
-        </DockPanel>
-    </Grid>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

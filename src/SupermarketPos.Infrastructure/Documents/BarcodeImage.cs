@@ -10,14 +10,18 @@ public static class BarcodeImage
 {
     public static byte[]? TryRenderEan13(string rawBarcode, int width = 300, int height = 110)
     {
-        var digits = new string(rawBarcode.Where(char.IsDigit).ToArray());
-        if (digits.Length < 12) return null;
-        var content = digits.Substring(0, 12); // ZXing appends the 13th (check) digit
+        if(rawBarcode.Length is not (12 or 13)||!rawBarcode.All(char.IsAsciiDigit))return null;
+        return Render(rawBarcode,BarcodeFormat.EAN_13,width,height);
+    }
+    public static byte[]? TryRenderCode128(string barcode,int width=600,int height=150)=>Render(barcode,BarcodeFormat.CODE_128,width,height);
+    public static byte[]? TryRenderQr(string barcode,int size=300)=>Render(barcode,BarcodeFormat.QR_CODE,size,size);
+    private static byte[]? Render(string content,BarcodeFormat format,int width,int height)
+    {
 
         var writer = new BarcodeWriterPixelData
         {
-            Format = BarcodeFormat.EAN_13,
-            Options = new EncodingOptions { Width = width, Height = height, Margin = 4, PureBarcode = false }
+            Format = format,
+            Options = new EncodingOptions { Width = width, Height = height, Margin = format==BarcodeFormat.CODE_128?16:4, PureBarcode = false }
         };
 
         try

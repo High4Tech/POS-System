@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using SupermarketPos.Domain.Entities;
 
 namespace SupermarketPos.Wpf.Common;
 
@@ -20,15 +21,41 @@ public sealed class CategoryColorConverter : IValueConverter
         Color.FromRgb(0xF9, 0x73, 0x16), // orange
     };
 
-    public static Brush Brush(int key)
+    public static SolidColorBrush Brush(int key) => Brush(null, key);
+
+    public static SolidColorBrush Brush(string? hex, int fallback = 0)
     {
-        var b = new SolidColorBrush(Palette[((key % Palette.Length) + Palette.Length) % Palette.Length]);
+        var color = hex is null
+            ? Palette[((fallback % Palette.Length) + Palette.Length) % Palette.Length]
+            : (Color)ColorConverter.ConvertFromString(hex);
+        var b = new SolidColorBrush(color);
         b.Freeze();
         return b;
     }
 
+    public static SolidColorBrush TileBrush(string? hex, int fallback)
+    {
+        var brush = Brush(hex, fallback);
+        var color = brush.Color;
+        var luminance = 0.2126f * color.ScR + 0.7152f * color.ScG + 0.0722f * color.ScB;
+        const float whiteTextLimit = 0.175f;
+        if (luminance <= whiteTextLimit) return brush;
+
+        // Keep the chosen hue and lower its luminance enough for white labels.
+        var scale = whiteTextLimit / luminance;
+        var dark = new SolidColorBrush(Color.FromScRgb(1f, color.ScR * scale, color.ScG * scale, color.ScB * scale));
+        dark.Freeze();
+        return dark;
+    }
+
     public object Convert(object value, Type targetType, object? parameter, CultureInfo culture) =>
-        Brush(value is int i ? i : 0);
+        value switch
+        {
+            Category category => Brush(category.ColorHex, category.Id),
+            string color => Brush(color),
+            int index => Brush(index),
+            _ => Brush(0)
+        };
 
     public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture) =>
         throw new NotSupportedException();
@@ -39,15 +66,16 @@ public sealed class PathToImageConverter : IValueConverter
 {
     public object? Convert(object value, Type targetType, object? parameter, CultureInfo culture)
     {
-        var path = value as string;
+        var path = PosStorage.ResolveImagePath(value as string);
         if (string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path)) return null;
         try
         {
+            using var stream = System.IO.File.OpenRead(path);
             var bmp = new System.Windows.Media.Imaging.BitmapImage();
             bmp.BeginInit();
             bmp.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
-            bmp.UriSource = new Uri(path, UriKind.Absolute);
-            bmp.DecodePixelWidth = 220;
+            bmp.StreamSource = stream;
+            bmp.DecodePixelWidth = parameter is string width && int.TryParse(width, out var pixels) ? pixels : 220;
             bmp.EndInit();
             bmp.Freeze();
             return bmp;
@@ -59,11 +87,50 @@ public sealed class PathToImageConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+public sealed class RegisterTileWidthConverter : IMultiValueConverter
+{
+    public double StandardWidth { get; set; }
+    public double Gap { get; set; }
+
+    public object Convert(object[] values, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (values[1] is not double preferred) return StandardWidth;
+        if (values[0] is not double viewport || viewport <= Gap || !double.IsFinite(viewport)) return preferred;
+        if (preferred <= StandardWidth) return Math.Min(preferred, viewport - Gap);
+
+        var standardColumns = (int)(viewport / (StandardWidth + Gap));
+        var preferredColumns = (int)Math.Round(viewport / (preferred + Gap));
+        var columns = Math.Max(1, Math.Max(preferredColumns, Math.Min(5, standardColumns)));
+        var fittedWidth = Math.Floor(viewport / columns) - Gap;
+        return columns < 3 ? Math.Min(preferred, fittedWidth) : fittedWidth;
+    }
+
+    public object[] ConvertBack(object value, Type[] targetTypes, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
+public sealed class ProductResultsHeightConverter : IMultiValueConverter
+{
+    public object Convert(object[] values, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (values[0] is not double available || values[1] is not double tableHeader)
+            return DependencyProperty.UnsetValue;
+
+        // Leave room for the cart title, table header, scan button and spacing.
+        var cartReserve = tableHeader * 1.5 + 128;
+        if(parameter as string=="context")return Math.Max(100,Math.Min(available*.75,available-cartReserve));
+        return Math.Min(available * 0.50, Math.Max(available * 0.15, available - cartReserve));
+    }
+
+    public object[] ConvertBack(object value, Type[] targetTypes, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>True when there is a usable image at the given path (for placeholder toggling).</summary>
 public sealed class HasImageToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object? parameter, CultureInfo culture) =>
-        value is string s && !string.IsNullOrWhiteSpace(s) && System.IO.File.Exists(s)
+        System.IO.File.Exists(PosStorage.ResolveImagePath(value as string))
             ? Visibility.Visible : Visibility.Collapsed;
 
     public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture) =>

@@ -27,6 +27,13 @@ public sealed class User
 
     public bool IsAdmin => Role == UserRole.Admin;
 
+    public void SetDisplayName(string name)
+    {
+        if (name.Trim().Length is 0 or > 100)
+            throw new DomainException("Enter an operator name of up to 100 characters.");
+        DisplayName = name.Trim();
+    }
+
     public void SetPasswordHash(string passwordHash)
     {
         if (string.IsNullOrWhiteSpace(passwordHash))

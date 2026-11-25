@@ -47,7 +47,7 @@ public class ProductStockTests
         var badVat = () => new Product("BC", "X", 10m, 1.5m, Unit.Piece, 1, 1);
         badVat.Should().Throw<DomainException>();
 
-        var emptyBarcode = () => new Product("", "X", 10m, 0.2m, Unit.Piece, 1, 1);
-        emptyBarcode.Should().Throw<DomainException>();
+        var optionalBarcode = new Product("", "X", 10m, 0.2m, Unit.Piece, 1, 1);
+        optionalBarcode.Barcode.Should().StartWith("INTERNAL-");
     }
 }

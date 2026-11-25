@@ -3,10 +3,11 @@ using SupermarketPos.Domain.Pricing;
 namespace SupermarketPos.Application.Dtos;
 
 /// <summary>Sales split by payment method.</summary>
-public sealed record PaymentSplit(int CashCount, decimal CashTotal, int CardCount, decimal CardTotal)
+public sealed record PaymentSplit(int CashCount, decimal CashTotal, int CardCount, decimal CardTotal,
+    int OtherCount = 0, decimal OtherTotal = 0m)
 {
-    public int TotalCount => CashCount + CardCount;
-    public decimal TotalAmount => CashTotal + CardTotal;
+    public int TotalCount => CashCount + CardCount + OtherCount;
+    public decimal TotalAmount => CashTotal + CardTotal + OtherTotal;
 }
 
 /// <summary>

@@ -1,0 +1,260 @@
+<UserControl x:Class="SupermarketPos.Wpf.Views.ProductEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
+             xmlns:views="clr-namespace:SupermarketPos.Wpf.Views">
+    <UserControl.Resources>
+        <DataTemplate x:Key="NamedOption">
+            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" FontSize="{DynamicResource TextSize15}" />
+        </DataTemplate>
+    </UserControl.Resources>
+    <StackPanel>
+        <TextBlock FontSize="{DynamicResource TextSize20}" Margin="0,0,0,12">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource H1}">
+                    <Setter Property="Text" Value="{loc:T Products_New}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Editor.IsNew}" Value="False">
+                            <Setter Property="Text" Value="{loc:T Products_EditTitle}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <TextBlock Text="{loc:T Scanner_EditPaused}" Foreground="{StaticResource AccentBrush}" TextWrapping="Wrap"
+                   Margin="0,0,0,12" Visibility="{Binding IsScannerEntry, Converter={StaticResource BoolToVis}}" />
+        <TextBlock Text="{Binding ProductError}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap"
+                   Margin="0,0,0,12" Visibility="{Binding ProductError, Converter={StaticResource StrToVis}}" />
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="24" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="{loc:T Products_Barcode}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                <DockPanel Margin="0,0,0,8">
+                    <Button Visibility="Collapsed" DockPanel.Dock="Right" Command="{Binding ToggleCaptureCommand}" Margin="6,0,0,0">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                                <Setter Property="Content" Value="{loc:T Scanner_Capture}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Editor.IsNew}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsScannerEntry}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsCaptureArmed}" Value="True">
+                                        <Setter Property="Content" Value="{loc:T Scanner_Stop}" />
+                                        <Setter Property="Background" Value="{StaticResource StopBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <TextBox x:Name="BarcodeField" Text="{Binding Editor.Barcode, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" />
+                </DockPanel>
+                <TextBlock Text="{loc:T Scanner_WaitingBarcode}" Style="{StaticResource Muted}" Margin="0,0,0,8"
+                           Visibility="{Binding IsCaptureArmed, Converter={StaticResource BoolToVis}}" />
+                <Button Content="{loc:T Scanner_ViewMatching}" Command="{Binding ViewMatchingProductCommand}"
+                        HorizontalAlignment="Left" Margin="0,0,0,8" Visibility="{Binding MatchingProduct.Name, Converter={StaticResource StrToVis}, FallbackValue=Collapsed}"
+                        Style="{StaticResource GhostButton}" />
+
+                <TextBlock Text="{loc:T Products_Name}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                <TextBox Text="{Binding Editor.Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" Visibility="{Binding Editor.ShowProductImages,Converter={StaticResource BoolToVis}}"/>
+                <ContentControl Content="{Binding MedicineNameSearch}" Margin="0,0,0,12" Visibility="{Binding Editor.IsPharmacy,Converter={StaticResource BoolToVis}}"/>
+                <StackPanel Visibility="{Binding Editor.IsPharmacy,Converter={StaticResource BoolToVis}}">
+                  <TextBlock Text="{loc:T Pharmacy_SellingUnit}" Style="{StaticResource FormLabel}"/>
+                  <ComboBox ItemsSource="{Binding Editor.MedicineUnits}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding Editor.MedicineUnit}" Margin="0,4,0,8"/>
+                  <TextBlock Text="{loc:T Pharmacy_UnitsPerStrip}" Style="{StaticResource FormLabel}"/>
+                  <TextBox Text="{Binding Editor.UnitsPerStrip,UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8"/>
+                  <TextBlock Text="{loc:T Pharmacy_StripPrice}" Style="{StaticResource FormLabel}"/>
+                  <TextBox Text="{Binding Editor.StripPrice,UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8"/>
+                  <CheckBox IsChecked="{Binding Editor.DispensingRulesReviewed}" Margin="0,4,0,8" HorizontalContentAlignment="Stretch"><TextBlock Text="{loc:T Pharmacy_RulesReviewed}" TextWrapping="Wrap"/></CheckBox>
+                  <CheckBox IsChecked="{Binding Editor.RequiresPrescription}" Margin="0,4,0,8" HorizontalContentAlignment="Stretch"><TextBlock Text="{loc:T Pharmacy_RequiresPrescription}" TextWrapping="Wrap"/></CheckBox>
+                  <CheckBox IsChecked="{Binding Editor.RequiresDispensingReference}" Margin="0,4,0,8" HorizontalContentAlignment="Stretch"><TextBlock Text="{loc:T Pharmacy_RequiresReference}" TextWrapping="Wrap"/></CheckBox>
+                </StackPanel>
+
+                <WrapPanel Margin="0,0,0,12">
+                    <CheckBox Content="{loc:T Scanner_ProductActive}" IsChecked="{Binding Editor.IsActive}" Margin="0,0,12,0" />
+                    <CheckBox Content="{loc:T Batch_Track}" IsChecked="{Binding Editor.TrackExpiry}">
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Editor.HasExistingBatches}" Value="True">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+                </WrapPanel>
+                <TextBlock Text="{loc:T Measure_Method}" Style="{StaticResource FormLabel}"/>
+                <ComboBox ItemsSource="{Binding Editor.SellingMethods}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding Editor.SellingMethod}" Margin="0,4,0,10"/>
+                <TextBlock Text="{loc:T Measure_PriceHint}" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                <TextBlock Text="{loc:T Measure_MinimumStock}" Style="{StaticResource FormLabel}"/>
+                <TextBox Text="{Binding Editor.MinimumStock,UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8"/>
+
+
+                <StackPanel Visibility="{Binding Editor.ShowProductImages,Converter={StaticResource BoolToVis}}">
+                <CheckBox Content="{loc:T Trade_SerialTrack}" IsChecked="{Binding Editor.TrackSerial}" Margin="0,0,0,8" />
+                <TextBlock Text="{loc:T Trade_WarrantyMonths}" Style="{StaticResource FormLabel}" />
+                <TextBox Text="{Binding Editor.WarrantyMonths, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" Margin="0,4,0,8" />
+                <Button Content="{loc:T Trade_Devices}" Command="{Binding ShowProductDevicesCommand}" Style="{StaticResource GhostButton}"
+                        HorizontalAlignment="Left" Margin="0,0,0,12" Visibility="{Binding Editor.IsNew, Converter={StaticResource InverseBoolToVis}}" />
+
+                </StackPanel>
+                <!-- product image -->
+                <Grid Margin="0,0,0,14" Visibility="{Binding Editor.ShowProductImages,Converter={StaticResource BoolToVis}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ContentControl Grid.Column="0" Width="58" Height="58" Margin="0,0,12,0" Style="{StaticResource CatalogThumbnail}"
+                                    Background="{Binding Editor.CategoryId, Converter={StaticResource CatColor}}"
+                                    Tag="{Binding Editor.ImagePath, Converter={StaticResource PathToImage}}"
+                                    Content="{Binding Editor.Name, Converter={StaticResource Initials}}" />
+                    <WrapPanel Grid.Column="1" VerticalAlignment="Center">
+                        <Button Content="{loc:T Products_ChooseImage}" Command="{Binding Editor.BrowseImageCommand}" Style="{StaticResource GhostButton}" Margin="0,0,8,4" />
+                        <Button Content="✕" Command="{Binding Editor.ClearImageCommand}" Style="{StaticResource DangerButton}" Padding="11,6" />
+                    </WrapPanel>
+                </Grid>
+                <StackPanel Visibility="{Binding Editor.TrackExpiry, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}">
+                    <TextBlock Text="{loc:T Batch_Lot}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                    <TextBox Text="{Binding Editor.BatchLot, UpdateSourceTrigger=PropertyChanged}" MaxLength="20"
+                             AutomationProperties.Name="{loc:T Batch_Lot}" Margin="0,0,0,8" />
+                    <TextBlock Text="{loc:T Batch_Expiry}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                    <views:BatchDatePicker SelectedDate="{Binding Editor.BatchExpiry}" SelectedDateFormat="Short"
+                                           Style="{StaticResource {x:Type DatePicker}}" ToolTip="{loc:T Batch_DateHelp}"
+                                           AutomationProperties.Name="{loc:T Batch_Expiry}" Margin="0,0,0,8" />
+                    <StackPanel Visibility="{Binding Editor.CanAssignBatch, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}">
+                        <TextBlock Text="{loc:T Batch_Assign}" Style="{StaticResource FormLabel}" />
+                        <TextBox Text="{Binding Editor.BatchQuantity, UpdateSourceTrigger=PropertyChanged}"
+                                 AutomationProperties.Name="{loc:T Batch_Assign}" Margin="0,4,0,8" />
+                    </StackPanel>
+                    <Button Content="{loc:T Batch_Details}" Command="{Binding ViewBatchesCommand}" Style="{StaticResource GhostButton}"
+                            HorizontalAlignment="Left" Visibility="{Binding Editor.IsTrackedExisting, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}" />
+                </StackPanel>
+
+            </StackPanel>
+            <StackPanel Grid.Column="2">
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                    <TextBlock x:Name="PriceLabel" Text="{loc:T Products_Price}" Style="{StaticResource FormLabel}" VerticalAlignment="Bottom" Margin="0,0,0,4" />
+                    <TextBlock x:Name="VatLabel" Grid.Column="2" Text="{loc:T Products_Vat}" Style="{StaticResource FormLabel}" VerticalAlignment="Bottom" Margin="0,0,0,4" />
+                    <TextBox Grid.Row="1" Text="{Binding Editor.Price, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"
+                             AutomationProperties.LabeledBy="{Binding ElementName=PriceLabel}" />
+                    <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Editor.VatPercent, UpdateSourceTrigger=PropertyChanged}"
+                             FlowDirection="LeftToRight" AutomationProperties.LabeledBy="{Binding ElementName=VatLabel}" />
+                </Grid>
+
+                <TextBlock Text="{loc:T Purchase_UnitCost}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                <TextBox Text="{Binding Editor.PurchaseCost, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12"
+                         FlowDirection="LeftToRight" />
+
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                    <TextBlock x:Name="StockLabel" VerticalAlignment="Bottom" Margin="0,0,0,4">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource FormLabel}">
+                                <Setter Property="Text" Value="{loc:T Products_Stock}" />
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Editor.TrackExpiry}" Value="True" />
+                                            <Condition Binding="{Binding Editor.IsNew}" Value="True" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Text" Value="{loc:T Batch_Opening}" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBox Grid.Row="1" Text="{Binding Editor.Stock, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.LabeledBy="{Binding ElementName=StockLabel}">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsPurchaseEntry}" Value="True"><Setter Property="IsReadOnly" Value="True" /></DataTrigger>
+                                    <DataTrigger Binding="{Binding Editor.IsTrackedExisting}" Value="True"><Setter Property="IsReadOnly" Value="True" /></DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                    <TextBlock x:Name="CategoryLabel" Grid.Column="2" Text="{loc:T Products_Category}" Style="{StaticResource FormLabel}" VerticalAlignment="Bottom" Margin="0,0,0,4" />
+                    <ComboBox Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Editor.Categories}" SelectedValue="{Binding Editor.CategoryId}"
+                              SelectedValuePath="Id" TextSearch.TextPath="Name" ItemTemplate="{StaticResource NamedOption}"
+                              ToolTip="{Binding SelectedItem.Name, RelativeSource={RelativeSource Self}}"
+                              AutomationProperties.LabeledBy="{Binding ElementName=CategoryLabel}" />
+                </Grid>
+
+                <TextBlock Text="{loc:T Supplier_Optional}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                <ComboBox ItemsSource="{Binding Editor.Suppliers}" SelectedValue="{Binding Editor.SupplierId}"
+                          SelectedValuePath="Id" TextSearch.TextPath="Name" ItemTemplate="{StaticResource NamedOption}"
+                          ToolTip="{Binding SelectedItem.Name, RelativeSource={RelativeSource Self}}" Margin="0,0,0,12" />
+                <StackPanel Visibility="{Binding Editor.IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,0,10"><TextBlock Text="{loc:T Pharmacy_DefaultLocation}" Style="{StaticResource FormLabel}"/><ComboBox ItemsSource="{Binding Editor.Locations}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Editor.DefaultLocationId}" Margin="0,4,0,0"/></StackPanel>
+                <Expander Header="{loc:T Pharmacy_IdentityDetails}" Visibility="{Binding Editor.IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,0,10"><StackPanel>
+                  <TextBlock Text="{loc:T Pharmacy_Generic}" Style="{StaticResource FormLabel}"/><TextBox Text="{Binding Editor.MedicineGeneric,UpdateSourceTrigger=PropertyChanged}" MaxLength="500" Margin="0,4,0,8"/>
+                  <TextBlock Text="{loc:T Pharmacy_Strength}" Style="{StaticResource FormLabel}"/><TextBox Text="{Binding Editor.MedicineStrength,UpdateSourceTrigger=PropertyChanged}" MaxLength="500" Margin="0,4,0,8"/>
+                  <TextBlock Text="{loc:T Pharmacy_Form}" Style="{StaticResource FormLabel}"/><TextBox Text="{Binding Editor.MedicineForm,UpdateSourceTrigger=PropertyChanged}" MaxLength="500" Margin="0,4,0,8"/>
+                  <TextBlock Text="{loc:T Pharmacy_Manufacturer}" Style="{StaticResource FormLabel}"/><TextBox Text="{Binding Editor.MedicineManufacturer,UpdateSourceTrigger=PropertyChanged}" MaxLength="500" Margin="0,4,0,8"/>
+                </StackPanel></Expander>
+
+                <StackPanel Visibility="{Binding Editor.UsesPackaging,Converter={StaticResource BoolToVis}}">
+                 <TextBlock Text="{loc:T Measure_PurchaseUnit}" Style="{StaticResource FormLabel}"/><ComboBox ItemsSource="{Binding Editor.PurchaseUnits}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding Editor.PurchaseUnit}"/>
+                 <TextBlock Text="{loc:T Measure_UnitsPerPack}" Style="{StaticResource FormLabel}"/><TextBox Text="{Binding Editor.UnitsPerPackage,UpdateSourceTrigger=PropertyChanged}"/>
+                 <TextBlock Text="{loc:T Measure_PackBarcode}" Style="{StaticResource FormLabel}"/><TextBox x:Name="PackageBarcodeField" Text="{Binding Editor.PackageBarcode,UpdateSourceTrigger=PropertyChanged}" MaxLength="64" FlowDirection="LeftToRight"/>
+                 <TextBlock Text="{loc:T Measure_PackCost}" Style="{StaticResource FormLabel}"/><TextBox Text="{Binding Editor.PackageCost,UpdateSourceTrigger=PropertyChanged}"/>
+                 <TextBlock Text="{loc:T Measure_PackPrice}" Style="{StaticResource FormLabel}"/><TextBox Text="{Binding Editor.PackagePrice,UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+                <TextBlock Text="{loc:T Stock_RestockQuantity}" Style="{StaticResource FormLabel}"
+                           Visibility="{Binding Editor.CanRestockNormally, Converter={StaticResource BoolToVis}}" />
+                <Grid Margin="0,4,0,16" Visibility="{Binding Editor.CanRestockNormally, Converter={StaticResource BoolToVis}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{Binding RestockAmount, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0" />
+                    <Button Grid.Column="1" Content="{loc:T Products_Restock}" Command="{Binding RestockCommand}" Style="{StaticResource GhostButton}" />
+                </Grid>
+
+                <Button Content="{loc:T Stock_History}" Command="{Binding ShowStockHistoryCommand}"
+                        Visibility="{Binding Editor.IsNew, Converter={StaticResource InverseBoolToVis}}"
+                        HorizontalAlignment="Left" Style="{StaticResource GhostButton}" />
+
+            </StackPanel>
+        </Grid>
+        <Grid Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Command="{Binding CancelEditCommand}" Margin="0,0,6,0">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource GhostButton}">
+                        <Setter Property="Content" Value="{loc:T Common_Cancel}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsScannerEntry}" Value="True">
+                                <Setter Property="Content" Value="{loc:T Scanner_Return}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Grid.Column="1" Content="{loc:T Scanner_SaveProduct}" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" Margin="6,0,0,0" />
+        </Grid>
+    </StackPanel>
+</UserControl>
+

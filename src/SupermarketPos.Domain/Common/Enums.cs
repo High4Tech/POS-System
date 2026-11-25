@@ -4,7 +4,8 @@ namespace SupermarketPos.Domain.Common;
 public enum Unit
 {
     Piece,
-    Kilogram
+    Kilogram,
+    Litre
 }
 
 /// <summary>Application roles. Admin can reach management screens; Cashier is limited to the register.</summary>

@@ -18,17 +18,17 @@ public sealed class Cart
     public decimal ItemCount => _lines.Sum(l => l.Product.Unit == Unit.Piece ? l.Quantity : 1m);
 
     /// <summary>Add a product, merging into an existing line for the same product.</summary>
-    public CartLine AddOrIncrement(Product product, decimal quantity)
+    public CartLine AddOrIncrement(Product product, decimal quantity, InventoryBatch? batch = null, string? serial = null,bool packaged=false,string? medicineUnit=null,bool prescriptionChecked=false,string? dispensingReference=null,int? locationId=null)
     {
         if (product is null) throw new DomainException("Product is required.");
-        var existing = _lines.FirstOrDefault(l => l.Product.Id == product.Id && product.Id != 0)
-                       ?? _lines.FirstOrDefault(l => ReferenceEquals(l.Product, product));
+        var existing = _lines.FirstOrDefault(l => l.LocationId==locationId && l.MedicineUnit==medicineUnit && l.PrescriptionChecked==prescriptionChecked && l.DispensingReference==dispensingReference && (medicineUnit is not null||l.IsPackage==packaged) && l.BatchId == batch?.Id && l.SerialNumber == serial &&
+            (ReferenceEquals(l.Product, product) || product.Id != 0 && l.Product.Id == product.Id));
         if (existing is not null)
         {
             existing.Increment(quantity);
             return existing;
         }
-        var line = new CartLine(product, quantity);
+        var line = new CartLine(product, quantity, batch, serial,packaged,medicineUnit,prescriptionChecked,dispensingReference,locationId);
         _lines.Add(line);
         return line;
     }

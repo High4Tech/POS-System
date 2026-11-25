@@ -1,8 +1,8 @@
-using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SupermarketPos.Application.Abstractions;
 using SupermarketPos.Domain.Entities;
+using SupermarketPos.Wpf.Localization;
 
 namespace SupermarketPos.Wpf.ViewModels;
 
@@ -10,7 +10,13 @@ public sealed partial class LoginViewModel : ObservableObject
 {
     private readonly IAuthService _auth;
 
-    public LoginViewModel(IAuthService auth) => _auth = auth;
+    private readonly IBusinessSetup? _setup;
+    public LoginViewModel(IAuthService auth, IBusinessSetup? setup = null) { _auth = auth; _setup = setup; }
+    [RelayCommand]
+    private void RecoverOwner()
+    {
+        if (_setup is not null) new Views.OwnerRecoveryWindow(_setup) { Owner = System.Windows.Application.Current.MainWindow }.ShowDialog();
+    }
 
     /// <summary>Raised when authentication succeeds; the shell listens to switch screens.</summary>
     public event Action<User>? LoggedIn;
@@ -29,9 +35,9 @@ public sealed partial class LoginViewModel : ObservableObject
             Password = string.Empty;
             LoggedIn?.Invoke(user);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Error = ex.Message;
+            Error = LocalizationManager.Instance["Login_Invalid"];
         }
     }
 }

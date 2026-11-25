@@ -4,6 +4,22 @@ using SupermarketPos.Domain.Pricing;
 
 namespace SupermarketPos.Application.Abstractions;
 
+public record PurchaseItem(int ProductId, decimal Quantity, decimal UnitCost, string? BatchLot = null, DateOnly? BatchExpiry = null,
+    IReadOnlyList<UnitIdentifiers>? Units = null,bool Packaged=false,string? MedicineUnit=null,int? LocationId=null,int? ExpectedUnitSize=null,SupermarketPos.Domain.Common.Unit? ExpectedUnit=null);
+
+public interface IPurchaseService
+{
+    Task<Purchase> ReceiveAsync(string supplier, string? reference, IReadOnlyList<PurchaseItem> items,
+                                User receivedBy, CancellationToken ct = default);
+    Task<IReadOnlyList<Purchase>> GetHistoryAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<Supplier>> GetSuppliersAsync(CancellationToken ct = default);
+    Task<Supplier> AddSupplierAsync(string name, CancellationToken ct = default);
+    Task<Supplier> SaveSupplierAsync(int? id, SupplierDetails details, CancellationToken ct = default);
+    Task<Purchase> ReceiveAsync(int supplierId, string? reference, DateTime purchaseDate, string? notes,
+        IReadOnlyList<PurchaseItem> items, User receivedBy, Guid confirmationId, CancellationToken ct = default,
+        decimal? initialAmountPaid = null, string paymentMethod = "CASH");
+}
+
 /// <summary>Password hashing primitive (BCrypt under the hood).</summary>
 public interface IPasswordHasher
 {
@@ -17,6 +33,8 @@ public interface IAuthService
     User? CurrentUser { get; }
     bool IsLoggedIn { get; }
     Task<User> LoginAsync(string username, string password, CancellationToken ct = default);
+    Task ChangePasswordAsync(string currentPassword, string newPassword, CancellationToken ct = default);
+    Task UpdateOperatorNameAsync(string name, CancellationToken ct = default);
     void Logout();
     void RequireAdmin();
 }
@@ -28,7 +46,7 @@ public interface ISaleService
     /// Validates stock, decrements it, assigns a receipt number and persists the sale — all inside a
     /// single transaction. Throws <c>InsufficientStockException</c> (rolling back) if stock is short.
     /// </summary>
-    Task<Sale> CheckoutAsync(Cart cart, Payment payment, User cashier, CancellationToken ct = default);
+    Task<Sale> CheckoutAsync(Cart cart, Payment payment, User cashier, CancellationToken ct = default, SaleCustomer? customer = null);
 }
 
 public interface IInventoryService
@@ -36,7 +54,11 @@ public interface IInventoryService
     Task RestockAsync(int productId, decimal quantity, CancellationToken ct = default);
     Task AdjustStockAsync(int productId, decimal newQuantity, CancellationToken ct = default);
     Task<IReadOnlyList<Product>> GetLowStockAsync(CancellationToken ct = default);
+    Task UpdateProductsAsync(IReadOnlyList<int> ids, ProductBatchUpdate change, CancellationToken ct = default);
+    Task DeleteProductsAsync(IReadOnlyList<int> ids, CancellationToken ct = default);
 }
+
+public sealed record ProductBatchUpdate(decimal? Price, decimal? Stock, decimal? VatRate, int? CategoryId);
 
 public interface IReportService
 {
@@ -52,8 +74,11 @@ public interface IReportService
 public interface IReceiptService
 {
     Task<byte[]> RenderPdfAsync(Sale sale, CancellationToken ct = default);
+    Task<ReceiptPreview> RenderPreviewAsync(Sale sale, CancellationToken ct = default);
     Task SavePdfAsync(Sale sale, string path, CancellationToken ct = default);
 }
+
+public sealed record ReceiptPreview(byte[] Pdf, IReadOnlyList<byte[]> Pages);
 
 /// <summary>Generates a printable PDF sheet of shelf labels (name, price, EAN-13 barcode).</summary>
 public interface IShelfLabelService

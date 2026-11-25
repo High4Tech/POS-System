@@ -10,9 +10,10 @@ namespace SupermarketPos.Domain.Entities;
 public sealed class AppSettings
 {
     public int Id { get; private set; } = 1;
-    public string StoreName { get; private set; } = "Süpermarket";
+    public string StoreName { get; private set; } = "Tech Store";
     public string StoreAddress { get; private set; } = string.Empty;
-    public string Language { get; private set; } = "tr";          // tr | en
+    public string Language { get; private set; } = "en";
+    public string? LogoPath { get; private set; }
     public decimal LowStockThreshold { get; private set; } = 5m;
     public string VatRatesCsv { get; private set; } = "0.01,0.10,0.20";
 
@@ -26,7 +27,7 @@ public sealed class AppSettings
 
     public IReadOnlyList<decimal> VatRates =>
         VatRatesCsv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                   .Select(decimal.Parse)
+                   .Select(r => decimal.Parse(r, System.Globalization.CultureInfo.InvariantCulture))
                    .ToList();
 
     public void Update(string storeName, string storeAddress, string language,
@@ -44,8 +45,10 @@ public sealed class AppSettings
 
         StoreName = storeName.Trim();
         StoreAddress = storeAddress?.Trim() ?? string.Empty;
-        Language = string.IsNullOrWhiteSpace(language) ? "tr" : language.Trim().ToLowerInvariant();
+        Language = Localization.PosText.NormalizeLanguage(language);
         LowStockThreshold = lowStockThreshold;
         VatRatesCsv = string.Join(',', rates.Select(r => r.ToString(System.Globalization.CultureInfo.InvariantCulture)));
     }
+
+    public void SetLogoPath(string? logoPath) => LogoPath = string.IsNullOrWhiteSpace(logoPath) ? null : logoPath;
 }

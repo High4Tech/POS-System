@@ -35,13 +35,17 @@ public sealed class ReportService : IReportService
         var breakdown = PricingService.ExtractGroups(
             sales.SelectMany(s => s.Lines).Select(l => (l.VatRate, l.LineGross)));
 
-        var cash = sales.Where(s => s.PaymentMethod == "CASH").ToList();
+        var cash = sales.Where(s => s.PaymentMethod == "CASH" || s.PaymentMethod == "CREDIT" && s.AmountPaid > 0m).ToList();
         var card = sales.Where(s => s.PaymentMethod == "CARD").ToList();
+        var other = sales.Where(s => s.PaymentMethod is not ("CASH" or "CARD") &&
+            !(s.PaymentMethod == "CREDIT" && s.AmountPaid > 0m)).ToList();
         var split = new PaymentSplit(
             CashCount: cash.Count,
             CashTotal: Money.Round2(cash.Sum(s => s.AmountPaid)),
             CardCount: card.Count,
-            CardTotal: Money.Round2(card.Sum(s => s.AmountPaid)));
+            CardTotal: Money.Round2(card.Sum(s => s.AmountPaid)),
+            OtherCount: other.Count,
+            OtherTotal: Money.Round2(other.Sum(s => s.AmountPaid)));
 
         return new SalesReport(title, from, to, sales.Count, gross, net, vat, breakdown, split);
     }

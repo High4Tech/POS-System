@@ -43,5 +43,5 @@ public sealed class FixedAmountDiscount : Discount
 
     public override decimal Apply(decimal gross) => Math.Max(0m, Money.Round2(gross - Amount));
 
-    public override string Describe() => $"-{Amount:0.00}{Money.CurrencySymbol}";
+    public override string Describe() => Money.Format(-Amount);
 }

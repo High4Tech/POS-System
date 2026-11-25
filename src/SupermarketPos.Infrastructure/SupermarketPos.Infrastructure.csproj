@@ -22,4 +22,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <EmbeddedResource Include="..\..\assets\fonts\*.ttf" LogicalName="SupermarketPos.Fonts.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\..\assets\catalogs\DRAP_Complete_Medicine_Database.csv" LogicalName="SupermarketPos.Catalogs.DRAP.csv" Condition="'$(CommercialBuild)' != 'true' Or '$(MedicineCatalogRedistributionApproved)' == 'true'" />
+  </ItemGroup>
 </Project>

@@ -1,0 +1,30 @@
+<Window Style="{StaticResource CaptionWindow}" x:Class="SupermarketPos.Wpf.Views.InventoryBatchesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
+        xmlns:layout="clr-namespace:SupermarketPos.Wpf.Common"
+        Title="{loc:T Batch_Details}" Width="740" Height="440" MinWidth="520" MinHeight="335" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" Background="{StaticResource BgBrush}" FontSize="{DynamicResource TextSize14}"
+        FlowDirection="{Binding FlowDirection, Source={x:Static loc:LocalizationManager.Instance}}">
+    <DockPanel Margin="20">
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+            <TextBlock Text="{Binding Name}" Style="{StaticResource H1}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" Margin="0,6,0,0" />
+        </StackPanel>
+        <Button DockPanel.Dock="Bottom" Content="{loc:T Common_Close}" IsCancel="True" Style="{StaticResource GhostButton}"
+                HorizontalAlignment="Right" Margin="0,10,0,0" />
+        <StackPanel x:Name="HoldControls" DockPanel.Dock="Bottom" Margin="0,8,0,0">
+          <TextBlock Text="{loc:T Pharmacy_HoldReason}" Style="{StaticResource FormLabel}"/><TextBox x:Name="HoldReason" MaxLength="300" Margin="0,4,0,6"/>
+          <TextBlock x:Name="HoldError" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap"/><WrapPanel><Button x:Name="HoldButton" Content="{loc:T Pharmacy_HoldBatch}" Style="{StaticResource DangerButton}" Margin="0,0,8,0"/><Button x:Name="ReleaseButton" Content="{loc:T Pharmacy_ReleaseBatch}" Style="{StaticResource PrimaryButton}"/></WrapPanel>
+        </StackPanel>
+        <DataGrid x:Name="BatchesTable" SelectedValuePath="Batch.Id" layout:TableLayout.Key="inventory-batches" ItemsSource="{Binding Rows}" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="{loc:T Batch_Lot}" Binding="{Binding Batch.Lot}" Width="1.3*" ElementStyle="{StaticResource TableValue}" />
+                <DataGridTextColumn Header="{loc:T Batch_Expiry}" Binding="{Binding Batch.ExpiryDate, StringFormat={}{0:yyyy-MM-dd}}" Width="*" />
+                <DataGridTextColumn Header="{loc:T Pos_Qty}" Binding="{Binding Batch.Quantity, StringFormat={}{0:0.###}}" Width="0.6*" />
+                <DataGridTextColumn Header="{loc:T Products_Status}" Binding="{Binding Status}" Width="*" ElementStyle="{StaticResource TableName}" />
+                <DataGridTextColumn Header="{loc:T Pharmacy_HoldReason}" Binding="{Binding Batch.HoldReason}" Width="1.5*" ElementStyle="{StaticResource TableName}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</Window>

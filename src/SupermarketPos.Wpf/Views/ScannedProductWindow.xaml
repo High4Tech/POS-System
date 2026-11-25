@@ -1,0 +1,16 @@
+<Window x:Class="SupermarketPos.Wpf.Views.ScannedProductWindow" FontSize="{DynamicResource TextSize14}"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
+        xmlns:views="clr-namespace:SupermarketPos.Wpf.Views"
+        Title="{loc:T Scanner_SaveProduct}" Style="{StaticResource FormDialogWindow}"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BgBrush}"
+        FlowDirection="{Binding FlowDirection, Source={x:Static loc:LocalizationManager.Instance}}"
+        Language="{Binding Language, Source={x:Static loc:LocalizationManager.Instance}}">
+    <Viewbox Style="{StaticResource DialogFit}" Margin="18">
+        <Border Style="{StaticResource Card}" Width="{DynamicResource ProductDialogWidth}" Padding="24">
+            <views:ProductEditorView />
+        </Border>
+    </Viewbox>
+</Window>

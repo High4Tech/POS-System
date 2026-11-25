@@ -75,4 +75,38 @@ public class AuthServiceTests
 
         act.Should().NotThrow();
     }
+
+    [Fact]
+    public async Task PasswordChange_RequiresCurrentPasswordAndPersistsAcrossSessions()
+    {
+        using var db = new TestDb();
+        var auth = Build(db, out var hasher);
+        await auth.LoginAsync("kasa", "1234");
+
+        await Assert.ThrowsAsync<AuthException>(() => auth.ChangePasswordAsync("wrong", "new-pass"));
+        db.Context.ChangeTracker.Clear();
+        await auth.ChangePasswordAsync("1234", "new-pass");
+
+        using var reopened = db.NewContext();
+        var nextSession = new AuthService(new UserRepository(reopened), hasher);
+        await Assert.ThrowsAsync<AuthException>(() => nextSession.LoginAsync("kasa", "1234"));
+        await nextSession.LoginAsync("kasa", "new-pass");
+        Assert.True(nextSession.IsLoggedIn);
+    }
+
+    [Fact]
+    public async Task OperatorNameChangePersistsWithoutChangingTheSignIn()
+    {
+        using var db = new TestDb();
+        var auth = Build(db, out var hasher);
+        await auth.LoginAsync("kasa", "1234");
+
+        await auth.UpdateOperatorNameAsync("  Store Operator  ");
+
+        using var reopened = db.NewContext();
+        var nextSession = new AuthService(new UserRepository(reopened), hasher);
+        var user = await nextSession.LoginAsync("kasa", "1234");
+        Assert.Equal("Store Operator", user.DisplayName);
+        Assert.Equal("kasa", user.Username);
+    }
 }
