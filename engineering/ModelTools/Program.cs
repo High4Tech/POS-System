@@ -134,7 +134,12 @@ if(args.Length==2&&args[0]=="setup-status")
 {
     using var connection=new SqliteConnection(new SqliteConnectionStringBuilder{DataSource=Path.Combine(Path.GetFullPath(args[1]),"pos.db"),Mode=SqliteOpenMode.ReadOnly,Pooling=false}.ToString());await connection.OpenAsync();
     using var command=connection.CreateCommand();command.CommandText="SELECT Completed,Step,ProfileJson FROM BusinessConfigurations";using var row=await command.ExecuteReaderAsync();
-    while(await row.ReadAsync()){using var profile=System.Text.Json.JsonDocument.Parse(row.GetString(2));Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new{Completed=row.GetBoolean(0),Step=row.GetInt32(1),Language=profile.RootElement.GetProperty("Language").GetString(),BusinessType=profile.RootElement.TryGetProperty("BusinessType",out var type)?type.GetString():null}));}return;
+    while(await row.ReadAsync())
+    {
+        var profile=System.Text.Json.JsonSerializer.Deserialize<SupermarketPos.Domain.Business.BusinessProfile>(row.GetString(2))!;
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new{Completed=row.GetBoolean(0),Step=row.GetInt32(1),profile.Language,profile.BusinessType,profile.EnableCatalogImages,profile.MobileRechargeAvailable,profile.DigitalServicesAvailable}));
+    }
+    return;
 }
 if(args.Length==2&&args[0]=="data-fingerprint")
 {
