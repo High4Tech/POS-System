@@ -12,7 +12,7 @@ The existing electronics/mobile capability controls device fields and services. 
 
 Migration 20261126090000_TechRetailDetails adds Brand, Model and Sku to Products with empty defaults. Backup compatibility was updated for the new schema. The new metadata persists independently of serial tracking and stock. Existing records need no manual conversion.
 
-Read-only hashes of all 15 checked business tables matched the pre-switch backup after the configuration change. This covered products, categories, sales and invoice lines, suppliers, purchases and their lines, batches, devices, account payments, providers, packages and service records.
+Read-only hashes of all 14 checked business tables matched the pre-switch backup after the configuration change. This covered products, categories, sales and invoice lines, suppliers, purchases and their lines, batches, devices, account payments, providers, packages and service records.
 
 ## Navigation and Sales
 
@@ -48,6 +48,8 @@ Authenticated testing of the installed app confirmed customer selection, the emp
 
 This testing found that Escape did not close the inline product editor. The follow-up uses the existing cancel commands at the window's bubbling KeyDown stage, after native dropdown handling. Product, category and bulk overlays receive initial focus and cycle keyboard traversal inside their fields. Cancellation is blocked while the relevant save command is running.
 
+The follow-up was also retested with real Windows keys in the isolated store. Alt+3 navigated to inventory, Ctrl+Shift+N opened New Product with barcode focused, and Escape closed it and focused inventory search. The exact published application assemblies then passed all 30 retail-flow assertions with their hashes matched to the payload.
+
 The manual-product event is raised by manual collection selection and Frequently Purchased. Phone and scanner dispatch use their existing path and do not trigger Qty autofocus. A focused dispatch check verifies that scan/search focus remains in place. Physical scanner hardware remains a separate verification gate.
 
 ## Tech Retail
@@ -70,7 +72,20 @@ An observed focused audit recorded 234 ms for Register data load, 60 ms for invo
 
 ## Installation
 
-The authoritative path is D:\SupermarketPos\App\SupermarketPos.exe, launched by Tech Store POS.lnk. The required local build and update scripts retain this identity, back up store and application files, verify payload hashes, and launch the updated app. Final release identity and installation results are pending this task's final gates.
+The authoritative path is D:\SupermarketPos\App\SupermarketPos.exe, launched by the existing C:\Users\nas\OneDrive\Desktop\Tech Store POS.lnk. Both required scripts completed successfully. No distribution installer was generated.
+
+- Installed version is 1.1.0-beta.7+g31be23f.a9ba7330651c, Release win-x64, self-contained.
+- Executable source revision is 31be23f7f5ac5985887d58215a1df5acdc11b3ab, pushed to codex/tech-retail-keyboard with its remote hash verified. The final documentation-only commit does not change that executable revision.
+- Source fingerprint is A9BA7330651C4C37A941715C16600B0966EB0AA62D6EDA4875DCEDB3983D52C4.
+- EXE SHA256 is 8376C42C382FAE6BE628A091251DFA91E1C234F12A5C5D5AA1670315A22F418D.
+- WPF assembly SHA256 is 4D20887022367B5F53B074FD80BC2E68E4F6271A109FA700B951AAD9ADDBD4F7.
+- Database backup is D:\SupermarketPos\Backups\Before-update-20261126-112941332.zip.
+- Application backup is D:\SupermarketPos\Backups\Previous-application-20261126-112941332.zip.
+- The updater automatically launched process 11420 from D:\SupermarketPos\App\SupermarketPos.exe.
+
+Independent verification opened both archives and confirmed the 5,382,144-byte database and 163,840-byte backed-up executable. Installed EXE, WPF assembly and runtime configuration hashes matched the intended payload. The responding process path matched the existing shortcut target. Read-only fingerprints of all 14 business tables matched the immediately preceding database backup after installation. Evidence is saved locally in engineering/qa-data/tech-escape-20261126-161934/installed-evidence.json.
+
+The initial 04195c2 installation was authenticated and exercised as described above. The editor follow-up was verified with real keys in the isolated store and with all 30 assertions against the exact final published assemblies. Build and install logs are engineering/qa-data/tech-retail-final-build.log and tech-retail-final-install.log. The installed app retains sign-in security after relaunch.
 
 ## Remaining verification
 
