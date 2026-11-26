@@ -547,6 +547,9 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.Property<decimal?>("MinimumStock")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Brand").IsRequired().HasColumnType("TEXT");
+                    b.Property<string>("Model").IsRequired().HasColumnType("TEXT");
+                    b.Property<string>("Sku").IsRequired().HasColumnType("TEXT");
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)

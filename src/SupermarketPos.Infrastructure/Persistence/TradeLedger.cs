@@ -53,7 +53,7 @@ public sealed class TradeLedger(PosDbContext db, IUnitOfWork work) : ITradeLedge
                orderby unit.Id descending
                select new SerialRecord(unit, product.Name, sale == null ? null : sale.ReceiptNo,
                    sale == null ? null : sale.CustomerName, sale == null ? null : sale.CustomerPhone,
-                   sale == null ? null : sale.CustomerEmail)).ToArrayAsync(ct);
+                   sale == null ? null : sale.CustomerEmail,product.Brand,product.Model)).ToArrayAsync(ct);
     }
 
     public Task RegisterExistingAsync(int productId, IReadOnlyList<UnitIdentifiers> units, CancellationToken ct = default) =>

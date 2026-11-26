@@ -30,9 +30,19 @@ internal static partial class Program
         var list=typeof(PosViewModel).GetProperty("RegisterList");if(list is null)data["registerViewSwitch"]="not implemented in baseline";else{clock.Restart();for(var i=0;i<6;i++){list.SetValue(pos,i%2==0);Pump();}data["sixRegisterViewSwitchesMs"]=clock.Elapsed.TotalMilliseconds;}
         clock.Restart();await main.ShowProductsCommand.ExecuteAsync(null);data["inventoryDataLoadMs"]=clock.Elapsed.TotalMilliseconds;var inventory=(ProductsViewModel)main.CurrentViewModel;
         clock.Restart();root.Children.Clear();root.Children.Add(new ProductsView{DataContext=inventory});Pump();data["inventoryFirstRenderMs"]=clock.Elapsed.TotalMilliseconds;
-        clock.Restart();for(var i=0;i<10;i++){inventory.Filter=i%2==0?"Cable":"";Pump();}data["tenInventoryFiltersMs"]=clock.Elapsed.TotalMilliseconds;
+        var filterUpdates=new List<double>();
+        for(var i=0;i<10;i++)
+        {
+            clock.Restart();inventory.Filter=i%2==0?"Cable":"";Pump();filterUpdates.Add(clock.Elapsed.TotalMilliseconds);
+        }
+        data["tenInventoryFiltersMs"]=filterUpdates.Sum();
+        data["inventoryFilterSamplesMs"]=filterUpdates;
         clock.Restart();await inventory.OpenProductAsync(sample.Id);Pump();data["productEditorOpenAndRenderMs"]=clock.Elapsed.TotalMilliseconds;
-        data["catalogRows"]=(await catalog.StatusAsync())?.RowCount??0;data["storeProducts"]=inventory.Products.Count;data["environment"]=Environment.OSVersion.VersionString;data["processorCount"]=Environment.ProcessorCount;data["note"]="Isolated desktop harness, 1600x1000, English at 100%. Timings include awaited work and stated WPF layout; they are not process cold-start or phone hardware benchmarks.";
+        using var process=Process.GetCurrentProcess();
+        data["workingSetMiB"]=Math.Round(process.WorkingSet64/1048576d,1);
+        data["peakWorkingSetMiB"]=Math.Round(process.PeakWorkingSet64/1048576d,1);
+        data["processCpuMs"]=process.TotalProcessorTime.TotalMilliseconds;
+        data["catalogRows"]=(await catalog.StatusAsync())?.RowCount??0;data["storeProducts"]=inventory.Products.Count;data["environment"]=Environment.OSVersion.VersionString;data["processorCount"]=Environment.ProcessorCount;data["note"]="Isolated desktop harness, 1600x1000, English at 100%. Timings include awaited work and stated WPF layout; memory and CPU include the harness and its preceding screens. These are not process cold-start or phone hardware benchmarks.";
         File.WriteAllText(Path.Combine(folder,"performance.json"),JsonSerializer.Serialize(data,new JsonSerializerOptions{WriteIndented=true}));window.Close();Pump();Console.WriteLine(JsonSerializer.Serialize(data));
     }
 }

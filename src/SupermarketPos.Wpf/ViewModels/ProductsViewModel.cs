@@ -430,6 +430,7 @@ public sealed partial class ProductsViewModel : ObservableObject
                     if(IsPharmacy&&stock==0)product.MarkStockUntracked();
                     product.SetExpiryTracking(Editor.TrackExpiry);
                     product.SetSerialTracking(Editor.TrackSerial, warrantyMonths);
+                    if(DeviceTrackingAvailable)product.SetRetailDetails(Editor.Brand,Editor.Model,Editor.Sku);
                     product.SetImagePath(Editor.ImagePath);
                     product.SetActive(Editor.IsActive);
                     product.SetPurchaseCost(purchaseCost);
@@ -454,6 +455,7 @@ public sealed partial class ProductsViewModel : ObservableObject
                     var adjustment = IsPharmacy || Editor.TrackExpiry ? 0m : stock - product.StockQuantity;
                     product.SetExpiryTracking(Editor.TrackExpiry);
                     product.SetSerialTracking(Editor.TrackSerial, warrantyMonths);
+                    if(DeviceTrackingAvailable)product.SetRetailDetails(Editor.Brand,Editor.Model,Editor.Sku);
                     if(!product.StockTracked&&stock!=0)throw new DomainException("Pharmacy_VerifyStockFirst");
                     if (!IsPharmacy&&!Editor.TrackExpiry&&product.StockTracked) product.SetStock(stock);
                     if (adjustment != 0m)

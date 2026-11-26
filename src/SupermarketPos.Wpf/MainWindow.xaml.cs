@@ -24,7 +24,6 @@ public partial class MainWindow : Window
         };
         Loaded += (_, _) => QueueFit();
         TopActions.SizeChanged += (_, _) => QueueFit();
-        NavigationStoreName.SizeChanged += (_, _) => QueueFit();
         MoreButton.SizeChanged += (_, _) => QueueFit();
         LocalizationManager.Instance.PropertyChanged += LanguageChanged;
         Closed += (_, _) => LocalizationManager.Instance.PropertyChanged -= LanguageChanged;
@@ -46,7 +45,7 @@ public partial class MainWindow : Window
         {
             _fitQueued = false;
             if (!IsLoaded || NavigationBar.ActualWidth <= 0) return;
-            var available = NavigationBar.ActualWidth - MoreButton.ActualWidth - TopActions.ActualWidth - NavigationStoreName.ActualWidth - 28;
+            var available = NavigationBar.ActualWidth - MoreButton.ActualWidth - TopActions.ActualWidth - 28;
             var active = (DataContext as MainViewModel)?.ActiveScreen;
             MoreButton.FontWeight = FontWeights.SemiBold;
             foreach (var button in Destinations.Children.OfType<Button>())
@@ -101,7 +100,14 @@ public partial class MainWindow : Window
 
     private void RouteShortcut(object sender, KeyEventArgs e)
     {
-        if (DataContext is MainViewModel { IsLoggedIn: true } model && !InAppDialog.IsOpen)
-            e.Handled = Shortcuts.TryRun(this, model, e.Key == Key.System ? e.SystemKey : e.Key, Keyboard.Modifiers);
+        if (DataContext is not MainViewModel { IsLoggedIn: true } model || InAppDialog.IsOpen) return;
+        if (e.Key == Key.Escape && model.CurrentViewModel is PosViewModel { IsPaymentOpen: true } register)
+        {
+            if (register.CompletePaymentCommand.IsRunning) return;
+            register.CancelPaymentCommand.Execute(null);
+            e.Handled = true;
+            return;
+        }
+        e.Handled = Shortcuts.TryRun(this, model, e.Key == Key.System ? e.SystemKey : e.Key, Keyboard.Modifiers);
     }
 }

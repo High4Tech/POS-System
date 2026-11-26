@@ -15,6 +15,8 @@ public sealed partial class CartLineViewModel : ObservableObject
     private readonly Func<CartLineViewModel, decimal, bool> _canSetQuantity;
     [ObservableProperty] private string _priceText;
     [ObservableProperty] private bool _hasInvalidPrice;
+    [ObservableProperty] private bool _hasInvalidQuantity;
+    partial void OnHasInvalidQuantityChanged(bool value) => _onChanged();
     [ObservableProperty] private bool _hasInvalidTax;
     [ObservableProperty] private string _taxText="";
     [ObservableProperty] private string? _editError;

@@ -26,13 +26,21 @@ internal static class Shortcuts
 
     internal static bool TryRun(Window window, MainViewModel shell, Key key, ModifierKeys modifiers)
     {
-        if (modifiers==ModifierKeys.None && key is not (Key.F1 or Key.F2 or Key.F3 or Key.F4 or Key.F12)) return false;
-        if (modifiers!=ModifierKeys.None && key is not (Key.F or Key.S or Key.P or Key.H or Key.B or Key.G or Key.C or Key.T or Key.R or Key.I or Key.F1 or Key.F3 or Key.F12 or Key.O or Key.V or Key.L or Key.Delete or Key.N)) return false;
+        if (modifiers == ModifierKeys.None && key is < Key.F1 or > Key.F24 && key != Key.OemQuestion) return false;
+        if (key == Key.OemQuestion && Keyboard.FocusedElement is System.Windows.Controls.Primitives.TextBoxBase or PasswordBox or ComboBox)
+            return false;
         if (key == Key.V && modifiers == ModifierKeys.Shift && Keyboard.FocusedElement is System.Windows.Controls.Primitives.TextBoxBase or PasswordBox)
             return false;
         if(shell.CurrentViewModel is PosViewModel { IsPaymentOpen:true }) return false;
-        var entry = Entries(window, shell).FirstOrDefault(s => s.Key == key && s.Modifiers == modifiers);
-        if (entry?.Invoke is null) return false;
+        var entry = Entries(window, shell, routedKey: key).FirstOrDefault(s => s.Key == key && s.Modifiers == modifiers);
+        if (entry is null) return false;
+        if (entry.Invoke is null)
+        {
+            if (entry.Requirement is null || key == Key.V && modifiers == ModifierKeys.Shift) return false;
+            shell.ShortcutHint = LocalizationManager.Instance[entry.Requirement];
+            return true;
+        }
+        shell.ShortcutHint = null;
         entry.Invoke();
         return true;
     }
@@ -60,11 +68,11 @@ internal static class Shortcuts
         ReferenceRow Row(Entry entry, string page, string? availability) => new(
             (entry.Modifiers.HasFlag(ModifierKeys.Control) ? "Ctrl + " : "") +
             (entry.Modifiers.HasFlag(ModifierKeys.Alt) ? "Alt + " : "") +
-            (entry.Modifiers.HasFlag(ModifierKeys.Shift) ? "Shift + " : "") + entry.Key,
+            (entry.Modifiers.HasFlag(ModifierKeys.Shift) ? "Shift + " : "") + (entry.Key==Key.OemQuestion?"/":entry.Key.ToString()),
             text[entry.Label].Replace($" ({entry.Key})", "", StringComparison.Ordinal), page, availability);
     }
 
-    private static IEnumerable<Entry> Entries(Window window, MainViewModel shell, bool reference = false, string? otherPage = null)
+    private static IEnumerable<Entry> Entries(Window window, MainViewModel shell, bool reference = false, string? otherPage = null, Key routedKey = Key.None)
     {
         const ModifierKeys ctrl = ModifierKeys.Control;
         const ModifierKeys alt = ModifierKeys.Alt;
@@ -96,25 +104,39 @@ internal static class Shortcuts
                 var select = pos?.IsPaymentOpen == true ? null : Run(pos?.SelectCustomerCommand);
                 yield return new(Key.C, ctrl | alt, "Customer_SelectExisting", select);
                 yield return new(Key.F12, 0, "Customer_Details", select);
-                var selected = pos is { CustomerSummary: not null, IsPaymentOpen: false };
-                if (selected || reference)
+                var selected = pos is { HasCustomerAccount: true, IsPaymentOpen: false };
+                if (!shell.IsReadOnly)
                 {
-                    if (!reference || !shell.IsReadOnly)
-                    {
-                        yield return new(Key.T, ctrl | alt, "Trade_Frequent", selected ? Run(pos?.PreviousPurchasesCommand, true) : null, "Shortcut_CustomerRequired");
-                        yield return new(Key.R, ctrl | alt, "Trade_PreviousPurchases", selected ? Run(pos?.PreviousPurchasesCommand, false) : null, "Shortcut_CustomerRequired");
-                    }
-                    var ledger = selected ? Run(pos?.CustomerLedgerCommand) : null;
-                    yield return new(Key.B, ctrl, "Trade_CustomerLedger", ledger, "Shortcut_CustomerRequired");
-                    yield return new(Key.F1, alt, "Trade_CustomerLedger", ledger, "Shortcut_CustomerRequired");
-                    yield return new(Key.F12, alt, "Trade_CustomerLedger", ledger, "Shortcut_CustomerRequired");
+                    yield return new(Key.T, ctrl | alt, "Trade_Frequent", selected ? Run(pos?.PreviousPurchasesCommand, true) : null, "Shortcut_CustomerAccountRequired");
+                    yield return new(Key.R, ctrl | alt, "Trade_PreviousPurchases", selected ? Run(pos?.PreviousPurchasesCommand, false) : null, "Shortcut_CustomerAccountRequired");
                 }
+                else if (!reference && routedKey is Key.T or Key.R)
+                {
+                    yield return new(Key.T, ctrl | alt, "Trade_Frequent", null, "License_RecordsOnly");
+                    yield return new(Key.R, ctrl | alt, "Trade_PreviousPurchases", null, "License_RecordsOnly");
+                }
+                var ledger = selected ? Run(pos?.CustomerLedgerCommand) : null;
+                yield return new(Key.B, ctrl, "Trade_CustomerLedger", ledger, "Shortcut_CustomerAccountRequired");
+                yield return new(Key.F1, alt, "Trade_CustomerLedger", ledger, "Shortcut_CustomerAccountRequired");
+                yield return new(Key.F12, alt, "Trade_CustomerLedger", ledger, "Shortcut_CustomerAccountRequired");
             }
         }
-        var search = otherPage is null ? FindSearch(window) : null;
+        var search = otherPage is null && (reference || routedKey is Key.F or Key.OemQuestion) ? FindSearch(window) : null;
         if (search is not null || reference && (screen is "pos" or "products" or "customers" or "reports" ||
             screen == "purchases" && shell.CanManageStock))
+        {
             yield return new(Key.F, ctrl, "Shortcut_FocusSearch", search is null ? null : () => { search.Focus(); search.SelectAll(); });
+            yield return new(Key.OemQuestion, 0, "Shortcut_FocusSearch", search is null ? null : () => { search.Focus(); search.SelectAll(); });
+        }
+        yield return new(Key.D1,alt,"Nav_Dashboard",Run(shell.ShowDashboardCommand));
+        yield return new(Key.D2,alt,"Nav_Pos",Run(shell.ShowPosCommand));
+        yield return new(Key.D3,alt,"Nav_Products",Run(shell.ShowProductsCommand));
+        if(shell.CanManageStock)yield return new(Key.D4,alt,"Nav_Purchases",Run(shell.ShowPurchasesCommand));
+        yield return new(Key.D5,alt,"Nav_Reports",Run(shell.ShowReportsCommand));
+        yield return new(Key.D6,alt,"Nav_Customers",Run(shell.ShowCustomersCommand));
+        yield return new(Key.D7,alt,"Nav_Settings",Run(shell.ShowSettingsCommand));
+        if(window.FindName("MoreButton") is Button more)
+            yield return new(Key.M,alt,"Common_More",()=>more.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)));
         if (shell.CanManageStock && !shell.IsReadOnly && (page is ProductsViewModel { IsEditorOpen: true } || reference && screen == "products"))
             yield return new(Key.S, ctrl, "Scanner_SaveProduct", page is ProductsViewModel { IsEditorOpen: true } editor ? Run(editor.SaveCommand) : null, "Shortcut_EditorRequired");
         var reports = page as ReportsViewModel;
@@ -136,32 +158,34 @@ internal static class Shortcuts
         yield return new(Key.G, ctrl, "Nav_Reports", Run(shell.ShowReportsCommand));
         if (window is MainWindow main)
             yield return new(Key.H, ctrl | shift, "Nav_Shortcuts", () => _ = main.ShowShortcutsAsync());
-        if(page is not PosViewModel { CustomerSummary:not null }) yield return new(Key.B, ctrl, "Nav_Customers", Run(shell.ShowCustomersCommand));
         var customers = page as CustomersViewModel;
-        if (customers?.Selected is not null || reference && screen == "customers")
+        if (customers is not null || reference && screen == "customers")
         {
             var ledger = customers?.Selected is null ? null : Run(customers.ViewLedgerCommand);
+            yield return new(Key.B, ctrl, "Trade_CustomerLedger", ledger, "Shortcut_CustomerRequired");
             yield return new(Key.F1, alt, "Trade_CustomerLedger", ledger, "Shortcut_CustomerRequired");
             yield return new(Key.F12, alt, "Trade_CustomerLedger", ledger, "Shortcut_CustomerRequired");
         }
+        else if (screen != "pos") yield return new(Key.B, ctrl, "Nav_Customers", Run(shell.ShowCustomersCommand));
         var inventory = page as ProductsViewModel;
         if (inventory is not null || reference && screen == "products")
         {
             if (shell.CanManageStock && !shell.IsReadOnly)
                 yield return new(Key.N, ctrl | shift, "Products_New", inventory is { IsEditorOpen: false } ? Run(inventory.NewCommand) : null,
                     "Trade_CloseEditorRequired");
-            var row = otherPage is null ? (Keyboard.FocusedElement as FrameworkElement)?.DataContext as ProductRowViewModel : null;
             var editorOpen = inventory?.IsEditorOpen == true;
+            var row = inventory is not null && !editorOpen && (reference || routedKey is Key.H or Key.I)
+                ? Descendants(window).OfType<DataGrid>().FirstOrDefault(grid => grid.Name == "InventoryTable" && grid.IsVisible)?.SelectedItem as ProductRowViewModel
+                : null;
             if (!editorOpen || reference)
             {
                 yield return new(Key.F3, alt, "Products_ShelfLabels",
                     editorOpen || reference && inventory?.Products.Count == 0 ? null : Run(inventory?.PrintLabelsCommand), "Shortcut_LabelsRequired");
-                if (!editorOpen && row is not null || reference)
+                if (!editorOpen || reference)
                     yield return new(Key.I, ctrl | alt, "Trade_ProductInfo", row is null || editorOpen ? null : Run(inventory?.ProductInformationCommand, row.Product), "Shortcut_ProductRequired");
             }
             var hasProduct = row is not null || editorOpen && inventory?.Editor.Id is not null;
-            if (hasProduct || reference)
-                yield return new(Key.H, ctrl, "Trade_ProductSales", hasProduct ? Run(inventory?.ProductSalesCommand, row?.Product.Id) : null, "Shortcut_ProductRequired");
+            yield return new(Key.H, ctrl, "Trade_ProductSales", hasProduct ? Run(inventory?.ProductSalesCommand, row?.Product.Id) : null, "Shortcut_ProductRequired");
         }
     }
 

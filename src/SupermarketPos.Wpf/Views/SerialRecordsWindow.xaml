@@ -24,6 +24,8 @@
                     <DataGrid x:Name="Devices" layout:TableLayout.Key="serial-warranty-records" IsReadOnly="True" SelectionMode="Single" Height="350">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{loc:T Pos_Product}" Binding="{Binding ProductName}" Width="1.4*" ElementStyle="{StaticResource TableName}" />
+                            <DataGridTextColumn Header="{loc:T Tech_Brand}" Binding="{Binding Brand}" Width="*" ElementStyle="{StaticResource TableName}"/>
+                            <DataGridTextColumn Header="{loc:T Tech_Model}" Binding="{Binding Model}" Width="*" ElementStyle="{StaticResource TableName}"/>
                             <DataGridTextColumn Header="{loc:T Trade_Serial}" Binding="{Binding Serial}" Width="*" ElementStyle="{StaticResource TableValue}" />
                             <DataGridTextColumn Header="{loc:T Trade_Imei1}" Binding="{Binding Imei1}" Width="*" ElementStyle="{StaticResource TableValue}" />
                             <DataGridTextColumn Header="{loc:T Trade_Imei2}" Binding="{Binding Imei2}" Width="*" ElementStyle="{StaticResource TableValue}" />

@@ -38,11 +38,19 @@ public sealed class SaleHistory(PosDbContext db)
     {
         var key = Sale.CustomerIdentity(customer);
         if (key is null) return [];
-        var candidates = await db.Sales.AsNoTracking().Where(s => s.CustomerAccountKey == key ||
-            (s.CustomerAccountKey == null && (s.CustomerPhone != null || s.CustomerEmail != null)))
-            .OrderByDescending(s => s.CreatedAt).ToListAsync(ct);
-        var ids = candidates.Where(s => (s.CustomerAccountKey ?? Sale.CustomerIdentity(s.Customer)) == key).Take(500).Select(s => s.Id).ToArray();
+        var candidates = db.Sales.AsNoTracking();
+        var recorded = await candidates.Where(s => s.CustomerAccountKey == key)
+            .OrderByDescending(s => s.CreatedAt).ThenByDescending(s => s.Id).Take(500)
+            .Select(s => new { s.Id, s.CreatedAt }).ToListAsync(ct);
+        var legacy = await candidates.Where(s => s.CustomerAccountKey == null && s.CustomerName != null &&
+            (s.CustomerPhone != null || s.CustomerEmail != null))
+            .Select(s => new { s.Id, s.CreatedAt, s.CustomerName, s.CustomerPhone, s.CustomerEmail }).ToListAsync(ct);
+        var ids = recorded.Concat(legacy.Where(s => Sale.CustomerIdentity(
+                SaleCustomer.Create(s.CustomerName, s.CustomerPhone, s.CustomerEmail, null)) == key)
+            .Select(s => new { s.Id, s.CreatedAt })).OrderByDescending(s => s.CreatedAt).ThenByDescending(s => s.Id)
+            .Take(500).Select(s => s.Id).ToArray();
+        if(ids.Length==0)return [];
         return await db.Sales.AsNoTracking().Include(s => s.Lines).Where(s => ids.Contains(s.Id))
-            .OrderByDescending(s => s.CreatedAt).ToListAsync(ct);
+            .OrderByDescending(s => s.CreatedAt).ThenByDescending(s => s.Id).ToListAsync(ct);
     }
 }

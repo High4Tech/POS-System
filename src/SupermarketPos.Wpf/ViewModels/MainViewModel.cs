@@ -89,6 +89,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private object _currentViewModel;
     [ObservableProperty] private bool _isLoggedIn;
+    [ObservableProperty] private string? _shortcutHint;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowLowStockNotifications))]
     private string _activeScreen = "pos";
@@ -97,6 +98,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     partial void OnCurrentViewModelChanging(object value)
     {
+        ShortcutHint = null;
         if (CurrentViewModel is ProductsViewModel inventory && !ReferenceEquals(inventory, value))
             inventory.SetInventoryActive(false);
         Scanner.Activate(ReferenceEquals(value, Login) ? null : value);

@@ -56,11 +56,11 @@
   <data name="Login_Username"><value>صارف کا نام</value></data>
   <data name="Login_Password"><value>پاس ورڈ</value></data>
   <data name="Login_Button"><value>سائن ان کریں</value></data>
-  <data name="Nav_Dashboard"><value>ڈیش بورڈ</value></data>
-  <data name="Nav_Pos"><value>کاؤنٹر</value></data>
+  <data name="Nav_Dashboard"><value>ہوم</value></data>
+  <data name="Nav_Pos"><value>فروخت</value></data>
   <data name="Nav_Products"><value>مصنوعات اور اسٹاک</value></data>
-  <data name="Nav_Reports"><value>فروخت اور رپورٹیں</value></data>
-  <data name="Nav_Settings"><value>اسٹور پروفائل</value></data>
+  <data name="Nav_Reports"><value>رپورٹیں</value></data>
+  <data name="Nav_Settings"><value>ترتیبات</value></data>
   <data name="Nav_Logout"><value>سائن آؤٹ</value></data>
   <data name="Nav_CollapseSidebar"><value>نیویگیشن سمیٹیں</value></data>
   <data name="Nav_ExpandSidebar"><value>نیویگیشن پھیلائیں</value></data>
@@ -315,8 +315,8 @@
   <data name="Category_RemoveImage" xml:space="preserve"><value>تصویر ہٹائیں</value></data>
   <data name="Category_ImageError" xml:space="preserve"><value>یہ تصویر نہیں کھل سکی۔ PNG، JPG، BMP یا GIF فائل منتخب کریں۔</value></data>
   <data name="Scanner_Panel" xml:space="preserve"><value>فون اسکینر</value></data>
-  <data name="Scanner_StatusConnected"><value>منسلک</value></data>
-  <data name="Scanner_StatusDisconnected"><value>رابطہ منقطع</value></data>
+  <data name="Scanner_StatusConnected"><value>اسکینر: منسلک</value></data>
+  <data name="Scanner_StatusDisconnected"><value>اسکینر: رابطہ منقطع</value></data>
   <data name="Scanner_Connected" xml:space="preserve"><value>فون منسلک ہے۔</value></data>
   <data name="Scanner_ManualDisconnected" xml:space="preserve"><value>رابطہ منقطع ہے۔ دوبارہ جوڑنے کا بٹن دبائیں۔</value></data>
   <data name="Scanner_ReconnectAction" xml:space="preserve"><value>دوبارہ جوڑیں</value></data>
@@ -738,7 +738,7 @@
   <data name="Features_Supermarket" xml:space="preserve"><value>سپر مارکیٹ / منی مارٹ</value></data>
   <data name="Features_Retail" xml:space="preserve"><value>عام پرچون</value></data>
   <data name="Features_Pharmacy" xml:space="preserve"><value>میڈیکل اسٹور</value></data>
-  <data name="Features_Electronics" xml:space="preserve"><value>الیکٹرانکس</value></data>
+  <data name="Features_Electronics" xml:space="preserve"><value>ٹیک ریٹیل</value></data>
   <data name="Features_Mobile" xml:space="preserve"><value>موبائل شاپ / ریچارج</value></data>
   <data name="Features_Loose" xml:space="preserve"><value>کھلی اشیا (وزن / حجم)</value></data>
   <data name="Features_Packaging" xml:space="preserve"><value>ڈبے، پیک اور الگ عدد</value></data>
@@ -1154,4 +1154,20 @@
   <data name="Trade_PrintReportRequired" xml:space="preserve"><value>رپورٹ بنائیں اور انوائس کا انتخاب ہٹا دیں</value></data>
   <data name="Trade_LedgerFilter" xml:space="preserve"><value>تاریخ، رسید یا لین دین سے تلاش کریں</value></data>
   <data name="Trade_CloseEditorRequired" xml:space="preserve"><value>پہلے کھلی پروڈکٹ محفوظ یا بند کریں</value></data>
+  <data name="Shortcut_CustomerAccountRequired" xml:space="preserve"><value>فون نمبر یا ای میل والے موجودہ گاہک کو منتخب کریں۔</value></data>
+  <data name="Customer_ClearSelection" xml:space="preserve"><value>گاہک کا انتخاب ہٹائیں</value></data>
+  <data name="Updates_InstalledVersion" xml:space="preserve"><value>انسٹال شدہ بلڈ</value></data>
+  <data name="Trade_NoFrequentProducts" xml:space="preserve"><value>اس گاہک کی خریداریوں میں فی الحال کوئی دستیاب چیز نہیں ملی۔</value></data>
+  <data name="Trade_NoCustomerInvoices" xml:space="preserve"><value>اس گاہک کے لیے کوئی انوائس نہیں ملی۔</value></data>
+<data name="Pos_CartPrice"><value>قیمت</value></data>
+<data name="Pos_AllProducts"><value>تمام مصنوعات</value></data>
+<data name="Pos_SearchResults"><value>تلاش کے نتائج</value></data>
+<data name="Pos_ProductCount"><value>{0} مصنوعات</value></data>
+<data name="Customer_WalkIn"><value>عام گاہک</value></data>
+<data name="Customer_Change"><value>تبدیل کریں</value></data>
+<data name="Customer_New"><value>نیا گاہک شامل کریں</value></data>
+<data name="Pos_QuantityError"><value>دستیاب اسٹاک کے اندر مثبت مقدار درج کریں۔</value></data>
+<data name="Tech_Brand"><value>برانڈ</value></data>
+<data name="Tech_Model"><value>ماڈل</value></data>
+<data name="Tech_Sku"><value>اسٹاک کوڈ</value></data>
 </root>

@@ -235,6 +235,14 @@ public partial class BusinessSettingsWindow : Window
     private void SupportTab()
     {
         var f=new BusinessForm();var report=_diagnostics.Latest();var description=new TextBox{AcceptsReturn=true,TextWrapping=TextWrapping.Wrap,Height=90,MaxLength=2000};
+        var assembly=typeof(App).Assembly;
+        var version=assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute),false)
+            .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().Single().InformationalVersion;
+        var build=assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyMetadataAttribute),false)
+            .OfType<System.Reflection.AssemblyMetadataAttribute>().ToDictionary(item=>item.Key,item=>item.Value);
+        var identity=new TextBox { IsReadOnly=true, TextWrapping=TextWrapping.Wrap, FlowDirection=FlowDirection.LeftToRight,
+            Text=string.Join("\n",new[]{version,build.GetValueOrDefault("BuildConfiguration"),build.GetValueOrDefault("BuildTimestampUtc"),build.GetValueOrDefault("BuildSourceFingerprint")}.Where(value=>!string.IsNullOrEmpty(value))) };
+        f.Add("Updates_InstalledVersion",identity,true);
         f.Add("Support_Description",description,true);
         var review=new TextBox{Text=JsonSerializer.Serialize(report,new JsonSerializerOptions(SignedDocuments.Json){WriteIndented=true}),IsReadOnly=true,TextWrapping=TextWrapping.Wrap,Height=120,VerticalScrollBarVisibility=ScrollBarVisibility.Auto,FlowDirection=FlowDirection.LeftToRight};
         f.Add("Support_Review",review,true);

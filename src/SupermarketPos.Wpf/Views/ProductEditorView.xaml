@@ -182,6 +182,12 @@
 
 
                 <StackPanel Visibility="{Binding DeviceTrackingAvailable,Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{loc:T Tech_Brand}" Style="{StaticResource FormLabel}"/>
+                <TextBox Text="{Binding Editor.Brand,UpdateSourceTrigger=PropertyChanged}" MaxLength="120" Margin="0,4,0,8"/>
+                <TextBlock Text="{loc:T Tech_Model}" Style="{StaticResource FormLabel}"/>
+                <TextBox Text="{Binding Editor.Model,UpdateSourceTrigger=PropertyChanged}" MaxLength="120" Margin="0,4,0,8"/>
+                <TextBlock Text="{loc:T Tech_Sku}" Style="{StaticResource FormLabel}"/>
+                <TextBox Text="{Binding Editor.Sku,UpdateSourceTrigger=PropertyChanged}" MaxLength="120" Margin="0,4,0,8"/>
                 <CheckBox Content="{loc:T Trade_SerialTrack}" IsChecked="{Binding Editor.TrackSerial}" Margin="0,0,0,8" />
                 <TextBlock Text="{loc:T Trade_WarrantyMonths}" Style="{StaticResource FormLabel}" />
                 <TextBox Text="{Binding Editor.WarrantyMonths, UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}" FlowDirection="LeftToRight" Margin="0,4,0,8" />

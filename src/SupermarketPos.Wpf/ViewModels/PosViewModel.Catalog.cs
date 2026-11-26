@@ -9,6 +9,10 @@ using SupermarketPos.Wpf.Views;
 namespace SupermarketPos.Wpf.ViewModels;
 public sealed partial class PosViewModel
 {
+    public string CollectionTitle => SelectedCategoryId != 0
+        ? Categories.FirstOrDefault(tile => tile.Category.Id == SelectedCategoryId)?.Name ?? Text["Pos_AllProducts"]
+        : string.IsNullOrWhiteSpace(SearchText) ? Text["Pos_AllProducts"] : Text["Pos_SearchResults"];
+    public string CollectionCount => Text.Format("Pos_ProductCount", ProductTiles.Count);
     private const int CardPageSize=24;
     private IReadOnlyList<Product> _registerProducts=[];
     private readonly LayoutPreferences<RegisterPreference> _registerPreferences;
@@ -31,7 +35,7 @@ public sealed partial class PosViewModel
     partial void OnShowResultsChanged(bool value){OnPropertyChanged(nameof(ShowRegisterCards));OnPropertyChanged(nameof(ShowRegisterList));}
     private void ApplyRegisterFilter()
     {
-        var term=SearchText.Trim();ShowProductTiles(_registerProducts.Where(p=>(SelectedCategoryId==0||p.CategoryId==SelectedCategoryId)&&(term.Length==0||p.Name.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.MedicineGeneric.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Barcode.Contains(term,StringComparison.OrdinalIgnoreCase))).ToArray());
+        var term=SearchText.Trim();ShowProductTiles(_registerProducts.Where(p=>(SelectedCategoryId==0||p.CategoryId==SelectedCategoryId)&&(term.Length==0||p.Name.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Brand.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Model.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Sku.Contains(term,StringComparison.OrdinalIgnoreCase)||p.MedicineGeneric.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Barcode.Contains(term,StringComparison.OrdinalIgnoreCase))).ToArray());
     }
     partial void OnSearchTextChanged(string value)=>ApplyRegisterFilter();
     [RelayCommand]private async Task SelectMedicineAsync(MedicineMatch match)
@@ -39,18 +43,25 @@ public sealed partial class PosViewModel
         if(!IsPharmacy||!CanReadBarcode())return;
         if(match.ProductId is{} id){if(await _products.GetCurrentForRegisterAsync(id) is{} existing)await AddFromResultsAsync(existing);return;}
         if(!CanReadBarcode())return;
-        AddProvisionalMedicine(match,match.Name,"");await Task.CompletedTask;
+        AddProvisionalMedicine(match,match.Name,"");
+        if(SelectedCartLine is { } selected)ManualProductAdded?.Invoke(selected);
+        await Task.CompletedTask;
     }
     private void AddProvisionalMedicine(MedicineMatch? match,string name,string barcode)
     {
         var existing=Lines.FirstOrDefault(l=>l.Line.Product.Id==0&&(match?.ReferenceId is{} id?l.Line.Product.MedicineReferenceId==id:barcode.Length>0&&l.Line.Product.Barcode==barcode));
-        if(existing is not null){existing.Quantity++;return;}
+        if(existing is not null){existing.Quantity++;SelectedCartLine=existing;return;}
         var p=new Product(barcode,string.IsNullOrWhiteSpace(name)?Text["Pharmacy_Unlisted"]:name,0,0,Unit.Piece,0,Categories.FirstOrDefault()?.Category.Id??1);p.MarkStockUntracked();
         if(match?.ReferenceId is{} reference)p.LinkMedicine(reference);
         if(match is not null)p.SetMedicineDetails(match.GenericName,match.Strength,match.Formulation,match.Manufacturer);
-        var line=_cart.AddOrIncrement(p,1,medicineUnit:p.SellingUnit);Lines.Add(CreateCartLine(line));Recalculate();Status=Text["Pharmacy_EnterCartDetails"];
+        var line=_cart.AddOrIncrement(p,1,medicineUnit:p.SellingUnit);SelectedCartLine=CreateCartLine(line);Lines.Add(SelectedCartLine);Recalculate();Status=Text["Pharmacy_EnterCartDetails"];
     }
-    [RelayCommand]private void UseMedicineName(){if(IsPharmacy&&CanReadBarcode()&&!string.IsNullOrWhiteSpace(SearchText))AddProvisionalMedicine(null,SearchText,"");}
+    [RelayCommand]private void UseMedicineName()
+    {
+        if(!IsPharmacy||!CanReadBarcode()||string.IsNullOrWhiteSpace(SearchText))return;
+        AddProvisionalMedicine(null,SearchText,"");
+        if(SelectedCartLine is { } selected)ManualProductAdded?.Invoke(selected);
+    }
     private CartLineViewModel CreateCartLine(CartLine line)=>new(line,Recalculate,ApproveCartQuantity,_auth.CurrentUser?.IsAdmin==true,_business.SalesTaxRegistered);
     private async Task CompletePendingMedicineSetupAsync()
     {

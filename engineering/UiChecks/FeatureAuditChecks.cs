@@ -57,7 +57,8 @@ internal static partial class Program
         var shell = sp.GetRequiredService<MainViewModel>();
         shell.IsLoggedIn = true;
         var window = new MainWindow(sp.GetRequiredService<PosStorage>()){DataContext=shell,Width=1366,Height=768};
-        foreach (var (model, view) in new[] { (typeof(PosViewModel),typeof(PosView)), (typeof(DashboardViewModel),typeof(DashboardView)) })
+        foreach (var (model, view) in new[] { (typeof(PosViewModel),typeof(PosView)), (typeof(DashboardViewModel),typeof(DashboardView)),
+            (typeof(ReportsViewModel),typeof(ReportsView)) })
         {
             var template = new DataTemplate(model){VisualTree=new FrameworkElementFactory(view)};
             window.Resources.Add(template.DataTemplateKey,template);
@@ -112,6 +113,23 @@ internal static partial class Program
         await reports.LoadHistoryCommand.ExecuteAsync(null);
         timings["invoiceSearchFilterMs"]=clock.Elapsed.TotalMilliseconds;
         Assert(reports.History.Single().Sale.Id==sale.Id,"Posted invoice is found by receipt number");
+        reports.SelectedSale=reports.History.Single();
+        Pump();
+        var reportsView=Descendants(window).OfType<ReportsView>().Single();
+        var heading=Descendants(reportsView).OfType<TextBlock>().Single(text=>text.Text==LocalizationManager.Instance["Dash_InvoiceItems"]);
+        var margin=Descendants(reportsView).OfType<TextBlock>().Single(text=>text.IsVisible&&Equals(text.ToolTip,LocalizationManager.Instance["Dash_Profit"]));
+        Assert(heading.ActualWidth>0&&margin.ActualWidth>0&&!Bounds(heading).IntersectsWith(Bounds(margin)),
+            "Invoice item heading and owner margin have separate layout space");
+        await TimeDialog("returnDialogOpenMs",()=>reports.ReturnItemsCommand.ExecuteAsync(null),close=>
+        {
+            var submit=Descendants(window).OfType<Button>().Single(button=>button.IsVisible&&
+                Equals(button.Content,LocalizationManager.Instance["Trade_ReturnItems"])&&button.Command is null);
+            var closeBounds=Bounds(close);
+            var submitBounds=Bounds(submit);
+            Assert(Math.Abs(closeBounds.Top-submitBounds.Top)<1&&closeBounds.Right<=submitBounds.Left,
+                "Return dialog places Close and Return Items on the same row without overlap");
+            CheckWindow(window,"return-dialog");
+        });
         reports.InvoiceSearch=customer.Phone!;
         reports.InvoicePayment="CREDIT";
         reports.InvoiceStatus="returned";
@@ -165,7 +183,10 @@ internal static partial class Program
                 .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             await task;
         }
-        async Task TimeDialog(string label, Func<Task> action)
+        Rect Bounds(FrameworkElement element) =>
+            element.TransformToAncestor(window).TransformBounds(new Rect(0,0,element.ActualWidth,element.ActualHeight));
+
+        async Task TimeDialog(string label, Func<Task> action, Action<Button>? verifyLayout=null)
         {
             clock.Restart();
             var task=action();
@@ -174,6 +195,7 @@ internal static partial class Program
             timings[label]=clock.Elapsed.TotalMilliseconds;
             Assert(InAppDialog.IsOpen,label+" opened a dialog");
             var close=Descendants(window).OfType<Button>().Single(b=>b.IsVisible&&Equals(b.Content,LocalizationManager.Instance["Common_Close"]));
+            verifyLayout?.Invoke(close);
             close.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             await task;
         }

@@ -16,4 +16,4 @@ public interface ITradeLedger
 }
 
 public sealed record SerialRecord(SerializedUnit Unit, string ProductName, string? ReceiptNo, string? CustomerName,
-    string? CustomerPhone, string? CustomerEmail);
+    string? CustomerPhone, string? CustomerEmail, string Brand="", string Model="");

@@ -24,6 +24,8 @@ public sealed partial class PosViewModel
             var added=_cart.AddOrIncrement(p,quantity,batch,serial:serial,medicineUnit:unit,prescriptionChecked:prescription,dispensingReference:reference,locationId:locationId);
             if(Lines.FirstOrDefault(l=>ReferenceEquals(l.Line,added)) is{} line)line.Refresh();else Lines.Add(CreateCartLine(added));
             await RefreshLocationLimitsAsync(p.Id);
+            SelectedCartLine=Lines.First(item=>ReferenceEquals(item.Line,added));
+            if(!_pharmacyScanned)ManualProductAdded?.Invoke(SelectedCartLine);
             Recalculate();Status=Text.Format("Scanner_Added",p.Name);if(_pharmacyScanned)_sound.PlayScanResult(new("added",p.Name,p.StockTracked?p.StockQuantity-QuantityInCart(p.Id):null),_profile.LowStockThreshold);_pharmacyScanned=false;return true;
         }
         finally{_readingBarcode=false;NotifyPaymentAvailability();}

@@ -180,6 +180,8 @@ public sealed partial class PosViewModel : ObservableObject
         foreach (var product in products)
             ProductTiles.Add(new RegisterProductTile(product, QuantityInCart(product.Id),_registerMetadata.GetValueOrDefault(product.Id),IsPharmacy));
         ShowResults = ProductTiles.Count > 0;
+        OnPropertyChanged(nameof(CollectionTitle));
+        OnPropertyChanged(nameof(CollectionCount));
         ProductPage=0;OnPropertyChanged(nameof(CardTiles));OnPropertyChanged(nameof(HasProductPages));OnPropertyChanged(nameof(ProductPageText));
     }
 
@@ -243,6 +245,7 @@ public sealed partial class PosViewModel : ObservableObject
         }
     }
 
+    public event Action<CartLineViewModel>? ManualProductAdded;
     [RelayCommand]
     private async Task AddFromResultsAsync(Product? product)
     {
@@ -259,7 +262,12 @@ public sealed partial class PosViewModel : ObservableObject
                     Status = StockWarning = Text.Format("Scanner_Inactive", product.Name);
                     _sound.PlayWarning();
                 }
-                else await ApplyBarcodeAsync(new BarcodeMatch(current, null), product.Barcode);
+                else
+                {
+                    await ApplyBarcodeAsync(new BarcodeMatch(current, null), product.Barcode);
+                    if (SelectedCartLine is { } line && line.Line.Product.Id == product.Id)
+                        ManualProductAdded?.Invoke(line);
+                }
             }
         }
         finally
@@ -288,6 +296,7 @@ public sealed partial class PosViewModel : ObservableObject
             existing.Refresh();
         else Lines.Add(CreateCartLine(added));
 
+        SelectedCartLine = Lines.First(item => ReferenceEquals(item.Line, added));
         Status = null;
         Recalculate();
     }
@@ -374,7 +383,7 @@ public sealed partial class PosViewModel : ObservableObject
 
     private bool CanOpenPayment() => System.Windows.Application.Current.MainWindow?.DataContext is not MainViewModel { IsReadOnly: true } &&
         !InAppDialog.IsOpen&&PharmacyWorkspace?.HasPendingEntry!=true&&!_clearConfirmation&&!_cart.IsEmpty && !_readingBarcode && !IsAddingScannedProduct && BatchPrompt is null &&
-        !_checkoutBusy && !Lines.Any(line => line.HasInvalidPrice||line.HasInvalidTax||line.HasInvalidName);
+        !_checkoutBusy && !Lines.Any(line => line.HasInvalidQuantity||line.HasInvalidPrice||line.HasInvalidTax||line.HasInvalidName);
     private bool CanStartPayment()=>!IsPaymentOpen&&CanOpenPayment();
 
     [RelayCommand(CanExecute = nameof(CanStartPayment))]
@@ -502,6 +511,7 @@ public sealed class VatLineViewModel
 
 public sealed partial class RegisterProductTile(Product product, decimal cartQuantity,MedicineMatch? medicine=null,bool pharmacy=false) : ObservableObject
 {
+    [ObservableProperty] private bool _searchSelected;
     public Product Product => product;
     public string Details=>pharmacy?string.Join(" · ",new[]{medicine?.Strength??product.MedicineStrength,medicine?.Formulation??product.MedicineForm}.Where(s=>s.Length>0)):product.Category?.Name??"";
     public string LocationText=>medicine?.Locations??"";

@@ -14,6 +14,22 @@ namespace SupermarketPos.Tests;
 
 public sealed class AccountsAndDevicesTests
 {
+    [Fact]
+    public async Task RetailDetailsPersistWithoutChangingDeviceOrStockIdentity()
+    {
+        using var test=new TestDb();
+        var product=Seed(test);
+        product.SetRetailDetails(" Vivo "," Y21 "," COVER-Y21 ");
+        await test.Context.SaveChangesAsync();
+        test.Context.ChangeTracker.Clear();
+        var saved=await test.Context.Products.SingleAsync();
+        Assert.Equal(("Vivo","Y21","COVER-Y21"),(saved.Brand,saved.Model,saved.Sku));
+        Assert.False(saved.TrackSerial);
+        Assert.Equal(2,saved.StockQuantity);
+        Assert.Throws<DomainException>(()=>saved.SetRetailDetails(new string('x',121),"",""));
+        Assert.Throws<DomainException>(()=>saved.SetRetailDetails("Vi\nvo","",""));
+        Assert.Equal("Vivo",saved.Brand);
+    }
     private static readonly User Operator = new("operator", "hash", "Operator", UserRole.Admin);
     private static readonly SaleCustomer Customer = new("Customer", "03001234567", null, null);
 

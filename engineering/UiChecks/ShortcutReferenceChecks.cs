@@ -66,10 +66,22 @@ internal static partial class Program
             if (page.Name == "Nav_Purchases")
                 Assert(current.Any(r => r.Key == "Ctrl + F" && r.Availability is null), "General retail Purchases lists its working product search shortcut");
             Assert(current.All(r => !r.Key.StartsWith("Ctrl + Alt + A")), "Only registered shortcuts appear");
-            KeyDown((Button)popup.FindName("HeaderClose"), Key.Escape);
+            Assert(popup.Parent is Border { Parent: Grid { IsKeyboardFocusWithin: true } },
+                "Opening the reference transfers keyboard focus into the dialog");
+            KeyDown((FrameworkElement)Keyboard.FocusedElement!, Key.Escape);
             await task;
             Assert(!InAppDialog.IsOpen && ReferenceEquals(Keyboard.FocusedElement, more), "Escape closes the popup and returns focus to More");
         }
+
+        await NavigateAsync(nav[2]);
+        var inventoryTable = Descendants(window).OfType<DataGrid>().Single(grid => grid.Name == "InventoryTable");
+        inventoryTable.SelectedIndex = 0;
+        var selectionReference = Open();
+        Assert(Rows(Popup(), "CurrentTable").Single(r => r.Key == "Ctrl + H").Availability is null &&
+            Rows(Popup(), "CurrentTable").Single(r => r.Key == "Ctrl + Alt + I").Availability is null,
+            "Inventory uses the selected product even when keyboard focus has moved off the row");
+        Dismiss(Popup());
+        await selectionReference;
 
         var setup = sp.GetRequiredService<IBusinessSetup>();
         var saved = await setup.LoadAsync();
@@ -85,6 +97,24 @@ internal static partial class Program
 
         await NavigateAsync(nav[0]);
         var register = (PosViewModel)shell.CurrentViewModel;
+        foreach (var size in new[] { 100, 200 })
+        {
+            scale.Save(size);
+            more.Focus();
+            var chooser = register.SelectCustomerCommand.ExecuteAsync(null);
+            Pump();
+            var root = (Panel)window.Content;
+            var overlay = (Grid)root.Children[root.Children.Count - 1];
+            var card = overlay.Children.OfType<Border>().Single();
+            var cancel = Descendants(card).OfType<Button>().Single(b => Equals(b.Content, text["Common_Cancel"]));
+            var bottom = cancel.TransformToAncestor(card).Transform(new Point(0, cancel.ActualHeight)).Y;
+            Assert(card.ActualHeight <= root.ActualHeight * (size == 100 ? .6 : .78) + 1 && bottom < card.ActualHeight,
+                $"Customer chooser fits its form and keeps its actions visible at {size}%");
+            Assert(overlay.IsKeyboardFocusWithin, "Customer chooser traps keyboard focus");
+            KeyDown((FrameworkElement)Keyboard.FocusedElement!, Key.Escape);
+            await chooser;
+        }
+        scale.Save(100);
         var product = await sp.GetRequiredService<PosDbContext>().Products.AsNoTracking().FirstAsync();
         await register.AddFromResultsCommand.ExecuteAsync(product);
         Assert(register.Lines.Count == 1, "A checkout test has one isolated cart line");
@@ -133,8 +163,11 @@ internal static partial class Program
         KeyDown(more, Key.F4);
         Pump();
         Assert(InAppDialog.IsOpen && register.Lines.Count == 1, "F4 retains the Clear Cart confirmation");
-        KeyDown((FrameworkElement)Keyboard.FocusedElement!, Key.Escape);
+        var clearCancel = Descendants(window).OfType<Button>().Single(button =>
+            button.IsVisible && button.IsEnabled && Equals(button.Content, text["Common_Cancel"]));
+        KeyDown(clearCancel, Key.Escape);
         await register.ClearCartCommand.ExecutionTask!;
+        Assert(!InAppDialog.IsOpen && register.Lines.Count == 1, "Escape closes Clear Cart and preserves its item");
         register.RemoveLineCommand.Execute(register.Lines.Single());
 
         var readOnlyLicense = new LicenseClient(sp.GetRequiredService<PublisherOptions>() with { Commercial = true },

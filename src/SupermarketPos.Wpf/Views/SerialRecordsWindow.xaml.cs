@@ -26,7 +26,21 @@ public partial class SerialRecordsWindow : Window
         ProductTitle.Text = product?.Name ?? LocalizationManager.Instance["Trade_Devices"];
         RegisterButton.Visibility = product?.TrackSerial == true && !selecting ? Visibility.Visible : Visibility.Collapsed;
         SelectButton.Visibility = selecting ? Visibility.Visible : Visibility.Collapsed;
-        Loaded += async (_, _) => await LoadAsync();
+        Loaded += async (_, _) => { await LoadAsync(); Search.Focus(); };
+        PreviewKeyDown += (_, e) =>
+        {
+            if(e.Key==System.Windows.Input.Key.Down&&Search.IsKeyboardFocusWithin&&Devices.Items.Count>0)
+            {
+                Devices.SelectedIndex=0;
+                Devices.Focus();
+                e.Handled=true;
+            }
+            else if(e.Key==System.Windows.Input.Key.Enter&&_selecting&&!_registering)
+            {
+                Select(this,new RoutedEventArgs());
+                e.Handled=true;
+            }
+        };
         Closing += (_, e) => e.Cancel = _registering;
     }
 
@@ -82,6 +96,8 @@ public partial class SerialRecordsWindow : Window
 public sealed class DeviceRow(SerialRecord record)
 {
     public string ProductName => record.ProductName;
+    public string Brand => record.Brand;
+    public string Model => record.Model;
     public string Serial => record.Unit.Serial;
     public string? Imei1 => record.Unit.Imei1;
     public string? Imei2 => record.Unit.Imei2;
@@ -93,6 +109,6 @@ public sealed class DeviceRow(SerialRecord record)
     public string Status => LocalizationManager.Instance[record.Unit.SaleId is null ? "Trade_Available" :
         WarrantyUntil is null ? "Trade_NoWarranty" : WarrantyUntil.Value.Date >= DateTime.Today ? "Trade_InWarranty" : "Trade_WarrantyExpired"];
 
-    public bool Matches(string term) => new[] { ProductName, Serial, Imei1, Imei2, Receipt, Customer, Phone, record.CustomerEmail }
+    public bool Matches(string term) => new[] { ProductName, Brand, Model, Status, Serial, Imei1, Imei2, Receipt, Customer, Phone, record.CustomerEmail }
         .Any(value => value?.Contains(term, StringComparison.CurrentCultureIgnoreCase) == true);
 }

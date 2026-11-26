@@ -42,7 +42,7 @@ internal static class HistoryTable
         (string Header, string Property)[] columns)
     {
         var view = new ListCollectionView(rows.Cast<object>().ToList());
-        var table = new DataGrid { ItemsSource = view, IsReadOnly = true, Height = 370 };
+        var table = new DataGrid { ItemsSource = view, IsReadOnly = true, MaxHeight = 370 };
         foreach (var (header, property) in columns)
             table.Columns.Add(new DataGridTextColumn
             {
@@ -52,8 +52,10 @@ internal static class HistoryTable
                 ElementStyle = (Style)System.Windows.Application.Current.FindResource("TableName")
             });
         Action close = () => { };
-        var panel = new StackPanel();
-        panel.Children.Add(BusinessForm.Label(title));
+        var panel = new DockPanel();
+        var heading = BusinessForm.Label(title);
+        DockPanel.SetDock(heading, Dock.Top);
+        panel.Children.Add(heading);
         if (matches is not null)
         {
             var search = new TextBox { Margin = new Thickness(0, 6, 0, 8) };
@@ -65,9 +67,12 @@ internal static class HistoryTable
                 var term = search.Text.Trim();
                 view.Filter = term.Length == 0 ? null : row => matches(row, term);
             };
+            DockPanel.SetDock(search, Dock.Top);
             panel.Children.Add(search);
         }
-        panel.Children.Add(table);
+        var actions = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0,10,0,0) };
+        DockPanel.SetDock(actions, Dock.Bottom);
+        panel.Children.Add(actions);
         object? invoice = null;
         if (openInvoice is not null)
         {
@@ -79,10 +84,11 @@ internal static class HistoryTable
             });
             open.IsEnabled = false;
             table.SelectionChanged += (_, _) => open.IsEnabled = table.SelectedItem is not null;
-            panel.Children.Add(open);
+            actions.Children.Add(open);
         }
-        panel.Children.Add(BusinessForm.Button("Common_Close", (_, _) => close(), "GhostButton"));
-        await InAppDialog.ShowAsync(panel, callback => close = callback, contentWidth: 1040);
+        actions.Children.Add(BusinessForm.Button("Common_Close", (_, _) => close(), "GhostButton"));
+        panel.Children.Add(table);
+        await InAppDialog.ShowAsync(panel, callback => close = callback, contentWidth: 1040, sizeToContent: true);
         if (invoice is not null && openInvoice is not null) await openInvoice(invoice);
     }
 }

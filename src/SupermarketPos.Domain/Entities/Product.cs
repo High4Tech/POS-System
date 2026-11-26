@@ -12,6 +12,15 @@ public sealed class Product
     public bool TrackExpiry { get; private set; }
     public bool TrackSerial { get; private set; }
     public int WarrantyMonths { get; private set; }
+    public string Brand { get; private set; } = "";
+    public string Model { get; private set; } = "";
+    public string Sku { get; private set; } = "";
+    public void SetRetailDetails(string? brand,string? model,string? sku)
+    {
+        var values=new[]{brand?.Trim()??"",model?.Trim()??"",sku?.Trim()??""};
+        if(values.Any(value=>value.Length>120||value.Any(char.IsControl)))throw new DomainException("Validation_Text");
+        Brand=values[0];Model=values[1];Sku=values[2];
+    }
     public int StockRevision { get; private set; }
     public void RecordLocationChange()=>StockRevision++;
     public IReadOnlyList<InventoryBatch> Batches => _batches;

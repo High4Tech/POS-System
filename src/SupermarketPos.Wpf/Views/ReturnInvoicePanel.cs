@@ -23,6 +23,7 @@ internal static class ReturnInvoicePanel
         header.Text=LocalizationManager.Instance["Trade_ReturnItems"]+" · "+sale.ReceiptNo;
         DockPanel.SetDock(header,Dock.Top);panel.Children.Add(header);
         var footer=new StackPanel();DockPanel.SetDock(footer,Dock.Bottom);panel.Children.Add(footer);
+        var actions=new WrapPanel { HorizontalAlignment=HorizontalAlignment.Right };
         var form=new BusinessForm();
         var body=new ScrollViewer {Content=form,VerticalScrollBarVisibility=ScrollBarVisibility.Auto,MaxHeight=465};
         panel.Children.Add(body);
@@ -59,8 +60,8 @@ internal static class ReturnInvoicePanel
         if(pending is not null)
         {
             form.Add("Trade_RefundReference",external,true);
-            footer.Children.Add(BusinessForm.Button("Trade_ConfirmCardRefund",async(_,_)=>await Run(()=>service.ResolveCardAsync(pending.Id,true,external.Text))));
-            footer.Children.Add(BusinessForm.Button("Trade_CardRefundFailed",async(_,_)=>await Run(()=>service.ResolveCardAsync(pending.Id,false,external.Text)),"GhostButton"));
+            actions.Children.Add(BusinessForm.Button("Trade_ConfirmCardRefund",async(_,_)=>await Run(()=>service.ResolveCardAsync(pending.Id,true,external.Text))));
+            actions.Children.Add(BusinessForm.Button("Trade_CardRefundFailed",async(_,_)=>await Run(()=>service.ResolveCardAsync(pending.Id,false,external.Text)),"GhostButton"));
         }
         else
         {
@@ -80,14 +81,15 @@ internal static class ReturnInvoicePanel
             form.Add("",cash,true);
             form.Add("",summary,true);
             if(choices.Count>0)
-                footer.Children.Add(BusinessForm.Button(sale.PaymentMethod=="CARD"?"Trade_RequestCardRefund":"Trade_ReturnItems",async(_,_)=>await Run(async()=>
+                actions.Children.Add(BusinessForm.Button(sale.PaymentMethod=="CARD"?"Trade_RequestCardRefund":"Trade_ReturnItems",async(_,_)=>await Run(async()=>
                 {
                     await service.RecordAsync(sale.Id,ReadSelection(),reason.Text,cash.IsChecked==true,confirmation);
                 })));
         }
         footer.Children.Add(error);
-        footer.Children.Add(BusinessForm.Button("Common_Close",(_,_)=>close(),"GhostButton"));
-        await InAppDialog.ShowAsync(panel,callback=>close=callback,contentWidth:900);
+        actions.Children.Insert(0,BusinessForm.Button("Common_Close",(_,_)=>close(),"GhostButton"));
+        footer.Children.Add(actions);
+        await InAppDialog.ShowAsync(panel,callback=>close=callback,contentWidth:760,sizeToContent:true);
 
         ReturnSelection[] ReadSelection() => choices.Where(c=>!string.IsNullOrWhiteSpace(c.Quantity.Text)).Select(c=>
         {

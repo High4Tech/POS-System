@@ -12,6 +12,35 @@ using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 using QuestPDF.Fluent;
 
+if(args.Length==2&&args[0]=="query-plans")
+{
+    var database=Path.Combine(Path.GetFullPath(args[1]),"pos.db");
+    await using var connection=new SqliteConnection(new SqliteConnectionStringBuilder{DataSource=database,Mode=SqliteOpenMode.ReadOnly,Pooling=false}.ToString());
+    await connection.OpenAsync();
+    var queries=new (string Name,string Sql)[]
+    {
+        ("Product barcode","SELECT Id FROM Products WHERE Barcode='00000000'"),
+        ("Product name","SELECT Id FROM Products WHERE instr(lower(Name),'sample')>0"),
+        ("Product category","SELECT Id FROM Products WHERE CategoryId=1"),
+        ("Receipt number","SELECT Id FROM Sales WHERE ReceiptNo='2026-000001'"),
+        ("Invoice date window","SELECT Id FROM Sales WHERE CreatedAt>='2026-01-01' AND CreatedAt<'2026-12-31' ORDER BY CreatedAt DESC LIMIT 101"),
+        ("Customer history/frequency","SELECT Id FROM Sales WHERE CustomerAccountKey='phone:03000000000' ORDER BY CreatedAt DESC, Id DESC LIMIT 500"),
+        ("Product sale history","SELECT SaleId FROM SaleLines WHERE ProductId=1"),
+        ("Posted returns","SELECT Id FROM SaleReturns WHERE SaleId=1 AND Status='Posted'"),
+        ("Stock movements","SELECT Id FROM StockMovements WHERE ProductId=1 ORDER BY OccurredAt DESC"),
+        ("Product batch","SELECT Id FROM InventoryBatches WHERE ProductId=1 AND Lot='fixture'"),
+        ("Expiry across products","SELECT Id FROM InventoryBatches WHERE ExpiryDate<'2026-12-31'")
+    };
+    foreach(var (name,sql) in queries)
+    {
+        using var command=connection.CreateCommand();
+        command.CommandText="EXPLAIN QUERY PLAN "+sql;
+        await using var rows=await command.ExecuteReaderAsync();
+        while(await rows.ReadAsync()) Console.WriteLine($"{name}: {rows.GetString(3)}");
+    }
+    return;
+}
+
 if(args.Length==2&&args[0]=="verify-local-build")
 {
     using var file=File.OpenRead(args[1]);using var pe=new PEReader(file);var reader=pe.GetMetadataReader();var definition=reader.GetAssemblyDefinition();
@@ -24,6 +53,10 @@ if(args.Length==2&&args[0]=="verify-local-build")
         var blob=reader.GetBlobReader(attribute.Value);if(blob.ReadUInt16()!=1)continue;values[blob.ReadSerializedString()!]=blob.ReadSerializedString();
     }
     if(!values.TryGetValue("CommercialBuild",out var mode)||!bool.TryParse(mode,out var commercial)||commercial||!string.IsNullOrEmpty(values.GetValueOrDefault("PublisherApi"))||!string.IsNullOrEmpty(values.GetValueOrDefault("PublisherPublicKey")))throw new Exception("Not the intended local development build");
+    if(values.GetValueOrDefault("BuildConfiguration") != "Release" ||
+        !DateTimeOffset.TryParse(values.GetValueOrDefault("BuildTimestampUtc"),out _) ||
+        values.GetValueOrDefault("BuildSourceFingerprint") is not { Length:64 } fingerprint || !fingerprint.All(Uri.IsHexDigit))
+        throw new Exception("A verified Release build needs a UTC build timestamp and SHA-256 source fingerprint.");
     Console.WriteLine($"Verified local development build {definition.Version}: no embedded publisher endpoint or activation requirement.");return;
 }
 
@@ -73,11 +106,34 @@ if(args.Length==3&&args[0]=="backup")
 {
     Console.WriteLine(await DataBackup.CreateAsync(Path.GetFullPath(args[1]),Path.GetFullPath(args[2])));return;
 }
+if(args.Length==3&&args[0]=="switch-tech-retail")
+{
+    var folder=Path.GetFullPath(args[1]);
+    var database=Path.Combine(folder,"pos.db");
+    if(!File.Exists(database))throw new InvalidOperationException("Existing POS database is required.");
+    var archive=await DataBackup.CreateAsync(folder,Path.GetFullPath(args[2]));
+    using var connection=new SqliteConnection(new SqliteConnectionStringBuilder{DataSource=database,Pooling=false}.ToString());
+    await connection.OpenAsync();
+    using var transaction=connection.BeginTransaction();
+    using var read=connection.CreateCommand();read.Transaction=transaction;
+    read.CommandText="SELECT ProfileJson FROM BusinessConfigurations";
+    var original=(string?)await read.ExecuteScalarAsync()??throw new InvalidOperationException("Business configuration is missing.");
+    var profile=System.Text.Json.Nodes.JsonNode.Parse(original)!.AsObject();
+    var before=profile["BusinessType"]?.GetValue<string>();
+    profile["BusinessType"]="electronics";profile["MedicineTemplate"]="none";
+    using var update=connection.CreateCommand();update.Transaction=transaction;
+    update.CommandText="UPDATE BusinessConfigurations SET ProfileJson=$profile,Revision=Revision+1";
+    update.Parameters.AddWithValue("$profile",profile.ToJsonString());
+    if(await update.ExecuteNonQueryAsync()!=1)throw new InvalidOperationException("Expected exactly one business configuration.");
+    await transaction.CommitAsync();
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new{Before=before,After="electronics",Backup=archive}));
+    return;
+}
 if(args.Length==2&&args[0]=="setup-status")
 {
     using var connection=new SqliteConnection(new SqliteConnectionStringBuilder{DataSource=Path.Combine(Path.GetFullPath(args[1]),"pos.db"),Mode=SqliteOpenMode.ReadOnly,Pooling=false}.ToString());await connection.OpenAsync();
     using var command=connection.CreateCommand();command.CommandText="SELECT Completed,Step,ProfileJson FROM BusinessConfigurations";using var row=await command.ExecuteReaderAsync();
-    while(await row.ReadAsync()){using var profile=System.Text.Json.JsonDocument.Parse(row.GetString(2));Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new{Completed=row.GetBoolean(0),Step=row.GetInt32(1),Language=profile.RootElement.GetProperty("Language").GetString()}));}return;
+    while(await row.ReadAsync()){using var profile=System.Text.Json.JsonDocument.Parse(row.GetString(2));Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new{Completed=row.GetBoolean(0),Step=row.GetInt32(1),Language=profile.RootElement.GetProperty("Language").GetString(),BusinessType=profile.RootElement.TryGetProperty("BusinessType",out var type)?type.GetString():null}));}return;
 }
 if(args.Length==2&&args[0]=="data-fingerprint")
 {

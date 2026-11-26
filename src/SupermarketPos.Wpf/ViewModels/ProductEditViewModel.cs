@@ -19,6 +19,9 @@ public sealed partial class ProductEditViewModel : ObservableObject
 
     [ObservableProperty] private string _barcode = string.Empty;
     [ObservableProperty] private string _name = string.Empty;
+    [ObservableProperty] private string _brand = "";
+    [ObservableProperty] private string _model = "";
+    [ObservableProperty] private string _sku = "";
     [ObservableProperty] private string _price = string.Empty;       // KDV-inclusive
     [ObservableProperty] private string _purchaseCost = "";
     [ObservableProperty] private string _vatPercent = "20";
@@ -76,6 +79,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
         ImagePath = null;
         TrackExpiry = HasExistingBatches = false;
         TrackSerial = false;
+        Brand=Model=Sku="";
         WarrantyMonths = "0";
         BatchLot = BatchQuantity = "";
         BatchExpiry = null;
@@ -85,6 +89,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
 
     public void Load(Product p)
     {
+        Brand=p.Brand;Model=p.Model;Sku=p.Sku;
         LoadPharmacy(p);
         Id = p.Id;
         OnPropertyChanged(nameof(IsNew));

@@ -26,7 +26,7 @@
               </WrapPanel>
               <Grid>
                 <ContentControl Content="{Binding InventoryMedicineSearch}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}"/>
-                <TextBox Text="{Binding Filter,UpdateSourceTrigger=PropertyChanged}" ToolTip="{loc:T Bulk_Search}" AutomationProperties.Name="{loc:T Bulk_Search}" Visibility="{Binding ShowProductImages,Converter={StaticResource BoolToVis}}"/>
+                <TextBox Text="{Binding Filter,UpdateSourceTrigger=PropertyChanged,Delay=120}" ToolTip="{loc:T Bulk_Search}" AutomationProperties.Name="{loc:T Bulk_Search}" Visibility="{Binding ShowProductImages,Converter={StaticResource BoolToVis}}"/>
               </Grid>
             </DockPanel>
             <ScrollViewer x:Name="InventoryFilters" DockPanel.Dock="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,0,8">
@@ -71,7 +71,7 @@
             </StackPanel>
             <Grid>
             <Border Style="{StaticResource Card}" Padding="6">
-                <DataGrid layout:TableLayout.Key="inventory-products" ItemsSource="{Binding VisibleProducts}" IsReadOnly="True">
+                <DataGrid x:Name="InventoryTable" layout:TableLayout.Key="inventory-products" ItemsSource="{Binding VisibleProducts}" IsReadOnly="True">
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
                             <Style.Triggers>

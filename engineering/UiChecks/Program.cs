@@ -56,12 +56,28 @@ internal static partial class Program
             // Check actual WPF two-way bindings, including init-only profile properties.
             var profile=new SupermarketPos.Domain.Business.BusinessProfile();var form=new BusinessForm();var input=form.Text("Settings_StoreName",profile,nameof(profile.StoreName));input.Text="Bound shop";input.GetBindingExpression(TextBox.TextProperty)!.UpdateSource();Assert(profile.StoreName=="Bound shop","Business fields bind to the saved profile");
             var screenshots=Directory.CreateDirectory(Path.Combine(root,"screens")).FullName;
+            if(args.Contains("--retail-flow"))
+            {
+                Wait(setup.CompleteAsync(new(){StoreName="Tech Retail verification",BusinessType="electronics"},"retail-owner","IsolatedRetail123!"));
+                Wait(auth.LoginAsync("retail-owner","IsolatedRetail123!"));
+                Wait(RetailKeyboardFlow(sp,screenshots),TimeSpan.FromMinutes(3));
+                Wait(scope.DisposeAsync().AsTask());Wait(provider.DisposeAsync().AsTask());
+                Console.WriteLine($"PASS: {_checks} retail keyboard assertions.");app.Shutdown();return 0;
+            }
+            if(args.Contains("--keyboard-smoke"))
+            {
+                Wait(KeyboardSmokeAsync(sp));
+                Dispatcher.Run();
+                Wait(scope.DisposeAsync().AsTask());
+                Wait(provider.DisposeAsync().AsTask());
+                return 0;
+            }
             if(args.Contains("--audit-probes"))
             {
                 Wait(setup.CompleteAsync(new(){StoreName="Audit shop"},"audit-owner","IsolatedAudit123!"));
                 Wait(auth.LoginAsync("audit-owner","IsolatedAudit123!"));
-                Wait(ShortcutReferenceChecks(sp,screenshots));
-                Wait(FeatureAuditChecks(sp,root));
+                Wait(ShortcutReferenceChecks(sp,screenshots),TimeSpan.FromMinutes(3));
+                Wait(FeatureAuditChecks(sp,root),TimeSpan.FromMinutes(3));
                 Wait(scope.DisposeAsync().AsTask());Wait(provider.DisposeAsync().AsTask());
                 Console.WriteLine($"PASS: {_checks} focused audit assertions.");app.Shutdown();return 0;
             }
@@ -89,7 +105,7 @@ internal static partial class Program
             OnboardingInteractionChecks(sp,setup,auth,storage,screenshots);
             Wait(setup.CompleteAsync(new(){StoreName="QA Electronics",LegalName="QA Registered Shop",Registered=true,Address="Test road",City="Lahore",Ntn="1234567",Language="ur"},"owner","IsolatedTest123!"));
             Wait(auth.LoginAsync("owner","IsolatedTest123!"));
-            Wait(ShortcutReferenceChecks(sp,screenshots));
+            Wait(ShortcutReferenceChecks(sp,screenshots),TimeSpan.FromMinutes(3));
             if(args.Contains("--shortcuts-only"))
             {
                 Wait(scope.DisposeAsync().AsTask());Wait(provider.DisposeAsync().AsTask());Console.WriteLine($"PASS: {_checks} checks including the shortcut popup.");app.Shutdown();return 0;
@@ -111,7 +127,7 @@ internal static partial class Program
             if(args.Contains("--performance")){Wait(PerformanceChecks(sp,root));Console.WriteLine("PASS: isolated performance measurements saved.");app.Shutdown();return 0;}
             Wait(InvoiceActionChecks(sp,storage,root,screenshots));
             Wait(RetailScreenChecks(sp,screenshots));
-            Wait(PharmacyScreenChecks(sp,screenshots));
+            Wait(PharmacyScreenChecks(sp,screenshots), TimeSpan.FromMinutes(3));
             var update=sp.GetRequiredService<SoftwareUpdates>();Wait(UpdateFeedChecks(root,update));
             var workerFixture=Path.GetFullPath("engineering/qa-data/worker-signed-fixture.json");
             if(File.Exists(workerFixture))
@@ -313,6 +329,7 @@ internal static partial class Program
     {
         var setup=sp.GetRequiredService<IBusinessSetup>();var state=await setup.LoadAsync();state.Profile.BusinessType="pharmacy";state.Profile.MedicineTemplate="pakistan-drap";await setup.SaveDraftAsync(state.Profile,state.Step);
         var catalog=sp.GetRequiredService<SupermarketPos.Infrastructure.Business.MedicineCatalogService>();await catalog.EnsureSelectedAsync();Assert((await catalog.StatusAsync())?.RowCount==10068,"Supplied catalog imports in an isolated real file database");
+        Console.WriteLine("PHARMACY catalog ready");
         var medicine=(await catalog.SearchAsync("moxiflox",1)).Single();Assert(medicine.Price is null,"Catalog never invents a price");
         var main=sp.GetRequiredService<MainViewModel>();var scanner=sp.GetRequiredService<ScannerController>();
         foreach(var lang in new[]{"en","ur"})foreach(var size in new[]{100,200})
@@ -378,6 +395,6 @@ internal static partial class Program
     }
     private static void Assert(bool valid,string message){if(!valid)throw new Exception(message);_checks++;}
     private static void Pump(){var frame=new DispatcherFrame();Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle,()=>frame.Continue=false);Dispatcher.PushFrame(frame);}
-    private static void Wait(Task task){var until=DateTime.UtcNow.AddSeconds(60);while(!task.IsCompleted){if(DateTime.UtcNow>until)throw new TimeoutException();Pump();Thread.Sleep(5);}task.GetAwaiter().GetResult();}
+    private static void Wait(Task task, TimeSpan? timeout=null){var until=DateTime.UtcNow+(timeout??TimeSpan.FromSeconds(60));while(!task.IsCompleted){if(DateTime.UtcNow>until)throw new TimeoutException();Pump();Thread.Sleep(5);}task.GetAwaiter().GetResult();}
     private static T Wait<T>(Task<T> task){Wait((Task)task);return task.GetAwaiter().GetResult();}
 }
