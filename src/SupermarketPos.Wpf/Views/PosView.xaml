@@ -213,7 +213,8 @@
                 </ItemsControl></DockPanel>
             </ScrollViewer>
 
-            <Grid x:Name="RegisterWorkspace" layout:PanelHeights.Key="register"><Grid.RowDefinitions><RowDefinition Height="58*"/><RowDefinition Height="12"/><RowDefinition Height="42*" MinHeight="{DynamicResource RegisterCartMinimumHeight}"/></Grid.RowDefinitions><GridSplitter Grid.Row="1" Style="{StaticResource HeightDivider}"/>
+            <ScrollViewer x:Name="RegisterScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False">
+            <Grid x:Name="RegisterWorkspace" Height="{Binding ViewportHeight,ElementName=RegisterScroll}" MinHeight="{DynamicResource RegisterWorkspaceMinimumHeight}" layout:PanelHeights.Key="register"><Grid.RowDefinitions><RowDefinition Height="58*" MinHeight="{DynamicResource RegisterCatalogMinimumHeight}"/><RowDefinition Height="12"/><RowDefinition Height="42*" MinHeight="{DynamicResource RegisterCartMinimumHeight}"/></Grid.RowDefinitions><GridSplitter Grid.Row="1" Style="{StaticResource HeightDivider}"/>
 <Border Padding="8" Style="{StaticResource Card}"><DockPanel>            <Border DockPanel.Dock="Top" Padding="0,0,0,6">
               <DockPanel>
             <WrapPanel DockPanel.Dock="Right" Margin="0,0,0,10"><ComboBox ItemsSource="{Binding CatalogKinds}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding CatalogKind}" MinWidth="120" Margin="0,0,6,0" Visibility="{Binding IsPharmacy,Converter={StaticResource InverseBoolToVis}}"/><ComboBox ItemsSource="{Binding RegisterSorts}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding RegisterSort}" MinWidth="120" Margin="0,0,6,0"/>
@@ -405,7 +406,7 @@
                         </Grid>
                     </DockPanel>
                 </Border>
-            </Grid>
+            </Grid></ScrollViewer>
         </DockPanel>
 
         <!-- RIGHT: totals + payment -->

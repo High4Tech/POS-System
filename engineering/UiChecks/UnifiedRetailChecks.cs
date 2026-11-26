@@ -38,6 +38,8 @@ internal static partial class Program
             window.UpdateLayout();var scroll=Descendants(table).OfType<ScrollViewer>().First();scroll.ScrollToBottom();Pump();window.UpdateLayout();
             Capture(window,System.IO.Path.Combine(screenshots,$"retail-service-row-{lang}-{size}.png"));
             Assert(table.ActualHeight>table.ColumnHeaderHeight+60,$"The cart keeps a usable body below its header at {size}% (table {table.ActualHeight}, header {table.ColumnHeaderHeight})");
+            var workspace=Descendants(window).OfType<Grid>().Single(g=>g.Name=="RegisterWorkspace");
+            Assert(workspace.RowDefinitions[0].ActualHeight>=200,"Large text preserves room for the product catalog as well as cart editing");
             Assert(scroll.ScrollableHeight>0&&scroll.VerticalOffset>0,"Tall service details can scroll inside the cart at "+size+"%");
         }
         sp.GetRequiredService<DesktopTextSize>().Save(100);SupermarketPos.Wpf.Localization.LocalizationManager.Instance.SetLanguage("en");
