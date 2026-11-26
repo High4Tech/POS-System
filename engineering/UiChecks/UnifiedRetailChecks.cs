@@ -35,10 +35,10 @@ internal static partial class Program
         foreach(var lang in new[]{"en","ur"})foreach(var size in new[]{100,200})
         {
             SupermarketPos.Wpf.Localization.LocalizationManager.Instance.SetLanguage(lang);sp.GetRequiredService<DesktopTextSize>().Save(size);Pump();
-            var scroll=Descendants(table).OfType<ScrollViewer>().First();scroll.ScrollToBottom();Pump();
-            Assert(table.ActualHeight>table.ColumnHeaderHeight+60,"The cart keeps a usable body below its header at "+size+"%");
-            Assert(scroll.ScrollableHeight>0&&scroll.VerticalOffset>0,"Tall service details can scroll inside the cart at "+size+"%");
+            window.UpdateLayout();var scroll=Descendants(table).OfType<ScrollViewer>().First();scroll.ScrollToBottom();Pump();window.UpdateLayout();
             Capture(window,System.IO.Path.Combine(screenshots,$"retail-service-row-{lang}-{size}.png"));
+            Assert(table.ActualHeight>table.ColumnHeaderHeight+60,$"The cart keeps a usable body below its header at {size}% (table {table.ActualHeight}, header {table.ColumnHeaderHeight})");
+            Assert(scroll.ScrollableHeight>0&&scroll.VerticalOffset>0,"Tall service details can scroll inside the cart at "+size+"%");
         }
         sp.GetRequiredService<DesktopTextSize>().Save(100);SupermarketPos.Wpf.Localization.LocalizationManager.Instance.SetLanguage("en");
         foreach(var item in pos.Lines.ToArray())pos.RemoveLineCommand.Execute(item);

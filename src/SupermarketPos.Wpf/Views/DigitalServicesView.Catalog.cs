@@ -17,7 +17,7 @@ public sealed partial class DigitalServicesView
     private async Task CatalogAsync()
     {
         if(_retailInventory is null||_products is null||_references is null){Record();return;}
-        await _retailInventory.EnsureProviderTemplateAsync();await LoadAsync();
+        await _retailInventory.EnsureProviderTemplateAsync();await _retailInventory.EnsureConfiguredPackagesAsync();await LoadAsync();
         var panel=new DockPanel{Margin=new Thickness(20)};var head=new StackPanel();DockPanel.SetDock(head,Dock.Top);panel.Children.Add(head);
         var title=BusinessForm.Label("Service_Title");title.SetResourceReference(TextBlock.StyleProperty,"H1");head.Children.Add(title);
         var actions=new WrapPanel();

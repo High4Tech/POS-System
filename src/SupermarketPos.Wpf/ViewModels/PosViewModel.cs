@@ -90,7 +90,7 @@ public sealed partial class PosViewModel : ObservableObject
     {
         Customer.SetExisting(await _saleHistory.GetCustomerSalesAsync());
         _business=(await _businessSetup.LoadAsync()).Profile;OnPropertyChanged(nameof(IsPharmacy));OnPropertyChanged(nameof(ShowProductImages));OnPropertyChanged(nameof(EnableLooseGoods));OnPropertyChanged(nameof(EnablePackagedUnits));OnPropertyChanged(nameof(EnableGoodsPanel));OnPropertyChanged(nameof(EnableDigitalServices));OnPropertyChanged(nameof(EnableMobileRecharge));
-        if(!IsPharmacy)await _retailInventory.EnsureProviderTemplateAsync();
+        if(!IsPharmacy){await _retailInventory.EnsureProviderTemplateAsync();await _retailInventory.EnsureConfiguredPackagesAsync();}
         _serviceProviders=await _digitalLedger.ProvidersAsync();_servicePackages=await _digitalLedger.PackagesAsync();
         foreach(var line in Lines)line.SetServiceOptions(_serviceProviders,_servicePackages);
         if(IsPharmacy&&PharmacyWorkspace is null)
@@ -109,7 +109,7 @@ public sealed partial class PosViewModel : ObservableObject
                 { IsSelected = c.Id == SelectedCategoryId });
         foreach (var line in Lines)
             line.UpdateAvailability(line.Line.Product.Id==0?line.Line.Product:await _products.GetCurrentForRegisterAsync(line.Line.Product.Id));
-        _registerProducts=(await _products.GetAllAsync()).Where(p=>p.IsActive).ToArray();
+        _registerProducts=(await _products.GetAllAsync()).Where(p=>p.IsActive&&(!IsPharmacy||p.Kind!="digital")).ToArray();
         _registerMetadata=IsPharmacy?await _medicineCatalog.DescribeAsync(_registerProducts):[];
         if(!Categories.Any(tile=>tile.IsSelected))SelectedCategoryId=0;
         ApplyRegisterFilter();

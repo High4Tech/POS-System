@@ -98,4 +98,13 @@ public sealed class RetailWorkflowTests
         await f.Inventory.SaveServiceAsync(0,"Transfer",100,"TRANSFER",f.Provider);
         var product=await db.Context.Products.SingleAsync();Assert.True(product.IsFinancialService);Assert.Equal(f.Provider,product.ServiceProviderId);Assert.Equal(100,product.UnitPrice);
     }
+    [Fact]public async Task ConfiguredPackagesAppearOnceInTheSharedCatalogAndFollowPackageChanges()
+    {
+        using var db=new TestDb();var f=await Setup(db);
+        var package=new MobileServicePackage{ProviderId=f.Provider,Name="Configured package",Price=200,ProviderCost=180,PackageIdentifier="LOCAL-1",Benefits="Configured benefits",Validity="7 days"};
+        await f.Ledger.SavePackageAsync(package);await f.Inventory.EnsureConfiguredPackagesAsync();await f.Inventory.EnsureConfiguredPackagesAsync();
+        var product=await db.Context.Products.SingleAsync();Assert.True(product.IsFinancialService);Assert.Equal(package.Id,product.ServicePackageId);Assert.False(product.StockTracked);Assert.False(product.QuickEntry);Assert.Equal(200,product.UnitPrice);Assert.Empty(db.Context.ServicePostings);
+        package.Price=250;package.IsActive=false;await f.Ledger.SavePackageAsync(package);await f.Inventory.EnsureConfiguredPackagesAsync();
+        Assert.Equal(250,product.UnitPrice);Assert.False(product.IsActive);Assert.Single(db.Context.Products);
+    }
 }

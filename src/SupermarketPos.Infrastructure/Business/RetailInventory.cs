@@ -51,6 +51,33 @@ public sealed class RetailInventory(PosDbContext db,IUnitOfWork work,IAuthServic
             db.Products.Add(product);await db.SaveChangesAsync(ct);db.Entry(product).State=EntityState.Detached;return product;
         });
     }
+    public async Task EnsureConfiguredPackagesAsync()
+    {
+        var profile=(await setup.LoadAsync()).Profile;
+        if(profile.IsPharmacy||!profile.MobileRechargeAvailable||auth.CurrentUser?.IsAdmin!=true)return;
+        await work.ExecuteInTransactionAsync(async ct=>
+        {
+            var providers=await db.ServiceProviders.ToDictionaryAsync(p=>p.Id,ct);
+            foreach(var package in await db.MobileServicePackages.AsNoTracking().ToListAsync(ct))
+            {
+                if(!providers.TryGetValue(package.ProviderId,out var provider))continue;
+                var key=package.CatalogKey.Length>0?package.CatalogKey:"configured-package:"+package.Id;
+                var product=await db.Products.SingleOrDefaultAsync(p=>p.CatalogKey==key,ct);
+                if(product is null)
+                {
+                    if(!package.IsActive||!provider.IsActive)continue;
+                    var category=await db.Categories.FirstOrDefaultAsync(c=>c.Name=="Digital Services",ct);
+                    if(category is null){category=new Category("Digital Services");db.Categories.Add(category);await db.SaveChangesAsync(ct);}
+                    var name=provider.Name+" · "+package.Name;
+                    product=new Product("INTERNAL-"+Guid.NewGuid().ToString("N"),name.Length<=200?name:package.Name,package.Price,0,Unit.Piece,0,category.Id);
+                    product.MarkStockUntracked();product.SetRetailKind("digital");product.SetCatalogKey(key);db.Products.Add(product);
+                }
+                product.ConfigureService("PACKAGE",provider.Id,package.Id);product.SetPrice(package.Price);product.SetPurchaseCost(package.ProviderCost);
+                product.SetActive(package.IsActive&&provider.IsActive);product.CompleteQuickEntry();
+            }
+            await db.SaveChangesAsync(ct);return true;
+        });
+    }
     public async Task<ServiceProviderAccount> UseProviderAsync(RetailReference reference)
     {
         await RequireAsync();

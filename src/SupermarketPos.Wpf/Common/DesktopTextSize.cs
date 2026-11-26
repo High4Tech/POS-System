@@ -48,7 +48,7 @@ public sealed class DesktopTextSize(PosStorage storage)
         resources["TableHeadingTextSize"] = 16 * scale;
         resources["TableSecondaryTextSize"] = 15 * scale;
         resources["TableRowHeight"] = Math.Max(48d, 52 * scale);
-        resources["RegisterCartMinimumHeight"] = 160 * scale;
+        resources["RegisterCartMinimumHeight"] = 200 + 120 * (scale - 1);
         resources["TableLabelHeight"] = Math.Max(38d, 46 * scale);
         resources["InventoryThumbnailSize"] = 36 * scale;
         var dialogGrowth = Math.Max(0, scale - 1);
