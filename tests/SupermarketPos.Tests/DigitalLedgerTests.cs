@@ -9,14 +9,27 @@ using SupermarketPos.Infrastructure.Persistence;
 namespace SupermarketPos.Tests;
 public sealed class DigitalLedgerTests
 {
-    private static async Task<(DigitalServiceLedger Ledger,int Provider)> Fixture(TestDb db)
+    private static async Task<(DigitalServiceLedger Ledger,int Provider)> Fixture(TestDb db,bool techRetail=false)
     {
         db.Context.Settings.Add(new AppSettings("Shop","","en",5,[0m]));await db.Context.SaveChangesAsync();
         var hasher=new BCryptPasswordHasher();var auth=new AuthService(new UserRepository(db.Context),hasher);var work=new UnitOfWork(db.Context);var setup=new BusinessSetup(db.Context,work,auth,hasher);
-        await setup.CompleteAsync(new BusinessProfile{StoreName="Shop",EnableDigitalWalletServices=true,EnableMobileRecharge=true},"owner","TestPassword123");await auth.LoginAsync("owner","TestPassword123");
+        var profile=new BusinessProfile{StoreName="Shop",EnableDigitalWalletServices=true,EnableMobileRecharge=true};
+        if(techRetail){profile.BusinessType="electronics";profile.ApplyBusinessDefaults();}
+        await setup.CompleteAsync(profile,"owner","TestPassword123");await auth.LoginAsync("owner","TestPassword123");
         var ledger=new DigitalServiceLedger(db.Context,work,auth,setup);var provider=new ServiceProviderAccount{Name="Test provider",OpeningFloat=2000};await ledger.SaveProviderAsync(provider);return(ledger,provider.Id);
     }
     private static ServiceTransaction Entry(int provider,string type="CASHIN",string status="Confirmed")=>new(){ConfirmationId=Guid.NewGuid(),ProviderId=provider,Type=type,Status=status,Principal=1000,Reference="TEST-REFERENCE",OccurredAt=DateTime.Now,FloatChange=-1000};
+    [Fact]public async Task TechRetailDefaultsSupportLoadAndConfiguredPackagesWithoutPhysicalStock()
+    {
+        using var db=new TestDb();var(ledger,provider)=await Fixture(db,techRetail:true);
+        var load=DigitalServiceLedger.ProviderQuote((await ledger.ProvidersAsync()).Single(),"LOAD",100);
+        load.ConfirmationId=Guid.NewGuid();load.OccurredAt=DateTime.Now;load.Status="Confirmed";load.CustomerPhone="03001234567";load.Reference="TECH-LOAD";
+        await ledger.SaveAsync(load,true);
+        var package=new MobileServicePackage{ProviderId=provider,Name="Configured test package",Price=500,ProviderCost=480};await ledger.SavePackageAsync(package);
+        var purchase=DigitalServiceLedger.PackageQuote(package);purchase.ConfirmationId=Guid.NewGuid();purchase.OccurredAt=DateTime.Now;purchase.Status="Confirmed";purchase.CustomerPhone="03001234567";purchase.Reference="TECH-PACKAGE";
+        await ledger.SaveAsync(purchase,true);await ledger.SaveAsync(purchase,true);
+        Assert.Equal(2,db.Context.ServicePostings.Count());Assert.Empty(db.Context.Products);Assert.Empty(db.Context.Sales);
+    }
     [Fact]public async Task PharmacyRestrictionsAreEnforcedEvenForForgedConfigurationFlags()
     {
         using var db=new TestDb();var (ledger,provider)=await Fixture(db);var pending=await ledger.SaveAsync(Entry(provider,status:"Pending"),false);

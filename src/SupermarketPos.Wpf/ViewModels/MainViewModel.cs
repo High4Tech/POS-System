@@ -42,6 +42,7 @@ public sealed partial class MainViewModel : ObservableObject
         IsPharmacy=business.IsPharmacy;
         DeviceColumnsVisible=business.DeviceTrackingAvailable;
         DigitalServicesVisible=business.DigitalServicesAvailable;
+        StockAlerts.ShowProductImages=business.EnableCatalogImages;
     }
 
     public MainViewModel(IServiceProvider provider, IAuthService auth, LoginViewModel login, StoreProfile storeProfile,

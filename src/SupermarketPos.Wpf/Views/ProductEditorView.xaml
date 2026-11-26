@@ -122,7 +122,7 @@
                             </StackPanel>
                         </Grid>
                     </StackPanel>
-        <Grid Visibility="{Binding Editor.ShowProductImages, Converter={StaticResource BoolToVis}}">
+        <Grid Visibility="{Binding Editor.IsPharmacy, Converter={StaticResource InverseBoolToVis}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="24" />
@@ -159,7 +159,7 @@
                         Style="{StaticResource GhostButton}" />
 
                 <TextBlock Text="{loc:T Products_Name}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
-                <TextBox Text="{Binding Editor.Name, UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}" Margin="0,0,0,12" Visibility="{Binding Editor.ShowProductImages,Converter={StaticResource BoolToVis}}"/>
+                <TextBox Text="{Binding Editor.Name, UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}" Margin="0,0,0,12"/>
                 <WrapPanel Margin="0,0,0,12">
                     <CheckBox Content="{loc:T Scanner_ProductActive}" IsChecked="{Binding Editor.IsActive}" Margin="0,0,12,0" />
                     <CheckBox Content="{loc:T Batch_Track}" IsChecked="{Binding Editor.TrackExpiry}">
@@ -176,7 +176,7 @@
                 </WrapPanel>
                 <TextBlock Text="{loc:T Measure_Method}" Style="{StaticResource FormLabel}"/>
                 <ComboBox ItemsSource="{Binding Editor.SellingMethods}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding Editor.SellingMethod}" Margin="0,4,0,10"/>
-                <TextBlock Text="{loc:T Measure_PriceHint}" Visibility="{Binding Editor.ShowProductImages,Converter={StaticResource BoolToVis}}" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                <TextBlock Text="{loc:T Measure_PriceHint}" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,8"/>
                 <TextBlock Text="{loc:T Measure_MinimumStock}" Style="{StaticResource FormLabel}"/>
                 <TextBox Text="{Binding Editor.MinimumStock,UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}" Margin="0,4,0,8"/>
 
@@ -195,21 +195,7 @@
                         HorizontalAlignment="Left" Margin="0,0,0,12" Visibility="{Binding Editor.IsNew, Converter={StaticResource InverseBoolToVis}}" />
 
                 </StackPanel>
-                <!-- product image -->
-                <Grid Margin="0,0,0,14" Visibility="{Binding Editor.ShowProductImages,Converter={StaticResource BoolToVis}}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <ContentControl Grid.Column="0" Width="58" Height="58" Margin="0,0,12,0" Style="{StaticResource CatalogThumbnail}"
-                                    Background="{Binding Editor.CategoryId, Converter={StaticResource CatColor}}"
-                                    Tag="{Binding Editor.ImagePath, Converter={StaticResource PathToImage}}"
-                                    Content="{Binding Editor.Name, Converter={StaticResource Initials}}" />
-                    <WrapPanel Grid.Column="1" VerticalAlignment="Center">
-                        <Button Content="{loc:T Products_ChooseImage}" Command="{Binding Editor.BrowseImageCommand}" Style="{StaticResource GhostButton}" Margin="0,0,8,4" />
-                        <Button Content="✕" Command="{Binding Editor.ClearImageCommand}" Style="{StaticResource DangerButton}" Padding="11,6" />
-                    </WrapPanel>
-                </Grid>
+
                 <StackPanel Visibility="{Binding Editor.TrackExpiry, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}">
                     <TextBlock Text="{loc:T Batch_Lot}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
                     <TextBox Text="{Binding Editor.BatchLot, UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}" MaxLength="20"
@@ -317,6 +303,21 @@
 
             </StackPanel>
         </Grid>
+                <!-- product image -->
+                <Grid Margin="0,0,0,14" Visibility="{Binding Editor.ShowProductImages,Converter={StaticResource BoolToVis}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ContentControl Grid.Column="0" Width="58" Height="58" Margin="0,0,12,0" Style="{StaticResource CatalogThumbnail}"
+                                    Background="{Binding Editor.CategoryId, Converter={StaticResource CatColor}}"
+                                    Tag="{Binding Editor.ImagePath, Converter={StaticResource PathToImage}}"
+                                    Content="{Binding Editor.Name, Converter={StaticResource Initials}}" />
+                    <WrapPanel Grid.Column="1" VerticalAlignment="Center">
+                        <Button Content="{loc:T Products_ChooseImage}" Command="{Binding Editor.BrowseImageCommand}" Style="{StaticResource GhostButton}" Margin="0,0,8,4" />
+                        <Button Content="✕" Command="{Binding Editor.ClearImageCommand}" Style="{StaticResource DangerButton}" Padding="11,6" />
+                    </WrapPanel>
+                </Grid>
         <Button Content="{loc:T Trade_ProductSales}" Command="{Binding ProductSalesCommand}" Style="{StaticResource GhostButton}"
                 HorizontalAlignment="Left" Visibility="{Binding Editor.IsNew, Converter={StaticResource InverseBoolToVis}}"/>
         <Grid Margin="0,8,0,0">

@@ -28,6 +28,7 @@ public sealed partial class StockAlertsViewModel : ObservableObject
     private IReadOnlyList<Product> _items = [];
 
     [ObservableProperty] private bool _showAlertCards = true;
+    [ObservableProperty] private bool _showProductImages;
     [ObservableProperty] private Product? _selected;
     [ObservableProperty] private string _quantity = "1";
     [ObservableProperty] private string? _restockMessage;

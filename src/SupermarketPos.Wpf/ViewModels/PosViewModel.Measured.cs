@@ -11,7 +11,7 @@ public sealed partial class PosViewModel
 {
     private BusinessProfile _business=new();
     public bool IsPharmacy=>_business.IsPharmacy;
-    public bool ShowProductImages=>!IsPharmacy;
+    public bool ShowProductImages=>_business.EnableCatalogImages;
     public bool EnableLooseGoods=>_business.LooseGoodsAvailable;
     public bool EnablePackagedUnits=>_business.PackagingAvailable;
     public bool EnableGoodsPanel=>!IsPharmacy&&(EnableLooseGoods||EnablePackagedUnits);

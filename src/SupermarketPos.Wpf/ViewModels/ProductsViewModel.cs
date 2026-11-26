@@ -19,9 +19,9 @@ namespace SupermarketPos.Wpf.ViewModels;
 
 public sealed partial class ProductsViewModel : ObservableObject
 {
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(ShowProductImages))] private bool _isPharmacy;
+    [ObservableProperty] private bool _isPharmacy;
     [ObservableProperty] private bool _deviceTrackingAvailable=true;
-    public bool ShowProductImages=>!IsPharmacy;
+    [ObservableProperty] private bool _showProductImages;
     private readonly IProductRepository _products;
     private readonly SupermarketPos.Infrastructure.Business.SaleHistory _saleSnapshots;
     private readonly ICategoryRepository _categories;
@@ -135,7 +135,7 @@ public sealed partial class ProductsViewModel : ObservableObject
     private bool MatchesFilter(ProductRowViewModel row)
     {
         var query = Filter.Trim();
-        if(IsPharmacy&&!MatchesPharmacyFilters(row))return false;
+        if(!MatchesPharmacyFilters(row))return false;
         return (!IsPharmacy||!NeedsSetupOnly||row.NeedsSetup)&&(row.Name.Contains(query, StringComparison.CurrentCultureIgnoreCase) ||
                row.Details.Contains(query,StringComparison.CurrentCultureIgnoreCase)||
                row.Barcode.Contains(query, StringComparison.OrdinalIgnoreCase) ||
@@ -170,7 +170,10 @@ public sealed partial class ProductsViewModel : ObservableObject
     private async Task LoadEditorOptionsAsync(AppSettings settings)
     {
         OnPropertyChanged(nameof(CanManageStock));
-        var business=(await _businessSetup.LoadAsync()).Profile;DeviceTrackingAvailable=business.DeviceTrackingAvailable;IsPharmacy=Editor.IsPharmacy=business.IsPharmacy;Editor.LooseEnabled=business.LooseGoodsAvailable;Editor.PackagesEnabled=business.PackagingAvailable;
+        var business=(await _businessSetup.LoadAsync()).Profile;
+        if(IsPharmacy!=business.IsPharmacy)ClearPharmacyFilters();
+        DeviceTrackingAvailable=business.DeviceTrackingAvailable;IsPharmacy=Editor.IsPharmacy=business.IsPharmacy;Editor.LooseEnabled=business.LooseGoodsAvailable;Editor.PackagesEnabled=business.PackagingAvailable;
+        ShowProductImages=Editor.ShowProductImages=business.EnableCatalogImages;
         PrepareMedicineSearch();
         _categoryList = (await _categories.GetAllAsync()).ToList();
         OnPropertyChanged(nameof(FilterCategories));

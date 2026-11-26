@@ -44,7 +44,7 @@ public sealed partial class ProductsViewModel
         {
             var rows=VisibleProducts.Cast<ProductRowViewModel>().ToArray();var groups=rows.Where(r=>r.Product.StockTracked).GroupBy(r=>r.UnitText).Select(g=>$"{g.Sum(r=>SupermarketPos.Domain.Pricing.MeasuredGoods.Quantity(ScopedQuantity(r.Product),r.Product.Unit)):0.###} {g.Key}");
             var batches=rows.SelectMany(r=>r.Product.Batches).Count(b=>MatchesBatch(b)&&ScopedBatchQuantity(b)>0);
-            return (LocationFilterName is{} location?location+" · ":"")+Localization.LocalizationManager.Instance.Format("Pharmacy_FilterSummary",rows.Length,batches)+" · "+string.Join(" · ",groups);
+            return (LocationFilterName is{} location?location+" · ":"")+(IsPharmacy?Localization.LocalizationManager.Instance.Format("Pharmacy_FilterSummary",rows.Length,batches):Localization.LocalizationManager.Instance.Format("Pos_ProductCount",rows.Length))+" · "+string.Join(" · ",groups);
         }
     }
     private bool MatchesBatch(InventoryBatch b)
@@ -71,7 +71,7 @@ public sealed partial class ProductsViewModel
     {
         var p=row.Product;var today=DateOnly.FromDateTime(DateTime.Today);var available=p.AvailableForSale(today);
         if(ReadyOnly&&row.NeedsSetup||BatchFilter.Length>0&&!p.Batches.Any(b=>b.Lot==BatchFilter)||ManufacturerFilter.Length>0&&row.Manufacturer!=ManufacturerFilter||FormFilter.Length>0&&row.Formulation!=FormFilter)return false;
-        var hasBarcode=!p.Barcode.StartsWith("INTERNAL-",StringComparison.Ordinal);
+        var hasBarcode=!string.IsNullOrWhiteSpace(p.Barcode)&&!p.Barcode.StartsWith("INTERNAL-",StringComparison.Ordinal);
         if(BarcodeState=="has"&&!hasBarcode||BarcodeState=="missing"&&hasBarcode)return false;
         return (FilterCategoryId==0||p.CategoryId==FilterCategoryId)&&(_locationProductIds is null||_locationProductIds.Contains(p.Id))&&(StockState switch{"in"=>p.StockTracked&&available>0,"low"=>row.IsLowStock,"out"=>p.StockTracked&&available<=0,"untracked"=>!p.StockTracked,_=>true})&&(ExpiryState switch{"expired"=>p.Batches.Any(b=>b.Quantity>0&&b.ExpiryDate<today),"soon"=>p.Batches.Any(b=>b.Quantity>0&&b.ExpiryDate>=today&&b.ExpiryDate<=today.AddDays(30)),"valid"=>p.Batches.Any(b=>b.Quantity>0&&b.ExpiryDate>=today&&b.HoldReason.Length==0),_=>true});
     }

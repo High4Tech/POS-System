@@ -79,6 +79,7 @@
                                     <Grid>
                                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                                         <ContentControl Width="46" Height="46" Margin="0,0,11,0" Style="{StaticResource CatalogThumbnail}"
+                                                        Visibility="{Binding DataContext.ShowProductImages,RelativeSource={RelativeSource AncestorType=UserControl},Converter={StaticResource BoolToVis}}"
                                                         Background="{Binding Category, Converter={StaticResource CatColor}}" FontSize="{DynamicResource TextSize16}"
                                                         Tag="{Binding ImagePath, Converter={StaticResource PathToImage}}"
                                                         Content="{Binding Name, Converter={StaticResource Initials}}" />

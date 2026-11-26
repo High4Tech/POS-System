@@ -133,6 +133,7 @@ internal static partial class Program
         Assert(products.IsBulkEditorOpen,"Bulk editor opens for selected products");
         SendEscape();Pump();
         Assert(!products.IsBulkEditorOpen,"Escape closes bulk editing without saving");
+        await CatalogOptionsChecks(sp,shell,window,screenshots);
         window.Close();
         Pump();
 

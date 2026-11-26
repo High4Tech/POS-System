@@ -94,7 +94,7 @@
                 <ContentControl Content="{Binding PharmacyWorkspace.Search}"/>
             </DockPanel>
             <ContentControl DockPanel.Dock="Top" MaxHeight="300" Content="{Binding PharmacyWorkspace}" Visibility="{Binding PharmacyWorkspace.HasPendingEntry,Converter={StaticResource BoolToVis},FallbackValue=Collapsed}"/>
-            <Grid DockPanel.Dock="Top" Margin="0,0,0,16" Visibility="{Binding ShowProductImages,Converter={StaticResource BoolToVis}}">
+            <Grid DockPanel.Dock="Top" Margin="0,0,0,16" Visibility="{Binding IsPharmacy,Converter={StaticResource InverseBoolToVis}}">
                 <TextBox x:Name="SearchBox" PreviewKeyDown="SearchKey" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="{DynamicResource TextSize16}" Padding="12,7" VerticalAlignment="Stretch">
                     <TextBox.InputBindings>
@@ -223,7 +223,7 @@
               <ScrollViewer VerticalScrollBarVisibility="Auto"><ContentControl Content="{Binding ContextPanel}"/></ScrollViewer>
              </DockPanel>
             </Border>
-<Border Style="{StaticResource Card}" Padding="8"><DockPanel>            <Border DockPanel.Dock="Top" Padding="0,0,0,6">
+<Border Padding="8"><Border.Style><Style TargetType="Border" BasedOn="{StaticResource Card}"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding ContextPanel}" Value="{x:Null}"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></Border.Style><DockPanel>            <Border DockPanel.Dock="Top" Padding="0,0,0,6">
               <DockPanel>
             <WrapPanel DockPanel.Dock="Right" Margin="0,0,0,10">
                 <Button Content="{loc:T Pos_Cards}" FontSize="{DynamicResource RegisterTileTextSize}" ContentTemplate="{StaticResource ButtonCaption}" Command="{Binding ShowCardsCommand}" Margin="0,0,6,0"><Button.Style><Style TargetType="Button" BasedOn="{StaticResource GhostButton}"><Style.Triggers><MultiDataTrigger><MultiDataTrigger.Conditions><Condition Binding="{Binding RegisterList}" Value="False"/><Condition Binding="{Binding IsEnabled,RelativeSource={RelativeSource Self}}" Value="True"/></MultiDataTrigger.Conditions><Setter Property="Background" Value="{StaticResource AccentBrush}"/><Setter Property="Foreground" Value="White"/></MultiDataTrigger></Style.Triggers></Style></Button.Style></Button>
@@ -275,12 +275,12 @@
                                                                Foreground="{StaticResource AccentBrush}" FontWeight="Bold" FontSize="{DynamicResource RegisterTileTextSize}" Margin="0,2,0,0" TextWrapping="Wrap" />
                                                 </StackPanel>
                                             </Button>
-                                            <StackPanel Visibility="{Binding DataContext.IsPharmacy,RelativeSource={RelativeSource AncestorType=ItemsControl},Converter={StaticResource BoolToVis}}" TextElement.FontSize="{DynamicResource RegisterTileTextSize}">
+                                            <StackPanel TextElement.FontSize="{DynamicResource RegisterTileTextSize}">
                                                 <TextBlock FontSize="{DynamicResource RegisterTileTextSize}" FontFamily="{Binding Details,Converter={StaticResource ProductTextFont}}" Text="{Binding Details}" Visibility="{Binding Details,Converter={StaticResource StrToVis}}" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,4"/>
                                                 <TextBlock Text="{Binding StockText}" FontSize="{DynamicResource RegisterTileTextSize}" FontFamily="{Binding StockText,Converter={StaticResource ProductTextFont}}" TextWrapping="Wrap"/>
                                                 <TextBlock FontSize="{DynamicResource RegisterTileTextSize}" FontFamily="{Binding LocationText,Converter={StaticResource ProductTextFont}}" Text="{Binding LocationText}" Visibility="{Binding LocationText,Converter={StaticResource StrToVis}}" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"/>
                                             </StackPanel>
-                                            <Grid Margin="3,6,3,0" FlowDirection="LeftToRight" Visibility="{Binding DataContext.ShowProductImages,RelativeSource={RelativeSource AncestorType=ItemsControl},Converter={StaticResource BoolToVis}}">
+                                            <Grid Margin="3,6,3,0" FlowDirection="LeftToRight" Visibility="{Binding DataContext.IsPharmacy,RelativeSource={RelativeSource AncestorType=ItemsControl},Converter={StaticResource InverseBoolToVis}}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="*" />

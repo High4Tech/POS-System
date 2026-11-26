@@ -26,25 +26,25 @@
               </WrapPanel>
               <Grid>
                 <ContentControl Content="{Binding InventoryMedicineSearch}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}"/>
-                <TextBox Text="{Binding Filter,UpdateSourceTrigger=PropertyChanged,Delay=120}" ToolTip="{loc:T Bulk_Search}" AutomationProperties.Name="{loc:T Bulk_Search}" Visibility="{Binding ShowProductImages,Converter={StaticResource BoolToVis}}"/>
+                <TextBox Text="{Binding Filter,UpdateSourceTrigger=PropertyChanged,Delay=120}" ToolTip="{loc:T Bulk_Search}" AutomationProperties.Name="{loc:T Bulk_Search}" Visibility="{Binding IsPharmacy,Converter={StaticResource InverseBoolToVis}}"/>
               </Grid>
             </DockPanel>
-            <ScrollViewer x:Name="InventoryFilters" DockPanel.Dock="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,0,8">
+            <ScrollViewer x:Name="InventoryFilters" DockPanel.Dock="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,8">
               <StackPanel Orientation="Horizontal">
                 <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Products_Category}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding FilterCategories}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding FilterCategoryId}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
                 <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Products_Stock}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding StockStates}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding StockState}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
-                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Pharmacy_SetupStatus}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding SetupStates}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding SetupState}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
-                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Pharmacy_Locations}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding LocationFilters}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding SelectedLocationFilter}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}"><TextBlock Text="{loc:T Pharmacy_SetupStatus}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding SetupStates}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding SetupState}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}"><TextBlock Text="{loc:T Pharmacy_Locations}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding LocationFilters}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding SelectedLocationFilter}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
                 <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Batch_Expiry}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding ExpiryStates}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding ExpiryState}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
-                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Pharmacy_CompanyShort}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding ManufacturerFilters}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding ManufacturerFilter}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
-                <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Pharmacy_Form}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding FormFilters}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding FormFilter}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}"><TextBlock Text="{loc:T Pharmacy_CompanyShort}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding ManufacturerFilters}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding ManufacturerFilter}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
+                <StackPanel Width="180" Margin="0,0,8,3" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}"><TextBlock Text="{loc:T Pharmacy_Form}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding FormFilters}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding FormFilter}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
                 <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Batch_Lot}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding BatchFilters}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding BatchFilter}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
                 <StackPanel Width="180" Margin="0,0,8,3"><TextBlock Text="{loc:T Products_Barcode}" Style="{StaticResource FormLabel}" FontSize="{DynamicResource TextSize13}"/><ComboBox ItemsSource="{Binding BarcodeStates}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding BarcodeState}" ToolTip="{Binding SelectedItem.Name,RelativeSource={RelativeSource Self}}"/></StackPanel>
                 <Button Content="{loc:T Pharmacy_ClearFilters}" Command="{Binding ClearPharmacyFiltersCommand}" Style="{StaticResource GhostButton}" VerticalAlignment="Bottom" Margin="0,0,0,3"/>
               </StackPanel>
             </ScrollViewer>
-            <CheckBox DockPanel.Dock="Top" Content="{loc:T Products_LowStockOnly}" IsChecked="{Binding LowStockOnly}" Visibility="{Binding ShowProductImages,Converter={StaticResource BoolToVis}}" Margin="0,0,0,8"/>
-            <TextBlock DockPanel.Dock="Top" Text="{Binding FilterSummary}" TextWrapping="Wrap" Margin="0,0,0,10" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}"/>
+            <CheckBox DockPanel.Dock="Top" Content="{loc:T Products_LowStockOnly}" IsChecked="{Binding LowStockOnly}" Margin="0,0,0,8"/>
+            <TextBlock DockPanel.Dock="Top" Text="{Binding FilterSummary}" TextWrapping="Wrap" Margin="0,0,0,10"/>
             <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,12">
                 <Button Content="{loc:T Bulk_Clear}" Command="{Binding ClearSelectionCommand}" Style="{StaticResource GhostButton}" Margin="0,0,8,5"
                         Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}" />
@@ -142,9 +142,9 @@
                         <DataGridTemplateColumn Header="{loc:T Products_Status}" Width="1.05*" MinWidth="58">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Border CornerRadius="999" Padding="6,4" HorizontalAlignment="Left">
+                                    <Border>
                                         <Border.Style>
-                                            <Style TargetType="Border">
+                                            <Style TargetType="Border" BasedOn="{StaticResource Badge}">
                                                 <Setter Property="Background" Value="#2216A34A" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsLowStock}" Value="True">

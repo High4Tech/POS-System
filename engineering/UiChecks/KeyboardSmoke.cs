@@ -18,7 +18,8 @@ internal static partial class Program
         var setup = sp.GetRequiredService<IBusinessSetup>();
         var auth = sp.GetRequiredService<IAuthService>();
         var password = $"Test-{Guid.NewGuid():N}!";
-        await setup.CompleteAsync(new() { StoreName = "Tech Retail keyboard test", BusinessType="electronics" }, "smoke-owner", password);
+        var profile=new SupermarketPos.Domain.Business.BusinessProfile{StoreName="Tech Retail keyboard test",BusinessType="electronics"};profile.ApplyBusinessDefaults();
+        await setup.CompleteAsync(profile, "smoke-owner", password);
         await auth.LoginAsync("smoke-owner", password);
         var db = sp.GetRequiredService<PosDbContext>();
         var product = await db.Products.OrderBy(p => p.Id).FirstAsync(p => p.BaseStockQuantity >= 5);

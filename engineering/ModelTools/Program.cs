@@ -121,6 +121,7 @@ if(args.Length==3&&args[0]=="switch-tech-retail")
     var profile=System.Text.Json.Nodes.JsonNode.Parse(original)!.AsObject();
     var before=profile["BusinessType"]?.GetValue<string>();
     profile["BusinessType"]="electronics";profile["MedicineTemplate"]="none";
+    profile["EnableMobileRecharge"]=true;
     using var update=connection.CreateCommand();update.Transaction=transaction;
     update.CommandText="UPDATE BusinessConfigurations SET ProfileJson=$profile,Revision=Revision+1";
     update.Parameters.AddWithValue("$profile",profile.ToJsonString());

@@ -1170,4 +1170,5 @@
 <data name="Tech_Brand"><value>Brand</value></data>
 <data name="Tech_Model"><value>Model</value></data>
 <data name="Tech_Sku"><value>SKU</value></data>
+  <data name="Features_CatalogImages" xml:space="preserve"><value>Show product and category images</value></data>
 </root>

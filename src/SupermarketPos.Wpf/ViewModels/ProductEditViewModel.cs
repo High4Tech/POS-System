@@ -11,8 +11,8 @@ namespace SupermarketPos.Wpf.ViewModels;
 /// <summary>Editable form state for creating or updating a product.</summary>
 public sealed partial class ProductEditViewModel : ObservableObject
 {
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(ShowProductImages))] private bool _isPharmacy;
-    public bool ShowProductImages=>!IsPharmacy;
+    [ObservableProperty] private bool _isPharmacy;
+    [ObservableProperty] private bool _showProductImages;
     public int? Id { get; private set; }
     private string? _internalBarcode;
     public string BarcodeForSave=>string.IsNullOrWhiteSpace(Barcode)&&_internalBarcode is not null?_internalBarcode:Barcode;

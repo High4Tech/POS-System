@@ -320,7 +320,7 @@
 
     <!-- ============ Status badges ============ -->
     <Style x:Key="Badge" TargetType="Border">
-        <Setter Property="CornerRadius" Value="999" />
+        <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Padding" Value="10,4" />
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>

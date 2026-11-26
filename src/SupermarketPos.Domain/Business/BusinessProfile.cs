@@ -14,6 +14,7 @@ public sealed record BusinessProfile
     public bool EnablePackagedUnits { get; set; }
     public bool EnableDigitalWalletServices { get; set; }
     public bool EnableMobileRecharge { get; set; }
+    public bool EnableCatalogImages { get; set; }
     [JsonIgnore] public bool DeviceTrackingAvailable => BusinessType is "electronics" or "mobile";
     [JsonIgnore] public bool DigitalServicesAvailable => DigitalWalletAvailable || MobileRechargeAvailable;
     [JsonIgnore] public bool IsPharmacy=>string.Equals(BusinessType?.Trim(),"pharmacy",StringComparison.OrdinalIgnoreCase);
@@ -28,7 +29,7 @@ public sealed record BusinessProfile
     {
         EnableLooseGoods=BusinessType is "grocery" or "supermarket";
         EnablePackagedUnits=BusinessType is "grocery" or "supermarket" or "retail" or "mobile" or "pharmacy";
-        EnableDigitalWalletServices=false;EnableMobileRecharge=BusinessType=="mobile";
+        EnableDigitalWalletServices=false;EnableMobileRecharge=BusinessType is "electronics" or "mobile";
         MedicineTemplate=IsPharmacy?"pakistan-drap":"none";
     }
     public bool Registered { get; init; }
