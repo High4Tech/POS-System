@@ -2,7 +2,7 @@
 
 ## GitHub
 
-The verified remote is https://github.com/High4Tech/POS-System.git. The local main branch and origin/main were at 061fcf2 when work began. The feature branch is codex/tech-retail-keyboard. It includes the prior locally verified stabilization work that was still uncommitted, plus this task's changes. Publishing and final deployment status will be recorded after the release gates pass.
+The verified remote is https://github.com/High4Tech/POS-System.git. The local main branch and origin/main were at 061fcf2 when work began. The feature branch is codex/tech-retail-keyboard. It includes the prior locally verified stabilization work that was still uncommitted, plus this task's changes. Source commit 04195c2 was pushed and its remote hash verified. Subsequent editor cancellation and final deployment evidence are recorded below.
 
 ## Business profiles and data
 
@@ -44,6 +44,10 @@ The product container shows the category or Search Results heading, filtered sho
 | F1–F4 | Cash, Card, Udhar, Clear Cart | Existing registry and focused checks, F1 and Escape retested with real input |
 | Escape | Cancel payment or active modal | Real Windows input |
 
+Authenticated testing of the installed app confirmed customer selection, the empty Frequently Purchased state for an account without available prior items, product search and manual Qty/Price focus, F1 Cash amount selection, F2 Card, F3 Udhar amount selection, F4 Clear confirmation cancellation, Help and Alt+3 inventory navigation. No sale or payment was posted. The single temporary cart line was removed and the cart returned to Walk-in with zero items. Tech Retail's New Product showed Brand, Model, SKU, device tracking and warranty without Pharmacy-only editing fields.
+
+This testing found that Escape did not close the inline product editor. The follow-up uses the existing cancel commands at the window's bubbling KeyDown stage, after native dropdown handling. Product, category and bulk overlays receive initial focus and cycle keyboard traversal inside their fields. Cancellation is blocked while the relevant save command is running.
+
 The manual-product event is raised by manual collection selection and Frequently Purchased. Phone and scanner dispatch use their existing path and do not trigger Qty autofocus. A focused dispatch check verifies that scan/search focus remains in place. Physical scanner hardware remains a separate verification gate.
 
 ## Tech Retail
@@ -56,7 +60,7 @@ Returns use the existing shared return engine. A serialized return requires the 
 
 ## Verification
 
-The final unit/integration run passed 199 tests. The device and storage tests also passed a 15-test rerun. The shared desktop suite passed 844 checks, including Pharmacy. The final Release Sales flow passed 24 assertions including quantity, unit conversion, price permission, payment focus and manual Pharmacy entry focus. The focused desktop audit passed 127 checks, including the final shortcut registry. Logs are under engineering/qa-data/tech-retail-gates-20261126-130625 in the local workspace.
+The final unit/integration run passed 199 tests. The device and storage tests also passed a 15-test rerun. The shared desktop suite passed 844 checks, including Pharmacy. The final Release Sales flow passed 30 assertions including quantity, unit conversion, price permission, payment focus, manual Pharmacy entry focus and product/category/bulk editor cancellation. The focused desktop audit passed 127 checks, including the final shortcut registry. Logs are under engineering/qa-data/tech-retail-gates-20261126-130625 and engineering/qa-data/tech-escape-20261126-161934 in the local workspace. The editor follow-up compiled without warnings or errors and used the focused 30-assertion rerun. The full 199/844/127 suites were completed before that UI-only follow-up.
 
 The isolated Windows app was operated with real keys for product search, Down, Enter, Qty, Price, customer selection, Frequently Purchased, Cash and Escape. These tests used a synthetic store and financial records. Production records were not used for test posting.
 
@@ -70,4 +74,4 @@ The authoritative path is D:\SupermarketPos\App\SupermarketPos.exe, launched by 
 
 ## Remaining verification
 
-Printer, card terminal and physical barcode scanner hardware, dedicated 4 GB hardware and Windows 7 execution were unavailable. The application targets .NET 8 WPF and has no supported Windows 7 build. Full keyboard-only journeys through every purchase, return and device state remain broader than the physical key checks listed above. Authenticated installed-store testing requires a signed-in session after installation.
+Printer, card terminal and physical barcode scanner hardware, dedicated 4 GB hardware and Windows 7 execution were unavailable. The application targets .NET 8 WPF and has no supported Windows 7 build. Full keyboard-only journeys through every purchase, return and device state remain broader than the physical key checks listed above. Authenticated installed-store testing was completed after the user signed in. A cold reopen through the existing shortcut exceeded 30 seconds on this host before the responsive sign-in window appeared. Startup and the slower dialogs remain performance limits, not passed speed targets.

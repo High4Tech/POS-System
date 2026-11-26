@@ -9,6 +9,12 @@ public partial class ProductsView : UserControl
 {
     private void OpenMore(object sender,System.Windows.RoutedEventArgs e){if(sender is Button{ContextMenu:{} menu} button){menu.PlacementTarget=button;menu.IsOpen=true;}}
     public ProductsView() => InitializeComponent();
+    private void EditorVisibilityChanged(object sender,DependencyPropertyChangedEventArgs e)
+    {
+        if(e.NewValue is true&&sender is Grid editor)
+            Dispatcher.InvokeAsync(()=>editor.MoveFocus(new System.Windows.Input.TraversalRequest(
+                System.Windows.Input.FocusNavigationDirection.First)),System.Windows.Threading.DispatcherPriority.Loaded);
+    }
 
     private void ChooseCategoryColor(object sender, RoutedEventArgs e)
     {

@@ -28,6 +28,19 @@ public partial class MainWindow : Window
         LocalizationManager.Instance.PropertyChanged += LanguageChanged;
         Closed += (_, _) => LocalizationManager.Instance.PropertyChanged -= LanguageChanged;
         PreviewKeyDown += RouteShortcut;
+        KeyDown += CloseInlineEditor;
+    }
+
+    private void CloseInlineEditor(object sender,KeyEventArgs e)
+    {
+        if(e.Key!=Key.Escape||InAppDialog.IsOpen||
+            DataContext is not MainViewModel { CurrentViewModel: ProductsViewModel products } shell)return;
+        if(products.IsEditorOpen&&!products.SaveCommand.IsRunning)products.CancelEditCommand.Execute(null);
+        else if(products.IsCategoryEditorOpen&&!products.SaveCategoryCommand.IsRunning)products.CloseCategoryEditorCommand.Execute(null);
+        else if(products.IsBulkEditorOpen&&!products.ApplyBulkEditCommand.IsRunning)products.CancelBulkEditCommand.Execute(null);
+        else return;
+        e.Handled=true;
+        Shortcuts.TryRun(this,shell,Key.F,ModifierKeys.Control);
     }
 
     private void ModelChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

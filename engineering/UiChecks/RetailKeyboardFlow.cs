@@ -18,6 +18,8 @@ internal static partial class Program
         var window=new MainWindow(sp.GetRequiredService<PosStorage>()){DataContext=shell,Width=1366,Height=768};
         var template=new DataTemplate(typeof(PosViewModel)){VisualTree=new FrameworkElementFactory(typeof(PosView))};
         window.Resources.Add(template.DataTemplateKey,template);
+        var productsTemplate=new DataTemplate(typeof(ProductsViewModel)){VisualTree=new FrameworkElementFactory(typeof(ProductsView))};
+        window.Resources.Add(productsTemplate.DataTemplateKey,productsTemplate);
         System.Windows.Application.Current.MainWindow=window;
         window.Show();
         await shell.ShowPosCommand.ExecuteAsync(null);
@@ -113,10 +115,30 @@ internal static partial class Program
         Assert(model.IsPharmacy&&pharmacyQuantity.IsKeyboardFocused&&pharmacyQuantity.SelectionLength==pharmacyQuantity.Text.Length,
             "Manual pharmacy entry uses the same Qty autofocus without exposing Tech Retail fields");
         foreach(var item in model.Lines.ToArray())model.RemoveLineCommand.Execute(item);
+        await shell.ShowProductsCommand.ExecuteAsync(null);
+        Pump();
+        var products=(ProductsViewModel)shell.CurrentViewModel;
+        var productCount=products.Products.Count;
+        products.NewCommand.Execute(null);Pump();
+        var editor=Descendants(window).OfType<Grid>().Single(grid=>grid.IsVisible&&grid.GetBindingExpression(UIElement.VisibilityProperty)?.ParentBinding.Path.Path==nameof(ProductsViewModel.IsEditorOpen));
+        Assert(editor.IsKeyboardFocusWithin,"New product moves keyboard focus into its editor");
+        SendEscape();Pump();
+        Assert(!products.IsEditorOpen&&products.Products.Count==productCount,"Escape closes a new product without saving inventory");
+        products.EditCategoriesCommand.Execute(null);Pump();
+        Assert(products.IsCategoryEditorOpen,"Category editor opens");
+        SendEscape();Pump();
+        Assert(!products.IsCategoryEditorOpen,"Escape closes the category editor");
+        foreach(var row in products.Products.Take(2))row.IsSelected=true;
+        products.OpenBulkEditCommand.Execute(null);Pump();
+        Assert(products.IsBulkEditorOpen,"Bulk editor opens for selected products");
+        SendEscape();Pump();
+        Assert(!products.IsBulkEditorOpen,"Escape closes bulk editing without saving");
         window.Close();
         Pump();
 
         void SendKey(FrameworkElement target,Key key) => target.RaiseEvent(new KeyEventArgs(
             Keyboard.PrimaryDevice,PresentationSource.FromVisual(target)!,0,key){RoutedEvent=Keyboard.PreviewKeyDownEvent});
+        void SendEscape() => ((UIElement)Keyboard.FocusedElement).RaiseEvent(new KeyEventArgs(
+            Keyboard.PrimaryDevice,PresentationSource.FromVisual(window)!,0,Key.Escape){RoutedEvent=Keyboard.KeyDownEvent});
     }
 }

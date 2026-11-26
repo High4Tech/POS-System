@@ -193,7 +193,7 @@
             </Grid>
         </DockPanel>
 
-        <Grid Background="#660F172A" Visibility="{Binding IsBulkEditorOpen, Converter={StaticResource BoolToVis}}">
+        <Grid IsVisibleChanged="EditorVisibilityChanged" KeyboardNavigation.TabNavigation="Cycle" Background="#660F172A" Visibility="{Binding IsBulkEditorOpen, Converter={StaticResource BoolToVis}}">
             <Viewbox Style="{StaticResource DialogFit}">
                 <Border Style="{StaticResource Card}" Width="{DynamicResource CompactDialogWidth}" Padding="28">
                     <StackPanel>
@@ -218,7 +218,7 @@
             </Viewbox>
         </Grid>
 
-        <Grid Background="#660F172A" Visibility="{Binding IsCategoryEditorOpen, Converter={StaticResource BoolToVis}}">
+        <Grid IsVisibleChanged="EditorVisibilityChanged" KeyboardNavigation.TabNavigation="Cycle" Background="#660F172A" Visibility="{Binding IsCategoryEditorOpen, Converter={StaticResource BoolToVis}}">
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Style.Triggers>
@@ -274,7 +274,7 @@
             </Viewbox>
         </Grid>
 
-        <Grid Background="#660F172A" Visibility="{Binding IsEditorOpen, Converter={StaticResource BoolToVis}}">
+        <Grid IsVisibleChanged="EditorVisibilityChanged" KeyboardNavigation.TabNavigation="Cycle" Background="#660F172A" Visibility="{Binding IsEditorOpen, Converter={StaticResource BoolToVis}}">
             <Viewbox Style="{StaticResource DialogFit}">
                 <Border Style="{StaticResource Card}" Width="{DynamicResource ProductDialogWidth}" Padding="24">
                     <views:ProductEditorView />
