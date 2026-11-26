@@ -55,6 +55,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
     [ObservableProperty] private bool _hasExistingBatches;
     [ObservableProperty] private decimal _unassignedStock;
 
+    [ObservableProperty]private IReadOnlyList<string> _retailBrands=[];
     public ObservableCollection<Category> Categories { get; } = new();
     public ObservableCollection<SupplierOption> Suppliers { get; } = new();
 

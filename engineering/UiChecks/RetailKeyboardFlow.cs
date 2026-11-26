@@ -100,6 +100,7 @@ internal static partial class Program
         quantity.Focus();SendKey(quantity,Key.Enter);
         Assert(search.IsKeyboardFocused,"Unauthorized price editing is skipped");
         model.Lines.Clear();
+        await UnifiedRetailChecks(sp,shell,window,screenshots);
         var setup=sp.GetRequiredService<SupermarketPos.Application.Abstractions.IBusinessSetup>();
         var state=await setup.LoadAsync();
         await setup.SaveDraftAsync(state.Profile with{BusinessType="pharmacy",MedicineTemplate="none"},state.Step);

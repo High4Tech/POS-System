@@ -93,6 +93,11 @@ public sealed class CartLine
         if(Product.Id!=0||product.Id<=0||BatchId is not null||SerialNumber is not null||product.Unit!=Product.Unit||product.SellingUnitSize(UnitCode)!=PackageSize)throw new DomainException("Measure_ChangedUnit");
         Product=product;
     }
+    public void SetQuickUnit(Unit unit)
+    {
+        if(!Product.QuickEntry||Product.StockTracked||BatchId is not null||SerialNumber is not null||IsPackage||unit==Unit.Piece&&Quantity!=decimal.Truncate(Quantity))throw new DomainException("Measure_ChangedUnit");
+        _=MeasuredGoods.BaseQuantity(Quantity,unit);Product.SetUnit(unit);MedicineUnit=null;PackageSize=1;_packagePrice=null;
+    }
 
     public void Increment(decimal by)
     {

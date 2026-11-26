@@ -43,9 +43,10 @@ public sealed partial class PosViewModel : ObservableObject
                         ISaleService sales, ReceiptPreviewDialog receipts, IAuthService auth, RegisterBarcodeLookup lookup,
                         ScannerController scanner, ProductsViewModel productEditor, ScannerFeedback sound, PosStorage storage,
                         StockAlertsViewModel alerts, StoreProfile profile, ISaleRepository saleHistory, ITradeLedger ledger,IBusinessSetup businessSetup,MedicineCatalogService medicineCatalog,PharmacyInventory pharmacyInventory,StockLocationService stockLocations, SaleHistory history, InvoiceMarginService margin,
-                        SupermarketPos.Infrastructure.Commercial.ProtectedLocalStore draftStorage)
+                        SupermarketPos.Infrastructure.Commercial.ProtectedLocalStore draftStorage,RetailInventory retailInventory,RetailReferenceCatalog retailCatalog,RetailCheckout retailCheckout,DigitalServiceLedger digitalLedger)
     {
         _products = products;
+        _retailInventory=retailInventory;_retailCatalog=retailCatalog;_retailCheckout=retailCheckout;_digitalLedger=digitalLedger;
         _customerHistory = history;
         _margin = margin;
         _draftStorage = draftStorage;
@@ -66,7 +67,7 @@ public sealed partial class PosViewModel : ObservableObject
         _ledger = ledger;
         _businessSetup=businessSetup;
         _medicineCatalog=medicineCatalog;_pharmacyInventory=pharmacyInventory;_stockLocations=stockLocations;
-        _registerPreferences=new(storage,"register-view.json");_registerList=_registerPreferences.Read()?.List??false;
+        _registerPreferences=new(storage,"register-view.json");_registerList=_registerPreferences.Read()?.List??false;_registerSort=_registerPreferences.Read()?.Sort??"name";
         Recalculate();
     }
 
@@ -89,6 +90,9 @@ public sealed partial class PosViewModel : ObservableObject
     {
         Customer.SetExisting(await _saleHistory.GetCustomerSalesAsync());
         _business=(await _businessSetup.LoadAsync()).Profile;OnPropertyChanged(nameof(IsPharmacy));OnPropertyChanged(nameof(ShowProductImages));OnPropertyChanged(nameof(EnableLooseGoods));OnPropertyChanged(nameof(EnablePackagedUnits));OnPropertyChanged(nameof(EnableGoodsPanel));OnPropertyChanged(nameof(EnableDigitalServices));OnPropertyChanged(nameof(EnableMobileRecharge));
+        if(!IsPharmacy)await _retailInventory.EnsureProviderTemplateAsync();
+        _serviceProviders=await _digitalLedger.ProvidersAsync();_servicePackages=await _digitalLedger.PackagesAsync();
+        foreach(var line in Lines)line.SetServiceOptions(_serviceProviders,_servicePackages);
         if(IsPharmacy&&PharmacyWorkspace is null)
         {
             PharmacyWorkspace=new PharmacySalePanel(_medicineCatalog,_pharmacyInventory,_products,_stockLocations,AddMedicineAsync);
@@ -172,7 +176,9 @@ public sealed partial class PosViewModel : ObservableObject
     [ObservableProperty] private string _tendered = string.Empty;
     [ObservableProperty] private string _changeText = MoneyText.Format(0m);
 
-    private decimal CurrentGross => PricingService.GrossTotal(_cart);
+    public bool IsCashCollection=>CurrentGross>=0;
+    public string CashChangeLabel=>Text[IsCashCollection?"Pos_Change":"Retail_CashPayout"];
+    private decimal CurrentGross => PricingService.GrossTotal(_cart.GoodsOnly())+Lines.Where(l=>l.IsFinancialService).Sum(l=>l.ServiceCash);
 
     private void ShowProductTiles(IReadOnlyList<Product> products)
     {
@@ -291,7 +297,7 @@ public sealed partial class PosViewModel : ObservableObject
         var qty = quantity ?? (product.Unit == Domain.Common.Unit.Kilogram ? 1.000m : 1m);
         var unit=IsPharmacy?packaged?product.PurchaseUnit:quantity.HasValue?product.SellingUnit:product.DefaultSellingUnit:null;
         if(IsPharmacy&&quantity is null)qty=product.SellingUnitSize(unit!);
-        var added = _cart.AddOrIncrement(product, qty, batch, serial,packaged,medicineUnit:unit);
+        var added = _cart.AddOrIncrement(product, qty, batch, serial,packaged,medicineUnit:unit,merge:!product.IsFinancialService);
         if (Lines.FirstOrDefault(item => ReferenceEquals(item.Line, added)) is { } existing)
             existing.Refresh();
         else Lines.Add(CreateCartLine(added));
@@ -392,7 +398,7 @@ public sealed partial class PosViewModel : ObservableObject
         if (!CanStartPayment()) return;
         IsCash = true;
         IsCredit = false;
-        Tendered = CurrentGross.ToString("0.00", CultureInfo.InvariantCulture);
+        Tendered = Math.Max(0,CurrentGross).ToString("0.00", CultureInfo.InvariantCulture);
         UpdateChange();
         IsPaymentOpen = true;
     }
@@ -401,6 +407,7 @@ public sealed partial class PosViewModel : ObservableObject
     private void OpenCard()
     {
         if (!CanStartPayment()) return;
+        if(Lines.Any(l=>l.IsFinancialService)){Status=Text["Retail_ServiceCashOnly"];return;}
         IsCash = false;
         IsCredit = false;
         IsPaymentOpen = true;
@@ -410,6 +417,7 @@ public sealed partial class PosViewModel : ObservableObject
     private void OpenCredit()
     {
         if (!CanStartPayment()) return;
+        if(Lines.Any(l=>l.IsFinancialService)){Status=Text["Retail_ServiceCashOnly"];return;}
         IsCash = false;
         IsCredit = true;
         CreditPaidNow = "0";
@@ -440,18 +448,26 @@ public sealed partial class PosViewModel : ObservableObject
         try
         {
             if(IsPharmacy)await CompletePendingMedicineSetupAsync();
-            Payment payment = IsCredit ? new CreditPayment(total, ParseOrThrow(CreditPaidNow),CreditDueDate,CreditNote) : IsCash
+            var servicePayments=new List<RetailServicePayment>();
+            foreach(var line in Lines.Where(l=>l.IsFinancialService))
+            {try{line.EditError=null;servicePayments.Add(line.BuildServicePayment());}catch(DomainException e){line.EditError=Text[e.Message];throw;}}
+            Payment? payment = total<0?null:IsCredit ? new CreditPayment(total, ParseOrThrow(CreditPaidNow),CreditDueDate,CreditNote) : IsCash
                 ? new CashPayment(total, ParseOrThrow(Tendered))
                 : new CardPayment(total);
 
-            var sale = await _sales.CheckoutAsync(_cart, payment, _auth.CurrentUser, customer: Customer.Build(), checkoutId: _checkoutId);
+            var result=IsPharmacy?new RetailCheckoutResult(await _sales.CheckoutAsync(_cart,payment!,_auth.CurrentUser,customer:Customer.Build(),checkoutId:_checkoutId),[]):
+                await _retailCheckout.CheckoutAsync(_cart,payment,IsCash?ParseOrThrow(Tendered):0,_auth.CurrentUser,Customer.Build(),_checkoutId,servicePayments);
+            var sale=result.Sale;
             IsPaymentOpen = false;
-            Status = LocalizationManager.Instance.Format("Msg_SaleComplete", sale.ReceiptNo);
+            Status = sale is null?Text["Service_Saved"]:LocalizationManager.Instance.Format("Msg_SaleComplete", sale.ReceiptNo);
             ResetCart();
 
             await _alerts.RefreshAsync();
             Customer.SetExisting(await _saleHistory.GetCustomerSalesAsync());
-            await _receipts.ShowAsync(sale);
+            await InitializeAsync();
+            if(sale is not null)await _receipts.ShowAsync(sale);
+            var postings=(await _digitalLedger.PostingsAsync()).ToDictionary(p=>p.TransactionId);
+            foreach(var service in result.Services.Where(t=>t.Status=="Confirmed"))await _receipts.ShowServiceAsync(service,postings[service.Id],_business);
         }
         catch (Exception ex)
         {
@@ -470,8 +486,9 @@ public sealed partial class PosViewModel : ObservableObject
     private void Recalculate()
     {
         OnPropertyChanged(nameof(ShowPendingTax));
-        var summary = PricingService.Summarize(_cart);
-        GrossTotalText = MoneyText.Format(summary.GrossTotal);
+        var summary = PricingService.Summarize(_cart.GoodsOnly());
+        GrossTotalText = MoneyText.Format(CurrentGross);
+        OnPropertyChanged(nameof(IsCashCollection));OnPropertyChanged(nameof(CashChangeLabel));
         OnPropertyChanged(nameof(CreditBalanceSummary));
         NetTotalText = MoneyText.Format(summary.NetTotal);
         VatTotalText = MoneyText.Format(summary.VatTotal);

@@ -5,7 +5,7 @@ namespace SupermarketPos.Wpf.Common;
 public static class DataLocation
 {
     // Only a protected folder pointer lives here; business records remain in the chosen data folder.
-    private static ProtectedLocalStore Bootstrap => new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"SupermarketPos","Bootstrap"));
+    private static ProtectedLocalStore Bootstrap => new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),RetailTestEdition.Enabled?"High4TechPosTest":"SupermarketPos","Bootstrap"));
     public static string Resolve(string fallback)
     {
         var store=Bootstrap;

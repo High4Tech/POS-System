@@ -25,34 +25,36 @@ public sealed partial class CartLineViewModel : ObservableObject
     private bool _synchronizing;
     public bool PendingSetup{get;private set;}
     public bool NeedsTax{get;}
-    public bool CanEditPrice{get;}
+    private readonly bool _canEditPrice;
+    private readonly bool _retail;
+    public bool CanEditPrice=>_canEditPrice&&!(IsFinancialService&&Line.Product.ServiceType=="PACKAGE"&&Line.Product.ServicePackageId is not null);
     public bool NeedsName=>PendingSetup&&Line.Product.Id==0&&Line.Product.MedicineReferenceId is null;
     private bool CanChooseBaseUnit=>PendingSetup&&!Line.Product.StockTracked&&Line.Product.UnitPrice<=0&&Line.Product.UnitsPerStrip<=1&&Line.Product.UnitsPerPackage<=1;
     public decimal? LocationStock{get;private set;}
 
     public CartLine Line { get; }
 
-    public CartLineViewModel(CartLine line, Action onChanged, Func<CartLineViewModel, decimal, bool> canSetQuantity,bool canEditPrice=true,bool needsTax=false)
+    public CartLineViewModel(CartLine line, Action onChanged, Func<CartLineViewModel, decimal, bool> canSetQuantity,bool canEditPrice=true,bool needsTax=false,bool retail=false)
     {
         Line = line;
         _onChanged = onChanged;
         _canSetQuantity = canSetQuantity;
-        CanEditPrice=canEditPrice;PendingSetup=line.MedicineUnit is not null&&line.GrossUnitPrice<=0;NeedsTax=PendingSetup&&line.Product.Id==0&&needsTax;HasInvalidTax=NeedsTax;
+        _canEditPrice=canEditPrice;_retail=retail;PendingSetup=line.MedicineUnit is not null&&line.GrossUnitPrice<=0||retail&&line.Product.QuickEntry;NeedsTax=PendingSetup&&line.Product.Id==0&&needsTax;HasInvalidTax=NeedsTax;
         _nameText=line.Product.Id==0&&line.Product.Name==Localization.LocalizationManager.Instance["Pharmacy_Unlisted"]?"":line.Product.Name;HasInvalidName=NeedsName&&string.IsNullOrWhiteSpace(_nameText);
         _priceText = line.GrossUnitPrice.ToString("0.00", CultureInfo.InvariantCulture);
-        HasInvalidPrice=line.MedicineUnit is not null&&line.GrossUnitPrice<=0;
+        HasInvalidPrice=(line.MedicineUnit is not null||PendingSetup)&&line.GrossUnitPrice<=0;
         UpdateAvailability(line.Product);
     }
 
     public string Name => Line.BatchLot is { } lot ? $"{Line.Product.Name} · {lot}" : Line.Product.Name;
     public string UnitText => Localization.LocalizationManager.Instance["Measure_"+Line.UnitCode];
-    public string LineTotalText => MoneyText.Format(Line.GrossTotal);
+    public string LineTotalText => MoneyText.Format(IsFinancialService?ServiceCash:Line.GrossTotal);
     public string? DiscountText => Line.LineDiscount?.Describe();
     public decimal AvailableStock { get; private set; }
     public bool IsAvailable { get; private set; }
     public record SellingUnitOption(string Code,string Name);
-    public SellingUnitOption[] SellingUnits=>(CanChooseBaseUnit?new[]{"piece","tablet","capsule","bottle","tube","sachet","vial","other"}:new[]{Line.Product.SellingUnit}.Concat(Line.Product.UnitsPerStrip>1?["strip"]:Array.Empty<string>()).Concat(Line.Product.UnitsPerPackage>1?[Line.Product.PurchaseUnit]:Array.Empty<string>())).Select(u=>new SellingUnitOption(u,Localization.LocalizationManager.Instance["Measure_"+u])).ToArray();
-    public bool HasUnitChoices=>Line.MedicineUnit is not null&&SellingUnits.Length>1;
+    public SellingUnitOption[] SellingUnits=>(_retail&&CanChooseKind&&ProductKind=="loose"?new[]{"piece","kg","litre"}:CanChooseBaseUnit?new[]{"piece","tablet","capsule","bottle","tube","sachet","vial","other"}:new[]{Line.Product.SellingUnit}.Concat(Line.Product.UnitsPerStrip>1?["strip"]:Array.Empty<string>()).Concat(Line.Product.UnitsPerPackage>1?[Line.Product.PurchaseUnit]:Array.Empty<string>())).Select(u=>new SellingUnitOption(u,Localization.LocalizationManager.Instance["Measure_"+u])).ToArray();
+    public bool HasUnitChoices=>(_retail&&CanChooseKind&&ProductKind=="loose"||Line.MedicineUnit is not null)&&SellingUnits.Length>1;
     public string SelectedSellingUnit
     {
         get=>Line.UnitCode;
@@ -61,6 +63,8 @@ public sealed partial class CartLineViewModel : ObservableObject
             if(value==Line.UnitCode)return;
             try
             {
+                if(_retail&&CanChooseKind&&value is "piece" or "kg" or "litre")
+                {Line.SetQuickUnit(value=="kg"?Unit.Kilogram:value=="litre"?Unit.Litre:Unit.Piece);Refresh();OnPropertyChanged();OnPropertyChanged(nameof(UnitText));EditError=null;_onChanged();return;}
                 var enteredPrice=Line.GrossUnitPrice;var choosingBase=CanChooseBaseUnit;if(choosingBase)Line.Product.ConfigureMedicineUnits(value);
                 var quantity=Line.DisplayQuantity*Line.Product.SellingUnitSize(value);
                 if(!_canSetQuantity(this,quantity)){OnPropertyChanged();return;}
@@ -71,7 +75,7 @@ public sealed partial class CartLineViewModel : ObservableObject
     }
     public void SetLocationStock(decimal? quantity){LocationStock=quantity;}
     public void CompleteSetup(){PendingSetup=false;OnPropertyChanged(nameof(NeedsName));OnPropertyChanged(nameof(Name));OnPropertyChanged(nameof(HasUnitChoices));OnPropertyChanged(nameof(SellingUnits));}
-    private void RefreshPrice(){_synchronizing=true;try{PriceText=Line.GrossUnitPrice.ToString("0.00",CultureInfo.InvariantCulture);}finally{_synchronizing=false;}HasInvalidPrice=Line.MedicineUnit is not null&&Line.GrossUnitPrice<=0;}
+    private void RefreshPrice(){_synchronizing=true;try{PriceText=Line.GrossUnitPrice.ToString("0.00",CultureInfo.InvariantCulture);}finally{_synchronizing=false;}HasInvalidPrice=(Line.MedicineUnit is not null||PendingSetup)&&Line.GrossUnitPrice<=0;}
 
     public void UpdateAvailability(Product? product)
     {
@@ -84,19 +88,21 @@ public sealed partial class CartLineViewModel : ObservableObject
     partial void OnPriceTextChanged(string value)
     {
         if(_synchronizing)return;
+        if(IsFinancialService)ServiceExternallyConfirmed=false;
         if(!CanEditPrice){RefreshPrice();return;}
         HasInvalidPrice = true;
         if (decimal.TryParse(value, NumberStyles.Number & ~NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var price))
         {
             try
             {
-                if(Line.MedicineUnit is not null&&price<=0)throw new DomainException("Pharmacy_ConfirmUnitPrice");
+                if((Line.MedicineUnit is not null||PendingSetup)&&price<=0)throw new DomainException("Retail_EnterPrice");
                 Line.SetUnitPrice(price);
                 HasInvalidPrice = false;
                 OnPropertyChanged(nameof(LineTotalText));
             }
             catch (Exception ex) when (ex is DomainException or OverflowException) { }
         }
+        OnPropertyChanged(nameof(LineTotalText));
         _onChanged();
     }
     partial void OnTaxTextChanged(string value)
@@ -118,6 +124,7 @@ public sealed partial class CartLineViewModel : ObservableObject
         {
             try
             {
+                if(IsFinancialService&&value!=1){EditError=Localization.LocalizationManager.Instance["Retail_OneService"];OnPropertyChanged();return;}
                 value*=Line.IsPackage?Line.PackageSize:1;
                 if (value == Line.Quantity) return;
                 if (!_canSetQuantity(this, value))

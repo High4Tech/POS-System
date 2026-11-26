@@ -15,6 +15,8 @@
                 <Button Content="{loc:T Pharmacy_Locations}" Command="{Binding ManageStockLocationsCommand}" Style="{StaticResource GhostButton}" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,8,0"/>
                 <Button Content="{loc:T Common_More}" Style="{StaticResource GhostButton}" Click="OpenMore">
                   <Button.ContextMenu><ContextMenu DataContext="{Binding PlacementTarget.DataContext,RelativeSource={RelativeSource Self}}">
+                    <MenuItem Header="{loc:T Retail_Templates}" Command="{Binding BrowseRetailTemplateCommand}" Visibility="{Binding IsPharmacy,Converter={StaticResource InverseBoolToVis}}"/>
+                    <MenuItem Header="{loc:T Retail_CategoryTemplate}" Command="{Binding LoadRetailCategoriesCommand}" Visibility="{Binding IsPharmacy,Converter={StaticResource InverseBoolToVis}}"/>
                     <MenuItem Header="{loc:T Bulk_ImportProducts}" Command="{Binding ImportProductsCommand}"/>
                     <MenuItem Header="{loc:T Bulk_Template}" Command="{Binding DownloadProductTemplateCommand}"/>
                     <MenuItem Header="{loc:T Category_Manage}" Command="{Binding EditCategoriesCommand}"/>

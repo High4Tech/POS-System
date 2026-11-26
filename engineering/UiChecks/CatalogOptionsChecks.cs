@@ -35,14 +35,13 @@ internal static partial class Program
                 Assert(pos.EnableMobileRecharge==(type=="electronics"),"Tech Retail recharge stays enabled independently of images");
                 if(type=="electronics"&&!images&&size==100)
                 {
-                    await shell.ShowDigitalServicesCommand.ExecuteAsync("LOAD");Pump();
-                    var service=Descendants(sales).OfType<DigitalServicesView>().Single();
-                    Assert(service.IsVisible,"Digital service workspace is visible above the product collection");
-                    Assert(Descendants(service).OfType<Button>().Any(b=>b.IsVisible&&Equals(b.Content,SupermarketPos.Wpf.Localization.LocalizationManager.Instance["Service_LOAD"])),"Load is available in Tech Retail");
-                    Assert(!Descendants(sales).OfType<TextBlock>().Any(t=>t.IsVisible&&t.Text==pos.CollectionTitle),"Product collection does not cover the service workspace");
+                    await shell.ShowDigitalServicesCommand.ExecuteAsync(null);Pump();
+                    var service=Descendants(window).OfType<DigitalServicesView>().Single();
+                    Assert(service.IsVisible&&shell.ActiveScreen=="digital","Digital Services has its own header workspace");
+                    Assert(!Descendants(window).OfType<PosView>().Any(c=>c.IsVisible),"Services does not embed a second panel in Sales");
                     Capture(window,System.IO.Path.Combine(screenshots,"tech-digital-services.png"));
-                    pos.CloseContextPanelCommand.Execute(null);Pump();
-                    Assert(pos.ContextPanel is null&&Descendants(sales).OfType<TextBlock>().Any(t=>t.IsVisible&&t.Text==pos.CollectionTitle),"Closing services restores the product collection");
+                    await shell.ShowPosCommand.ExecuteAsync(null);Pump();
+                    Assert(ReferenceEquals(pos,shell.CurrentViewModel),"Returning from services preserves the register instance");
                 }
                 Capture(window,System.IO.Path.Combine(screenshots,$"sales-{type}-{images}-{size}.png"));
                 await shell.ShowProductsCommand.ExecuteAsync(null);Pump();

@@ -8,6 +8,27 @@ namespace SupermarketPos.Domain.Entities;
 /// </summary>
 public sealed class Product
 {
+    public string Kind { get; private set; } = "labeled";
+    public string ServiceType { get; private set; } = "SERVICE";
+    public int? ServiceProviderId { get; private set; }
+    public int? ServicePackageId { get; private set; }
+    public string CatalogKey { get; private set; } = "";
+    public bool QuickEntry { get; private set; }
+    public bool IsFinancialService => Kind=="digital"&&ServiceType!="SERVICE";
+    public void SetRetailKind(string kind)
+    {
+        if(kind is not ("labeled" or "loose" or "digital")||kind=="digital"&&(StockTracked||TrackExpiry||TrackSerial))throw new DomainException("Retail_InvalidKind");
+        Kind=kind;
+        if(kind!="digital"){ServiceType="SERVICE";ServiceProviderId=ServicePackageId=null;}
+    }
+    public void ConfigureService(string type,int? providerId=null,int? packageId=null)
+    {
+        if(Kind!="digital"||type is not ("SERVICE" or "CASHIN" or "CASHOUT" or "TRANSFER" or "LOAD" or "PACKAGE")||providerId<=0||packageId<=0||packageId is not null&&type!="PACKAGE")throw new DomainException("Service_Invalid");
+        ServiceType=type;ServiceProviderId=providerId;ServicePackageId=packageId;
+    }
+    public void SetCatalogKey(string key){if(key.Length>120||key.Any(char.IsControl))throw new DomainException("Validation_Text");CatalogKey=key;}
+    public void MarkQuickEntry(){if(StockTracked)throw new DomainException("Retail_InvalidKind");QuickEntry=true;}
+    public void CompleteQuickEntry()=>QuickEntry=false;
     private readonly List<InventoryBatch> _batches = [];
     public bool TrackExpiry { get; private set; }
     public bool TrackSerial { get; private set; }

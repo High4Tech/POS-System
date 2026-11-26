@@ -16,10 +16,10 @@ public sealed partial class PosViewModel
     private const int CardPageSize=24;
     private IReadOnlyList<Product> _registerProducts=[];
     private readonly LayoutPreferences<RegisterPreference> _registerPreferences;
-    private sealed record RegisterPreference(bool List);
+    private sealed record RegisterPreference(bool List,string Sort="name");
     [ObservableProperty][NotifyPropertyChangedFor(nameof(ShowRegisterCards),nameof(ShowRegisterList))]private bool _registerList;
-    public bool ShowRegisterCards=>ShowResults&&!RegisterList&&ContextPanel is null;
-    public bool ShowRegisterList=>ShowResults&&RegisterList&&ContextPanel is null;
+    public bool ShowRegisterCards=>ShowResults&&!RegisterList;
+    public bool ShowRegisterList=>ShowResults&&RegisterList;
     public bool ShowPendingTax=>Lines.Any(l=>l.NeedsTax&&l.PendingSetup);
     [ObservableProperty]private int _productPage;
     public RegisterProductTile[] CardTiles=>ProductTiles.Skip(ProductPage*CardPageSize).Take(CardPageSize).ToArray();
@@ -28,16 +28,17 @@ public sealed partial class PosViewModel
     partial void OnProductPageChanged(int value){OnPropertyChanged(nameof(CardTiles));OnPropertyChanged(nameof(ProductPageText));}
     [RelayCommand]private void PreviousProducts(){if(ProductPage>0)ProductPage--;}
     [RelayCommand]private void NextProducts(){if((ProductPage+1)*CardPageSize<ProductTiles.Count)ProductPage++;}
-    partial void OnRegisterListChanged(bool value){_registerPreferences.Write(new(value));OnPropertyChanged(nameof(HasProductPages));}
+    partial void OnRegisterListChanged(bool value){_registerPreferences.Write(new(value,RegisterSort));OnPropertyChanged(nameof(HasProductPages));}
     [RelayCommand]private void ShowCards()=>RegisterList=false;
     [RelayCommand]private void ShowList()=>RegisterList=true;
     [RelayCommand]private void SelectAllCategory(){SelectedCategoryId=0;ApplyRegisterFilter();}
     partial void OnShowResultsChanged(bool value){OnPropertyChanged(nameof(ShowRegisterCards));OnPropertyChanged(nameof(ShowRegisterList));}
     private void ApplyRegisterFilter()
     {
-        var term=SearchText.Trim();ShowProductTiles(_registerProducts.Where(p=>(SelectedCategoryId==0||p.CategoryId==SelectedCategoryId)&&(term.Length==0||p.Name.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Brand.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Model.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Sku.Contains(term,StringComparison.OrdinalIgnoreCase)||p.MedicineGeneric.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Barcode.Contains(term,StringComparison.OrdinalIgnoreCase))).ToArray());
+        var term=SearchText.Trim();var matches=_registerProducts.Where(p=>(CatalogKind=="all"||p.Kind==CatalogKind)&&(SelectedCategoryId==0||p.CategoryId==SelectedCategoryId)&&(term.Length==0||p.Name.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Brand.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Model.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Sku.Contains(term,StringComparison.OrdinalIgnoreCase)||p.MedicineGeneric.Contains(term,StringComparison.CurrentCultureIgnoreCase)||p.Barcode.Contains(term,StringComparison.OrdinalIgnoreCase)));
+        ShowProductTiles((RegisterSort=="recent"?matches.OrderByDescending(p=>p.Id):RegisterSort=="price"?matches.OrderBy(p=>p.UnitPrice):matches.OrderBy(p=>p.Name)).ToArray());OnPropertyChanged(nameof(CanQuickAddProduct));OnPropertyChanged(nameof(QuickAddCaption));
     }
-    partial void OnSearchTextChanged(string value)=>ApplyRegisterFilter();
+    partial void OnSearchTextChanged(string value){ApplyRegisterFilter();_ = RefreshRetailReferencesAsync(value);}
     [RelayCommand]private async Task SelectMedicineAsync(MedicineMatch match)
     {
         if(!IsPharmacy||!CanReadBarcode())return;
@@ -62,7 +63,7 @@ public sealed partial class PosViewModel
         AddProvisionalMedicine(null,SearchText,"");
         if(SelectedCartLine is { } selected)ManualProductAdded?.Invoke(selected);
     }
-    private CartLineViewModel CreateCartLine(CartLine line)=>new(line,Recalculate,ApproveCartQuantity,_auth.CurrentUser?.IsAdmin==true,_business.SalesTaxRegistered);
+    private CartLineViewModel CreateCartLine(CartLine line){var model=new CartLineViewModel(line,Recalculate,ApproveCartQuantity,_auth.CurrentUser?.IsAdmin==true,_business.SalesTaxRegistered,!IsPharmacy);model.SetServiceOptions(_serviceProviders,_servicePackages);return model;}
     private async Task CompletePendingMedicineSetupAsync()
     {
         foreach(var line in Lines.Where(l=>l.PendingSetup).ToArray())

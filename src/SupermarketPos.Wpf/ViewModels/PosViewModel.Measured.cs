@@ -22,11 +22,7 @@ public sealed partial class PosViewModel
     public void OpenDigitalPanel(DigitalServicesView view)=>ContextPanel=ReferenceEquals(ContextPanel,view)?null:view;
     [RelayCommand] private async Task LooseItemsAsync()
     {
-        if(ContextPanel is LooseGoodsPanel){ContextPanel=null;return;}
-        if(!CanReadBarcode()||!EnableGoodsPanel)return;
-        var products=(await _products.GetAllAsync()).Where(p=>p.IsActive&&(EnableLooseGoods||EnablePackagedUnits&&p.UnitsPerPackage>1)).ToArray();
-        var recent=(await _saleHistory.GetByDateRangeAsync(DateTime.Today.AddDays(-30),DateTime.Today.AddDays(1))).SelectMany(s=>s.Lines).GroupBy(l=>l.ProductId).ToDictionary(g=>g.Key,g=>g.Count());
-        ContextPanel=new LooseGoodsPanel(products.OrderByDescending(p=>recent.GetValueOrDefault(p.Id)).ThenBy(p=>p.Name).ToArray(),EnableLooseGoods,EnablePackagedUnits,AddMeasuredAsync);
+        CatalogKind=CatalogKind=="loose"?"all":"loose";ApplyRegisterFilter();await Task.CompletedTask;
     }
     private async Task<bool> AddMeasuredAsync(Product selected,decimal quantity,bool packaged)
     {

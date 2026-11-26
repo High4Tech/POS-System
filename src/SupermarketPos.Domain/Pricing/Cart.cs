@@ -34,6 +34,10 @@ public sealed class Cart
     }
 
     public void Remove(CartLine line) => _lines.Remove(line);
+    public Cart GoodsOnly()
+    {
+        var goods=new Cart();goods._lines.AddRange(_lines.Where(line=>!line.Product.IsFinancialService));goods.CartDiscount=CartDiscount;return goods;
+    }
 
     public void Clear()
     {

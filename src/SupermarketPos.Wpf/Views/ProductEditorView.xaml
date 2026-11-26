@@ -183,7 +183,7 @@
 
                 <StackPanel Visibility="{Binding DeviceTrackingAvailable,Converter={StaticResource BoolToVis}}">
                 <TextBlock Text="{loc:T Tech_Brand}" Style="{StaticResource FormLabel}"/>
-                <TextBox Text="{Binding Editor.Brand,UpdateSourceTrigger=PropertyChanged}" MaxLength="120" Margin="0,4,0,8"/>
+                <ComboBox ItemsSource="{Binding Editor.RetailBrands}" Text="{Binding Editor.Brand,UpdateSourceTrigger=PropertyChanged}" IsEditable="True" Margin="0,4,0,8"/>
                 <TextBlock Text="{loc:T Tech_Model}" Style="{StaticResource FormLabel}"/>
                 <TextBox Text="{Binding Editor.Model,UpdateSourceTrigger=PropertyChanged}" MaxLength="120" Margin="0,4,0,8"/>
                 <TextBlock Text="{loc:T Tech_Sku}" Style="{StaticResource FormLabel}"/>

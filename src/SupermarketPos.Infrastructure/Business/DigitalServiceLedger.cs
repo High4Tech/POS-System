@@ -22,7 +22,7 @@ public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthS
         auth.RequireAdmin();
         if((await setup.LoadAsync()).Profile.DigitalServicesAvailable==false)throw new DomainException("Service_Disabled");
         if(new[]{entry.DefaultCustomerFee,entry.DefaultProviderFee,entry.DefaultCommission}.Any(v=>v<0||v!=Money.Round2(v))||entry.LoadCostRate is <0 or >10)throw new DomainException("Service_InvalidAmount");
-        if(string.IsNullOrWhiteSpace(entry.Name)||entry.Name.Length>100||entry.OpeningFloat<0||entry.OpeningFloat!=Money.Round2(entry.OpeningFloat)||entry.FeePolicy.Length>300||entry.CommissionPolicy.Length>300||entry.AllowedTypes.Split(',').Any(c=>c is not ("CASHIN" or "CASHOUT" or "LOAD" or "PACKAGE")))throw new DomainException("Service_Invalid");
+        if(string.IsNullOrWhiteSpace(entry.Name)||entry.Name.Length>100||entry.OpeningFloat<0||entry.OpeningFloat!=Money.Round2(entry.OpeningFloat)||entry.FeePolicy.Length>300||entry.CommissionPolicy.Length>300||entry.AllowedTypes.Split(',').Any(c=>c is not ("CASHIN" or "CASHOUT" or "TRANSFER" or "LOAD" or "PACKAGE")))throw new DomainException("Service_Invalid");
         var saved=entry.Id==0?null:await db.ServiceProviders.SingleAsync(p=>p.Id==entry.Id);
         if(saved is null)db.ServiceProviders.Add(entry);
         else {if(saved.OpeningFloat!=entry.OpeningFloat&&await db.ServiceTransactions.AnyAsync(t=>t.ProviderId==saved.Id))throw new DomainException("Service_OpeningLocked");var revision=saved.Revision;db.Entry(saved).CurrentValues.SetValues(entry);saved.Revision=revision+1;}
@@ -39,7 +39,7 @@ public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthS
     {
         var user=auth.CurrentUser??throw new DomainException("Service_SignIn");entry.Validate();
         var business=(await setup.LoadAsync(ct)).Profile;
-        if(entry.Type is "CASHIN" or "CASHOUT"?!business.DigitalWalletAvailable:!business.MobileRechargeAvailable)throw new DomainException("Service_Disabled");
+        if(entry.Type is "CASHIN" or "CASHOUT" or "TRANSFER"?!business.DigitalWalletAvailable:!business.MobileRechargeAvailable)throw new DomainException("Service_Disabled");
         if(await db.ServiceTransactions.SingleOrDefaultAsync(t=>t.ConfirmationId==entry.ConfirmationId,ct) is{} prior)
         {
             if(prior.ProviderId!=entry.ProviderId||prior.PackageId!=entry.PackageId||prior.Principal!=entry.Principal||prior.Type!=entry.Type||prior.CustomerFee!=entry.CustomerFee||prior.ProviderFee!=entry.ProviderFee||prior.Commission!=entry.Commission||prior.ProviderCost!=entry.ProviderCost||prior.Collected!=entry.Collected||prior.FloatChange!=entry.FloatChange||prior.CustomerPhone!=entry.CustomerPhone||prior.Reference!=entry.Reference)throw new DomainException("Service_ConfirmationConflict");
@@ -102,15 +102,15 @@ public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthS
         decimal Net(Func<ServiceTransaction,decimal> amount,params string[] types)=>rows.Where(t=>posted.Contains(t.Id)).Sum(t=>t.ReversesId is{} id?(types.Length==0||types.Contains(originals[id].Type)?-amount(originals[id]):0):(types.Length==0||types.Contains(t.Type)?amount(t):0));
         var retail=await db.Sales.AsNoTracking().Include(s=>s.Lines).Where(s=>s.CreatedAt>=from&&s.CreatedAt<to).ToListAsync();
         var loose=retail.SelectMany(s=>s.Lines).Where(l=>l.UnitCode is "kg" or "litre").Sum(l=>l.LineGross);
-        return new(posts.Sum(p=>p.Income),posts.Sum(p=>p.CashChange),posts.Sum(p=>p.FloatChange),Net(t=>t.Principal,"CASHIN"),Net(t=>t.Principal,"CASHOUT"),Net(t=>t.Collected,"LOAD","PACKAGE"),Net(t=>t.Commission),rows.Count(t=>t.Status is "Draft" or "Pending"),rows.Count(t=>t.Status is "Failed" or "Reversed"),retail.Sum(s=>s.GrossTotal)-loose,loose);
+        return new(posts.Sum(p=>p.Income),posts.Sum(p=>p.CashChange),posts.Sum(p=>p.FloatChange),Net(t=>t.Principal,"CASHIN"),Net(t=>t.Principal,"CASHOUT"),Net(t=>t.Collected,"LOAD","PACKAGE"),Net(t=>t.Commission),rows.Count(t=>t.Status is "Draft" or "Pending"),rows.Count(t=>t.Status is "Failed" or "Reversed"),retail.Sum(s=>s.GrossTotal)-loose,loose,Net(t=>t.Principal,"TRANSFER"));
     }
     public Task<List<ServicePosting>> PostingsAsync()=>db.ServicePostings.AsNoTracking().ToListAsync();
     public static ServiceTransaction PackageQuote(MobileServicePackage p)=>new(){Type="PACKAGE",ProviderId=p.ProviderId,PackageId=p.Id,PackageName=p.Name,PackageIdentifier=p.PackageIdentifier,AccountType=p.AccountType,PackageBenefits=p.Benefits,PackageValidity=p.Validity,Principal=p.Price,Collected=p.Price+p.CustomerFee,ProviderCost=p.ProviderCost,CustomerFee=p.CustomerFee,ProviderFee=p.ProviderFee,Commission=p.Commission,FloatChange=-p.ProviderCost+p.Commission-p.ProviderFee};
     public static ServiceTransaction ProviderQuote(ServiceProviderAccount p,string type,decimal amount)
     {
-        if(type is not ("CASHIN" or "CASHOUT" or "LOAD"))throw new DomainException("Service_Invalid");
+        if(type is not ("CASHIN" or "CASHOUT" or "TRANSFER" or "LOAD"))throw new DomainException("Service_Invalid");
         var cost=type=="LOAD"?Money.Round2(amount*p.LoadCostRate):0;
-        return new(){Type=type,ProviderId=p.Id,Principal=amount,CustomerFee=p.DefaultCustomerFee,ProviderFee=p.DefaultProviderFee,Commission=p.DefaultCommission,ProviderCost=cost,Collected=amount+p.DefaultCustomerFee,FloatChange=(type=="CASHIN"?-amount:type=="CASHOUT"?amount:-cost)+p.DefaultCommission-p.DefaultProviderFee};
+        return new(){Type=type,ProviderId=p.Id,Principal=amount,CustomerFee=p.DefaultCustomerFee,ProviderFee=p.DefaultProviderFee,Commission=p.DefaultCommission,ProviderCost=cost,Collected=amount+p.DefaultCustomerFee,FloatChange=(type is "CASHIN" or "TRANSFER"?-amount:type=="CASHOUT"?amount:-cost)+p.DefaultCommission-p.DefaultProviderFee};
     }
 }
-public sealed record ServicePeriodReport(decimal Income,decimal CashChange,decimal FloatChange,decimal CashIn,decimal CashOut,decimal RechargeCollected,decimal Commissions,int Pending,int FailedReversed,decimal PhysicalRevenue,decimal LooseRevenue);
+public sealed record ServicePeriodReport(decimal Income,decimal CashChange,decimal FloatChange,decimal CashIn,decimal CashOut,decimal RechargeCollected,decimal Commissions,int Pending,int FailedReversed,decimal PhysicalRevenue,decimal LooseRevenue,decimal Transfers);

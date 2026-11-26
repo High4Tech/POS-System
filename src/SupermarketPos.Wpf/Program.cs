@@ -5,7 +5,7 @@ public static class Program
     public static void Main(string[] args)
     {
         Velopack.VelopackApp.Build().Run();
-        using var instance = new Mutex(true, "Local\\SupermarketPosDesktop", out var firstInstance);
+        using var instance = new Mutex(true, Common.RetailTestEdition.Enabled?"Local\\High4TechPosRetailTest":"Local\\SupermarketPosDesktop", out var firstInstance);
         if (!firstInstance) return;
         var pathIndex = Array.IndexOf(args, "--data-directory");
         if (pathIndex >= 0 && args.Length > pathIndex + 1)

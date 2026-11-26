@@ -15,10 +15,11 @@ public sealed record BusinessProfile
     public bool EnableDigitalWalletServices { get; set; }
     public bool EnableMobileRecharge { get; set; }
     public bool EnableCatalogImages { get; set; }
+    public string RetailTemplate { get; set; } = "none";
     [JsonIgnore] public bool DeviceTrackingAvailable => BusinessType is "electronics" or "mobile";
     [JsonIgnore] public bool DigitalServicesAvailable => DigitalWalletAvailable || MobileRechargeAvailable;
     [JsonIgnore] public bool IsPharmacy=>string.Equals(BusinessType?.Trim(),"pharmacy",StringComparison.OrdinalIgnoreCase);
-    [JsonIgnore] public bool LooseGoodsAvailable=>(BusinessType is "grocery" or "supermarket" or "retail" or "other") && EnableLooseGoods;
+    [JsonIgnore] public bool LooseGoodsAvailable=>!IsPharmacy&&EnableLooseGoods;
     [JsonIgnore] public bool PackagingAvailable=>IsPharmacy||EnablePackagedUnits;
     [JsonIgnore] public bool DigitalWalletAvailable=>!IsPharmacy&&EnableDigitalWalletServices;
     [JsonIgnore] public bool MobileRechargeAvailable=>!IsPharmacy&&EnableMobileRecharge;
@@ -27,9 +28,10 @@ public sealed record BusinessProfile
     public string WhatsAppTemplate { get; init; } = "";
     public void ApplyBusinessDefaults()
     {
-        EnableLooseGoods=BusinessType is "grocery" or "supermarket";
+        EnableLooseGoods=BusinessType is "grocery" or "supermarket" or "electronics";
         EnablePackagedUnits=BusinessType is "grocery" or "supermarket" or "retail" or "mobile" or "pharmacy";
-        EnableDigitalWalletServices=false;EnableMobileRecharge=BusinessType is "electronics" or "mobile";
+        EnableDigitalWalletServices=BusinessType is "electronics" or "mobile";EnableMobileRecharge=BusinessType is "electronics" or "mobile";
+        RetailTemplate=BusinessType is "electronics" or "mobile"?"pakistan-tech":"none";
         MedicineTemplate=IsPharmacy?"pakistan-drap":"none";
     }
     public bool Registered { get; init; }
@@ -77,6 +79,7 @@ public sealed record BusinessProfile
     {
         var errors = new Dictionary<string, string>();
         if(MedicineTemplate is not ("none" or "pakistan-drap"))errors[nameof(MedicineTemplate)]="Validation_Choice";
+        if(RetailTemplate is not ("none" or "pakistan-tech"))errors[nameof(RetailTemplate)]="Validation_Choice";
         if(BusinessType is not ("other" or "grocery" or "supermarket" or "retail" or "pharmacy" or "electronics" or "mobile"))errors[nameof(BusinessType)]="Validation_Choice";
         void Check(string field, string value, int max, bool mandatory = false)
         {

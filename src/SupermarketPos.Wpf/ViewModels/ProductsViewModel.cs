@@ -53,9 +53,9 @@ public sealed partial class ProductsViewModel : ObservableObject
                              ISettingsRepository settings, IShelfLabelService labels, IUnitOfWork uow,
                              PosStorage storage, IInventoryService inventory, IBarcodeService barcodes,
                              ScannerController scanner, ScannerFeedback sound, IPurchaseService purchases, BulkRecordService bulk,
-                             RegisterBarcodeLookup lookup, ITradeLedger ledger,IBusinessSetup businessSetup,SupermarketPos.Infrastructure.Business.MedicineCatalogService medicineCatalog,SupermarketPos.Infrastructure.Business.PharmacyInventory pharmacyInventory,SupermarketPos.Infrastructure.Business.StockLocationService stockLocations, SupermarketPos.Infrastructure.Business.SaleHistory saleSnapshots, IAuthService auth)
+                             RegisterBarcodeLookup lookup, ITradeLedger ledger,IBusinessSetup businessSetup,SupermarketPos.Infrastructure.Business.MedicineCatalogService medicineCatalog,SupermarketPos.Infrastructure.Business.PharmacyInventory pharmacyInventory,SupermarketPos.Infrastructure.Business.StockLocationService stockLocations, SupermarketPos.Infrastructure.Business.SaleHistory saleSnapshots, IAuthService auth,SupermarketPos.Infrastructure.Business.RetailInventory retailInventory,SupermarketPos.Infrastructure.Business.RetailReferenceCatalog retailCatalog)
     {
-        _products = products;
+        _products = products;_retailInventory=retailInventory;_retailCatalog=retailCatalog;
         _auth = auth;
         _saleSnapshots = saleSnapshots;
         _categories = categories;
@@ -156,7 +156,7 @@ public sealed partial class ProductsViewModel : ObservableObject
         foreach (var row in Products)
             row.PropertyChanged -= SelectionChanged;
         Products.Clear();
-        foreach (var p in items)
+        foreach (var p in items.Where(p=>p.Kind!="digital"))
         {
             var row = new ProductRowViewModel(p, _lowStockThreshold,medicineDetails.GetValueOrDefault(p.Id));
             row.PropertyChanged += SelectionChanged;
@@ -175,6 +175,7 @@ public sealed partial class ProductsViewModel : ObservableObject
         DeviceTrackingAvailable=business.DeviceTrackingAvailable;IsPharmacy=Editor.IsPharmacy=business.IsPharmacy;Editor.LooseEnabled=business.LooseGoodsAvailable;Editor.PackagesEnabled=business.PackagingAvailable;
         ShowProductImages=Editor.ShowProductImages=business.EnableCatalogImages;
         PrepareMedicineSearch();
+        Editor.RetailBrands=business.RetailTemplate=="pakistan-tech"?await _retailCatalog.BrandsAsync():[];
         _categoryList = (await _categories.GetAllAsync()).ToList();
         OnPropertyChanged(nameof(FilterCategories));
         OnPropertyChanged(nameof(BulkCategories));
@@ -431,6 +432,7 @@ public sealed partial class ProductsViewModel : ObservableObject
                 {
                     product = new Product(code, Editor.Name, price, vatRate.Value, unit, Editor.TrackExpiry ? 0m : stock, categoryId);
                     if(IsPharmacy&&stock==0)product.MarkStockUntracked();
+                    if(!IsPharmacy)product.SetRetailKind(unit==Unit.Piece?"labeled":"loose");
                     product.SetExpiryTracking(Editor.TrackExpiry);
                     product.SetSerialTracking(Editor.TrackSerial, warrantyMonths);
                     if(DeviceTrackingAvailable)product.SetRetailDetails(Editor.Brand,Editor.Model,Editor.Sku);
@@ -455,6 +457,7 @@ public sealed partial class ProductsViewModel : ObservableObject
                     product.SetPrice(price);
                     product.SetVatRate(vatRate.Value);
                     product.SetUnit(unit);
+                    if(!IsPharmacy)product.SetRetailKind(unit==Unit.Piece?"labeled":"loose");
                     var adjustment = IsPharmacy || Editor.TrackExpiry ? 0m : stock - product.StockQuantity;
                     product.SetExpiryTracking(Editor.TrackExpiry);
                     product.SetSerialTracking(Editor.TrackSerial, warrantyMonths);

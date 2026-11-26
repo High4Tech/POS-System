@@ -69,7 +69,7 @@
       <DataTrigger Binding="{Binding ActiveScreen}" Value="settings"><Setter Property="Background" Value="White"/><Setter Property="Foreground" Value="{StaticResource SelectedNavTextBrush}"/></DataTrigger>
     </Style.Triggers></Style></Button.Style>
 </Button>
-                  <Button x:Name="DigitalDestination" Content="{loc:T Service_Title}" Command="{Binding ShowDigitalServicesCommand}" Style="{StaticResource TopButton}"/>
+                  <Button x:Name="DigitalDestination" Tag="digital" Content="{loc:T Service_Title}" Command="{Binding ShowDigitalServicesCommand}" Style="{StaticResource TopButton}"/>
                 </StackPanel>
               </DockPanel>
             </Border>

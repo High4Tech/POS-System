@@ -34,7 +34,13 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]private async Task ShowDigitalServicesAsync(string? kind)
     {
         if(!(await _provider.GetRequiredService<IBusinessSetup>().LoadAsync()).Profile.DigitalServicesAvailable)return;
-        if(!_auth.IsLoggedIn)return;_digital??=_provider.GetRequiredService<DigitalServicesView>();_digital.ChooseType(kind);if(_pos is null||!ReferenceEquals(CurrentViewModel,_pos))await ShowPosAsync();_pos!.OpenDigitalPanel(_digital);
+        if(!_auth.IsLoggedIn)return;
+        if(_digital is null)
+        {
+            _digital=_provider.GetRequiredService<DigitalServicesView>();
+            _digital.ProductChosen+=async product=>{await ShowPosAsync();await _pos!.AddFromResultsCommand.ExecuteAsync(product);};
+        }
+        _digital.ChooseType(kind);CurrentViewModel=_digital;ActiveScreen="digital";
     }
     public async Task RefreshFeaturesAsync()
     {

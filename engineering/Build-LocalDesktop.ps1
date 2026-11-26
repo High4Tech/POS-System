@@ -4,7 +4,8 @@ param(
     [Parameter(Mandatory)][string]$Version,
     [string]$DataDirectory = 'D:\SupermarketPos',
     [string]$Dotnet = 'dotnet',
-    [switch]$NoRestore
+    [switch]$NoRestore,
+    [switch]$TestRetailEdition
 )
 
 $ErrorActionPreference = 'Stop'
@@ -17,7 +18,7 @@ if ($out.StartsWith($directory.TrimEnd('\') + '\', [StringComparison]::OrdinalIg
 }
 $revision = (git -C $repo rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0) { throw 'Cannot identify the POS source revision.' }
-$filePaths = git -C $repo ls-files --cached --others --exclude-standard -- src
+$filePaths = git -C $repo ls-files --cached --others --exclude-standard -- src assets
 if ($LASTEXITCODE -ne 0) { throw 'Cannot list POS source files.' }
 $lines = foreach ($name in ($filePaths | Sort-Object -Unique)) {
     $file = Join-Path $repo $name
@@ -31,14 +32,19 @@ $builtAt = [DateTime]::UtcNow.ToString('O')
 $build = "$Version+g$($revision.Substring(0,7)).$($fingerprint.Substring(0,12).ToLowerInvariant())"
 $project = Join-Path $repo 'src\SupermarketPos.Wpf\SupermarketPos.Wpf.csproj'
 $restoreOptions = if($NoRestore) { ,@('--no-restore') } else { ,@() }
+$editionOptions = if($TestRetailEdition) { @('-p:RetailTestEdition=true','-p:CommercialBuild=false','-p:PosDataDirectory=') } else { @('-p:RetailTestEdition=false',"-p:PosDataDirectory=$directory") }
 & $Dotnet publish $project -c Release -r win-x64 --self-contained true -o $out @restoreOptions "-p:Version=$Version" `
     '-p:IncludeSourceRevisionInInformationalVersion=false' "-p:InformationalVersion=$build" `
-    "-p:BuildTimestampUtc=$builtAt" "-p:BuildSourceFingerprint=$fingerprint" "-p:PosDataDirectory=$directory"
+    "-p:BuildTimestampUtc=$builtAt" "-p:BuildSourceFingerprint=$fingerprint" @editionOptions
 if ($LASTEXITCODE -ne 0) { throw 'POS publish failed.' }
 
 $assembly = Join-Path $out 'SupermarketPos.dll'
 & $Dotnet run --project (Join-Path $PSScriptRoot 'ModelTools\ModelTools.csproj') @restoreOptions -- verify-local-build $assembly
 if ($LASTEXITCODE -ne 0) { throw 'Release verification failed.' }
+if($TestRetailEdition) {
+    $runtime = Get-Content -LiteralPath (Join-Path $out 'SupermarketPos.runtimeconfig.json') -Raw | ConvertFrom-Json
+    if($runtime.runtimeOptions.configProperties.'SupermarketPos.DataDirectory') { throw 'A test edition must not contain the production data path.' }
+}
 [pscustomobject]@{
     Version = $build
     Configuration = 'Release'

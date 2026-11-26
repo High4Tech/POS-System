@@ -83,12 +83,6 @@
 
         <!-- LEFT: search + cart -->
         <DockPanel Grid.Column="0" Margin="0,0,20,0">
-            <WrapPanel x:Name="ContextActions" DockPanel.Dock="Top" Margin="0,0,0,10">
-             <WrapPanel Visibility="{Binding EnableGoodsPanel,Converter={StaticResource BoolToVis}}">
-              <Button Content="{loc:T Measure_LooseItems}" Command="{Binding LooseItemsCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,6,4"/>
-             </WrapPanel>
-             <Button Content="{loc:T Service_Title}" Command="{Binding DataContext.ShowDigitalServicesCommand,RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource PrimaryButton}" Visibility="{Binding EnableDigitalServices,Converter={StaticResource BoolToVis}}" Margin="0,0,6,4"/>
-            </WrapPanel>
             <DockPanel DockPanel.Dock="Top" Visibility="{Binding IsPharmacy,Converter={StaticResource BoolToVis}}" Margin="0,0,0,12">
                 <Button DockPanel.Dock="Right" Visibility="{Binding SearchText,Converter={StaticResource StrToVis}}" Content="{loc:T Pharmacy_UseEnteredName}" Command="{Binding UseMedicineNameCommand}" Style="{StaticResource GhostButton}" Margin="8,0,0,0"/>
                 <ContentControl Content="{Binding PharmacyWorkspace.Search}"/>
@@ -116,7 +110,12 @@
                 </TextBlock>
             </Grid>
 
-            <Border DockPanel.Dock="Top" BorderBrush="{StaticResource WarnBrush}" BorderThickness="1" CornerRadius="10"
+
+            <StackPanel DockPanel.Dock="Top" Margin="0,0,0,8" Visibility="{Binding IsPharmacy,Converter={StaticResource InverseBoolToVis}}">
+              <Button Content="{Binding QuickAddCaption}" Command="{Binding QuickAddProductCommand}" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Visibility="{Binding CanQuickAddProduct,Converter={StaticResource BoolToVis}}"/>
+              <ScrollViewer MaxHeight="140" VerticalScrollBarVisibility="Auto"><ItemsControl ItemsSource="{Binding RetailReferenceMatches}"><ItemsControl.ItemTemplate><DataTemplate><Button Content="{Binding Caption}" Command="{Binding DataContext.UseRetailReferenceCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Margin="0,3"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl></ScrollViewer>
+            </StackPanel>
+           <Border DockPanel.Dock="Top" BorderBrush="{StaticResource WarnBrush}" BorderThickness="1" CornerRadius="10"
                     Padding="12" Background="#FFFFFBEB" Margin="0,0,0,10"
                     Visibility="{Binding UnknownBarcode, Converter={StaticResource StrToVis}}">
                 <StackPanel>
@@ -172,7 +171,6 @@
 
             <ScrollViewer x:Name="CategoryStrip" Tag="{DynamicResource CategoryCardWidth}" DockPanel.Dock="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                           Margin="0,0,0,12" Padding="0,0,0,3" Focusable="False">
-                <ScrollViewer.Style><Style TargetType="ScrollViewer"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding ContextPanel}" Value="{x:Null}"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></ScrollViewer.Style>
                 <DockPanel><Button DockPanel.Dock="Left" Content="{loc:T Pos_All}" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="{DynamicResource RegisterTileTextSize}" ContentTemplate="{StaticResource ButtonCaption}" Padding="12,6" Command="{Binding SelectAllCategoryCommand}" Style="{StaticResource TileButton}" Background="{StaticResource AccentBrush}" Foreground="White" MinWidth="80" Margin="0,0,9,0"/><ItemsControl ItemsSource="{Binding Categories}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
@@ -215,17 +213,10 @@
                 </ItemsControl></DockPanel>
             </ScrollViewer>
 
-            <Grid x:Name="RegisterWorkspace" layout:PanelHeights.Key="register"><Grid.RowDefinitions><RowDefinition Height="58*"/><RowDefinition Height="12"/><RowDefinition Height="42*"/></Grid.RowDefinitions><GridSplitter Grid.Row="1" Style="{StaticResource HeightDivider}"/>
-            <Border DockPanel.Dock="Top" Margin="0,0,0,12">
-             <Border.Style><Style TargetType="Border" BasedOn="{StaticResource Card}"><Style.Triggers><DataTrigger Binding="{Binding ContextPanel}" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></Border.Style>
-             <DockPanel>
-              <Button DockPanel.Dock="Right" Content="{loc:T Common_Close}" Command="{Binding CloseContextPanelCommand}" Style="{StaticResource GhostButton}" VerticalAlignment="Top" Margin="8,0,0,0"/>
-              <ScrollViewer VerticalScrollBarVisibility="Auto"><ContentControl Content="{Binding ContextPanel}"/></ScrollViewer>
-             </DockPanel>
-            </Border>
-<Border Padding="8"><Border.Style><Style TargetType="Border" BasedOn="{StaticResource Card}"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding ContextPanel}" Value="{x:Null}"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></Border.Style><DockPanel>            <Border DockPanel.Dock="Top" Padding="0,0,0,6">
+            <Grid x:Name="RegisterWorkspace" layout:PanelHeights.Key="register"><Grid.RowDefinitions><RowDefinition Height="58*"/><RowDefinition Height="12"/><RowDefinition Height="42*" MinHeight="{DynamicResource RegisterCartMinimumHeight}"/></Grid.RowDefinitions><GridSplitter Grid.Row="1" Style="{StaticResource HeightDivider}"/>
+<Border Padding="8" Style="{StaticResource Card}"><DockPanel>            <Border DockPanel.Dock="Top" Padding="0,0,0,6">
               <DockPanel>
-            <WrapPanel DockPanel.Dock="Right" Margin="0,0,0,10">
+            <WrapPanel DockPanel.Dock="Right" Margin="0,0,0,10"><ComboBox ItemsSource="{Binding CatalogKinds}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding CatalogKind}" MinWidth="120" Margin="0,0,6,0" Visibility="{Binding IsPharmacy,Converter={StaticResource InverseBoolToVis}}"/><ComboBox ItemsSource="{Binding RegisterSorts}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding RegisterSort}" MinWidth="120" Margin="0,0,6,0"/>
                 <Button Content="{loc:T Pos_Cards}" FontSize="{DynamicResource RegisterTileTextSize}" ContentTemplate="{StaticResource ButtonCaption}" Command="{Binding ShowCardsCommand}" Margin="0,0,6,0"><Button.Style><Style TargetType="Button" BasedOn="{StaticResource GhostButton}"><Style.Triggers><MultiDataTrigger><MultiDataTrigger.Conditions><Condition Binding="{Binding RegisterList}" Value="False"/><Condition Binding="{Binding IsEnabled,RelativeSource={RelativeSource Self}}" Value="True"/></MultiDataTrigger.Conditions><Setter Property="Background" Value="{StaticResource AccentBrush}"/><Setter Property="Foreground" Value="White"/></MultiDataTrigger></Style.Triggers></Style></Button.Style></Button>
                 <Button Content="{loc:T Pos_List}" FontSize="{DynamicResource RegisterTileTextSize}" ContentTemplate="{StaticResource ButtonCaption}" Command="{Binding ShowListCommand}"><Button.Style><Style TargetType="Button" BasedOn="{StaticResource GhostButton}"><Style.Triggers><MultiDataTrigger><MultiDataTrigger.Conditions><Condition Binding="{Binding RegisterList}" Value="True"/><Condition Binding="{Binding IsEnabled,RelativeSource={RelativeSource Self}}" Value="True"/></MultiDataTrigger.Conditions><Setter Property="Background" Value="{StaticResource AccentBrush}"/><Setter Property="Foreground" Value="White"/></MultiDataTrigger></Style.Triggers></Style></Button.Style></Button>
             </WrapPanel>
@@ -334,15 +325,32 @@
                             </Button>
                         </WrapPanel>
                         <Grid Background="White" ClipToBounds="True">
-                        <DataGrid layout:TableLayout.Key="register-cart-keyboard" x:Name="CartTable" ItemsSource="{Binding Lines}" SelectedItem="{Binding SelectedCartLine}" VerticalAlignment="Stretch" Margin="0">
+                        <DataGrid layout:TableLayout.Key="register-cart-retail-kinds" x:Name="CartTable" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.VerticalScrollBarVisibility="Auto" RowDetailsVisibilityMode="Visible" ItemsSource="{Binding Lines}" SelectedItem="{Binding SelectedCartLine}" VerticalAlignment="Stretch" Margin="0">
+                        <DataGrid.RowStyle><Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}"><Setter Property="DetailsVisibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsFinancialService}" Value="True"><Setter Property="DetailsVisibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></DataGrid.RowStyle>
+                        <DataGrid.RowDetailsTemplate><DataTemplate>
+                          <UniformGrid Columns="3" Margin="10" Visibility="{Binding IsFinancialService,Converter={StaticResource BoolToVis}}">
+                            <StackPanel Margin="5"><TextBlock Text="{loc:T Service_Provider}"/><ComboBox ItemsSource="{Binding ServiceProviders}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding SelectedServiceProviderId}" AutomationProperties.Name="{loc:T Service_Provider}"/></StackPanel>
+                            <StackPanel Margin="5" Visibility="{Binding IsPackageService,Converter={StaticResource BoolToVis}}"><TextBlock Text="{loc:T Service_PackageName}"/><ComboBox ItemsSource="{Binding ServicePackages}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding SelectedServicePackageId}" AutomationProperties.Name="{loc:T Service_PackageName}"/></StackPanel>
+                            <StackPanel Margin="5"><TextBlock Text="{loc:T Retail_Recipient}"/><TextBox Text="{Binding ServiceRecipient,UpdateSourceTrigger=PropertyChanged}" MaxLength="60" AutomationProperties.Name="{loc:T Retail_Recipient}"/></StackPanel>
+                            <StackPanel Margin="5" Visibility="{Binding IsPackageService,Converter={StaticResource InverseBoolToVis}}"><TextBlock Text="{loc:T Service_CustomerFee}"/><TextBox Text="{Binding ServiceFeeText,UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:T Service_CustomerFee}"/></StackPanel>
+                            <StackPanel Margin="5"><TextBlock Text="{loc:T Service_Reference}"/><TextBox Text="{Binding ServiceReference,UpdateSourceTrigger=PropertyChanged}" MaxLength="80" AutomationProperties.Name="{loc:T Service_Reference}"/></StackPanel>
+                            <StackPanel Margin="5"><TextBlock Text="{loc:T Products_Status}"/><ComboBox ItemsSource="{Binding ServiceStates}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding ServiceStatus}" AutomationProperties.Name="{loc:T Products_Status}"/></StackPanel>
+                            <CheckBox Margin="5" IsChecked="{Binding ServiceExternallyConfirmed}"><TextBlock Text="{loc:T Service_ExternalConfirmed}" TextWrapping="Wrap"/></CheckBox>
+                          </UniformGrid>
+                        </DataTemplate></DataGrid.RowDetailsTemplate>
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="{loc:T Pos_Product}" Width="3.2*" MinWidth="82">
-                              <DataGridTemplateColumn.CellTemplate><DataTemplate><Grid>
+                              <DataGridTemplateColumn.CellTemplate><DataTemplate><StackPanel><Grid>
                                 <TextBlock Text="{Binding Name}" FontFamily="{Binding Name,Converter={StaticResource ProductTextFont}}" Style="{StaticResource TableName}" Visibility="{Binding NeedsName,Converter={StaticResource InverseBoolToVis}}"/>
                                 <TextBox Text="{Binding NameText,UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding NeedsName,Converter={StaticResource BoolToVis}}" Style="{StaticResource TableInput}" AutomationProperties.Name="{loc:T Products_Name}"/>
-                              </Grid></DataTemplate></DataGridTemplateColumn.CellTemplate>
+                              </Grid>
+                              <StackPanel Visibility="{Binding IsDigital,Converter={StaticResource BoolToVis}}" Margin="0,5,0,0">
+                                <ComboBox ItemsSource="{Binding ServiceTypes}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding SelectedServiceType}" AutomationProperties.Name="{loc:T Service_Type}"/>
+
+                              </StackPanel>
+                              </StackPanel></DataTemplate></DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="{loc:T Pos_Qty}" Width=".8*" MinWidth="55">
+                            <DataGridTemplateColumn Header="{loc:T Pos_Qty}" Width=".8*" MinWidth="80">
                               <DataGridTemplateColumn.CellTemplate><DataTemplate>
                                 <StackPanel><TextBox Tag="quantity" PreviewKeyDown="CartEditorKey" LostKeyboardFocus="CommitQuantity" Text="{Binding Quantity,UpdateSourceTrigger=Explicit,StringFormat={}{0:0.###}}" Style="{StaticResource TableInput}" ToolTip="{Binding EditError}" AutomationProperties.Name="{loc:T Pos_Qty}"/><TextBlock Text="{Binding EditError}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" Visibility="{Binding EditError,Converter={StaticResource StrToVis}}"/></StackPanel>
                               </DataTemplate></DataGridTemplateColumn.CellTemplate>
@@ -371,6 +379,10 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
+                            <DataGridTemplateColumn x:Name="RetailKindColumn" Header="{loc:T Retail_Kind}" Width="1.3*" MinWidth="145"><DataGridTemplateColumn.CellTemplate><DataTemplate><Grid>
+                              <TextBlock Text="{Binding ProductKindName}" Visibility="{Binding CanChooseKind,Converter={StaticResource InverseBoolToVis}}"/>
+                              <ComboBox ItemsSource="{Binding ProductKinds}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding ProductKind}" Visibility="{Binding CanChooseKind,Converter={StaticResource BoolToVis}}"/>
+                            </Grid></DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
                             <DataGridTemplateColumn x:Name="PendingTaxColumn" Visibility="Collapsed" Header="{loc:T Products_Vat}" Width=".8*" MinWidth="62"><DataGridTemplateColumn.CellTemplate><DataTemplate><TextBox Text="{Binding TaxText,UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding NeedsTax,Converter={StaticResource BoolToVis}}" Style="{StaticResource TableInput}" AutomationProperties.Name="{loc:T Products_Vat}"/></DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
                             <DataGridTextColumn Header="{loc:T Pos_LineTotal}" Binding="{Binding LineTotalText}" MinWidth="64" Width="1.55*" IsReadOnly="True"
                                                 ElementStyle="{StaticResource TableMoney}" />
@@ -510,11 +522,11 @@
 
                         <StackPanel Visibility="{Binding IsCash, Converter={StaticResource BoolToVis}}">
                             <TextBlock x:Name="TenderedLabel" Text="{loc:T Pos_Tendered}" Style="{StaticResource FormLabel}" Margin="0,0,0,6" />
-                            <TextBox x:Name="CashAmountInput" FlowDirection="LeftToRight" Text="{Binding Tendered, UpdateSourceTrigger=PropertyChanged}" FontSize="{DynamicResource TextSize20}"
+                            <TextBox x:Name="CashAmountInput" IsEnabled="{Binding IsCashCollection}" FlowDirection="LeftToRight" Text="{Binding Tendered, UpdateSourceTrigger=PropertyChanged}" FontSize="{DynamicResource TextSize20}"
                                      AutomationProperties.LabeledBy="{Binding ElementName=TenderedLabel}" />
                             <Grid Margin="0,14,0,0">
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                                <TextBlock Text="{loc:T Pos_Change}" Style="{StaticResource Muted}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                                <TextBlock Text="{Binding CashChangeLabel}" Style="{StaticResource Muted}" VerticalAlignment="Center" Margin="0,0,12,0" />
                                 <Viewbox Grid.Column="1" Style="{StaticResource FitAmount}">
                                     <TextBlock Text="{Binding ChangeText}" Style="{StaticResource Money}" FontSize="{DynamicResource TextSize22}" FlowDirection="LeftToRight" />
                                 </Viewbox>

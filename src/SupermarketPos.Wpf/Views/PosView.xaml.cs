@@ -165,7 +165,7 @@ public partial class PosView : UserControl
             _activeModel = DataContext as PosViewModel;
             if(_activeModel is not null){_activeModel.PropertyChanged+=ModelChanged;_activeModel.ManualProductAdded+=ManualProductAdded;_activeModel.CustomerSelectionClosed+=FocusSearch;}
             ModelChanged(this,new(nameof(PosViewModel.ShowPendingTax)));
-            RegisterLocationsColumn.Visibility=_activeModel?.IsPharmacy==true?Visibility.Visible:Visibility.Collapsed;
+            RegisterLocationsColumn.Visibility=_activeModel?.IsPharmacy==true?Visibility.Visible:Visibility.Collapsed;RetailKindColumn.Visibility=_activeModel?.IsPharmacy==true?Visibility.Collapsed:Visibility.Visible;
             _activeModel?.SetRegisterActive(true);
             FocusSearch();
         };

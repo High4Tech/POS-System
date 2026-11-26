@@ -19,7 +19,7 @@ internal static class Shortcuts
     private static readonly (string Screen, string Label)[] Pages =
     [
         ("pos", "Nav_Pos"), ("customers", "Nav_Customers"), ("products", "Nav_Products"),
-        ("purchases", "Nav_Purchases"), ("reports", "Nav_Reports"), ("settings", "Nav_Settings"), ("dashboard", "Nav_Dashboard")
+        ("purchases", "Nav_Purchases"), ("reports", "Nav_Reports"), ("settings", "Nav_Settings"), ("dashboard", "Nav_Dashboard"), ("digital","Service_Title")
     ];
 
     internal sealed record ReferenceRow(string Shortcut, string Action, string Page, string? Availability);
@@ -135,6 +135,7 @@ internal static class Shortcuts
         yield return new(Key.D5,alt,"Nav_Reports",Run(shell.ShowReportsCommand));
         yield return new(Key.D6,alt,"Nav_Customers",Run(shell.ShowCustomersCommand));
         yield return new(Key.D7,alt,"Nav_Settings",Run(shell.ShowSettingsCommand));
+        if(shell.DigitalServicesVisible)yield return new(Key.D8,alt,"Service_Title",Run(shell.ShowDigitalServicesCommand));
         if(window.FindName("MoreButton") is Button more)
             yield return new(Key.M,alt,"Common_More",()=>more.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)));
         if (shell.CanManageStock && !shell.IsReadOnly && (page is ProductsViewModel { IsEditorOpen: true } || reference && screen == "products"))

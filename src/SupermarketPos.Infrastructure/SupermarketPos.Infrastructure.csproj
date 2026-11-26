@@ -26,5 +26,8 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <EmbeddedResource Include="..\..\assets\fonts\*.ttf" LogicalName="SupermarketPos.Fonts.%(Filename)%(Extension)" />
     <EmbeddedResource Include="..\..\assets\catalogs\DRAP_Complete_Medicine_Database.csv" LogicalName="SupermarketPos.Catalogs.DRAP.csv" Condition="'$(CommercialBuild)' != 'true' Or '$(MedicineCatalogRedistributionApproved)' == 'true'" />
+    <EmbeddedResource Include="..\..\assets\catalogs\tech-retail\finance-v3.sqlite" LogicalName="SupermarketPos.Catalogs.Tech.Finance.sqlite" />
+    <EmbeddedResource Include="..\..\assets\catalogs\tech-retail\hardware-v6.sqlite" LogicalName="SupermarketPos.Catalogs.Tech.Hardware.sqlite" />
+    <EmbeddedResource Include="..\..\assets\catalogs\tech-retail\logos\**\*.png" LogicalName="SupermarketPos.Catalogs.Tech.Logos.%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

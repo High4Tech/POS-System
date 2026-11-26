@@ -39,7 +39,7 @@ public partial class BusinessSettingsWindow : Window
     private async Task LoadAsync()
     {
         _auth.RequireAdmin();_profile=(await _setup.LoadAsync()).Profile; Tabs.Items.Clear();
-        ProfileTab();FeaturesTab(); if(_profile.Registered){FbrTab(); await TaxTab();} InvoiceTab(); LicenseTab(); UpdatesTab(); StorageTab(); SupportTab();
+        ProfileTab();FeaturesTab(); if(_profile.Registered){FbrTab(); await TaxTab();} InvoiceTab(); if(!RetailTestEdition.Enabled){LicenseTab();UpdatesTab();} StorageTab(); SupportTab();
         if(_profile.IsPharmacy)await CatalogTab();
         if(_profile.DigitalWalletAvailable||_profile.MobileRechargeAvailable)
             Tab("Service_Config",new DigitalServicesView(Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<DigitalServiceLedger>(_provider),_setup,Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ReceiptPreviewDialog>(_provider),configuration:true));
@@ -71,7 +71,7 @@ public partial class BusinessSettingsWindow : Window
             return Task.CompletedTask;
         }),"GhostButton"));
         f.Add("",BusinessForm.Button("Profile_Save",async(_,_)=>await Run(SaveProfile)));
-        f.Add("",BusinessForm.Button("Setup_Restart",async(_,_)=>await Run(async()=>
+        if(!RetailTestEdition.Enabled)f.Add("",BusinessForm.Button("Setup_Restart",async(_,_)=>await Run(async()=>
         {
             await _setup.RestartAsync();
             var wizard=Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<OnboardingWindow>(_provider);

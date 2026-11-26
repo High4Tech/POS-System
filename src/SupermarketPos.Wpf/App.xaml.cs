@@ -74,7 +74,9 @@ public partial class App : System.Windows.Application
             if (!setup.Completed || activationRequired)
             {
                 ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                var wizard = _provider.GetRequiredService<OnboardingWindow>();
+                Window wizard = RetailTestEdition.Enabled
+                    ? new RetailTestSetupWindow(_provider.GetRequiredService<IBusinessSetup>(),_provider.GetRequiredService<IAuthService>(),storage)
+                    : _provider.GetRequiredService<OnboardingWindow>();
                 if (wizard.ShowDialog() != true) { Shutdown(); return; }
                 current = await settings.GetAsync();
                 LocalizationManager.Instance.SetLanguage(current.Language);

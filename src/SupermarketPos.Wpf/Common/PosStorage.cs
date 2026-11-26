@@ -25,8 +25,8 @@ public sealed class PosStorage
     private static string DataDirectory()
     {
         var configuredDirectory = AppContext.GetData("SupermarketPos.DataDirectory") as string;
-        var directory = configuredDirectory ?? Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SupermarketPos");
+        var directory = configuredDirectory ?? (RetailTestEdition.Enabled?RetailTestEdition.DefaultDataDirectory:Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SupermarketPos"));
         if (!Path.IsPathFullyQualified(directory))
             throw new InvalidOperationException("The POS data folder must be an absolute path.");
 

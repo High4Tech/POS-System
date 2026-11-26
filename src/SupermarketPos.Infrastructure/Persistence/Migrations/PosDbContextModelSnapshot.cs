@@ -440,6 +440,10 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("CatalogKey")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("Commission")
                         .HasColumnType("TEXT");
 
@@ -499,6 +503,17 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CatalogKey")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("INTEGER");
 
@@ -520,6 +535,13 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(true);
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("labeled");
 
                     b.Property<decimal>("LegacyStockQuantity")
                         .HasColumnType("TEXT")
@@ -547,9 +569,10 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.Property<decimal?>("MinimumStock")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Brand").IsRequired().HasColumnType("TEXT");
-                    b.Property<string>("Model").IsRequired().HasColumnType("TEXT");
-                    b.Property<string>("Sku").IsRequired().HasColumnType("TEXT");
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -573,6 +596,9 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValue("box");
 
+                    b.Property<bool>("QuickEntry")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("RequiresDispensingReference")
                         .HasColumnType("INTEGER");
 
@@ -587,6 +613,23 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
 
                     b.Property<bool>("SellingUnitConfigured")
                         .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ServicePackageId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ServiceProviderId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("SERVICE");
+
+                    b.Property<string>("Sku")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("StockRevision")
                         .IsConcurrencyToken()
@@ -637,6 +680,10 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Barcode")
                         .IsUnique();
+
+                    b.HasIndex("CatalogKey")
+                        .IsUnique()
+                        .HasFilter("\"CatalogKey\" <> ''");
 
                     b.HasIndex("CategoryId");
 
@@ -1151,6 +1198,10 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("AllowedTypes")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CatalogKey")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

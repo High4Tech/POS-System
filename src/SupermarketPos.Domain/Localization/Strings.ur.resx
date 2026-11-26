@@ -1171,4 +1171,40 @@
 <data name="Tech_Model"><value>ماڈل</value></data>
 <data name="Tech_Sku"><value>اسٹاک کوڈ</value></data>
   <data name="Features_CatalogImages" xml:space="preserve"><value>مصنوعات اور زمروں کی تصاویر دکھائیں</value></data>
+  <data name="Retail_InvalidKind" xml:space="preserve"><value>مصنوعات کی درست قسم منتخب کریں۔ ڈیجیٹل خدمات کا مادی اسٹاک نہیں ہوتا۔</value></data>
+  <data name="Retail_ServiceCheckoutRequired" xml:space="preserve"><value>ادائیگی سے پہلے خدمت کی تفصیلات مکمل کریں۔</value></data>
+  <data name="Retail_Only" xml:space="preserve"><value>اس عمل کے لیے ریٹیل مصنوعات کا صفحہ استعمال کریں۔</value></data>
+  <data name="Retail_EnterPrice" xml:space="preserve"><value>صفر سے زیادہ درست فروخت کی قیمت درج کریں۔</value></data>
+  <data name="Retail_ServiceCashOnly" xml:space="preserve"><value>مالی خدمات کی ادائیگی نقد ہوتی ہے۔ نقد ادائیگی منتخب کریں۔</value></data>
+  <data name="Retail_OneService" xml:space="preserve"><value>ہر خدمت کی قطار میں ایک لین دین رکھیں۔ دوسرے وصول کنندہ کے لیے نئی قطار شامل کریں۔</value></data>
+  <data name="Retail_RecipientRequired" xml:space="preserve"><value>وصول کنندہ کا فون یا اکاؤنٹ نمبر درج کریں۔</value></data>
+  <data name="Retail_Kind" xml:space="preserve"><value>قسم</value></data>
+  <data name="Retail_all" xml:space="preserve"><value>تمام اقسام</value></data>
+  <data name="Retail_labeled" xml:space="preserve"><value>لیبل والی مصنوعات</value></data>
+  <data name="Retail_loose" xml:space="preserve"><value>کھلی مصنوعات</value></data>
+  <data name="Retail_digital" xml:space="preserve"><value>ڈیجیٹل مصنوعات</value></data>
+  <data name="Retail_Sort_name" xml:space="preserve"><value>نام کے مطابق</value></data>
+  <data name="Retail_Sort_recent" xml:space="preserve"><value>حال ہی میں شامل</value></data>
+  <data name="Retail_Sort_price" xml:space="preserve"><value>قیمت: کم سے زیادہ</value></data>
+  <data name="Retail_AddNamed" xml:space="preserve"><value>“{0}” شامل کریں</value></data>
+  <data name="Retail_Templates" xml:space="preserve"><value>پاکستان کیٹلاگ ٹیمپلیٹس</value></data>
+  <data name="Retail_Models" xml:space="preserve"><value>آلات اور لوازمات</value></data>
+  <data name="Retail_SearchTemplate" xml:space="preserve"><value>حوالہ کیٹلاگ میں تلاش کریں</value></data>
+  <data name="Retail_UseTemplate" xml:space="preserve"><value>منتخب ٹیمپلیٹ استعمال کریں</value></data>
+  <data name="Retail_ReferencePrice" xml:space="preserve"><value>حوالہ قیمت — اپنی دکان کی قیمت کی تصدیق کریں</value></data>
+  <data name="Retail_VerifyPackage" xml:space="preserve"><value>میں نے موجودہ پیکیج، اہلیت اور دکان کی قیمت کی تصدیق کر لی ہے۔</value></data>
+  <data name="Retail_SelectNetwork" xml:space="preserve"><value>نیٹ ورک منتخب کریں</value></data>
+  <data name="Retail_NewService" xml:space="preserve"><value>خدمت شامل کریں</value></data>
+  <data name="Retail_Recipient" xml:space="preserve"><value>وصول کنندہ کا فون / اکاؤنٹ</value></data>
+  <data name="Retail_CategoryTemplate" xml:space="preserve"><value>زمروں کا ٹیمپلیٹ شامل کریں</value></data>
+  <data name="Retail_NoTemplate" xml:space="preserve"><value>کوئی حوالہ ٹیمپلیٹ نہیں</value></data>
+  <data name="Retail_PakistanTemplate" xml:space="preserve"><value>پاکستان ٹیک ریٹیل — آلات، بینک، والٹ اور موبائل پیکیجز</value></data>
+  <data name="Service_SERVICE" xml:space="preserve"><value>خدمت / فیس</value></data>
+  <data name="Service_TRANSFER" xml:space="preserve"><value>بینک / والٹ منتقلی</value></data>
+  <data name="Service_Catalog" xml:space="preserve"><value>خدمات کا کیٹلاگ</value></data>
+  <data name="Trial_Title" xml:space="preserve"><value>ہائی فور ٹیک پی او ایس ٹیسٹ کی ترتیب</value></data>
+  <data name="Trial_LocalOnly" xml:space="preserve"><value>الگ ٹیک ریٹیل ٹیسٹ اسٹور۔ مقامی صارف نام اور پاس ورڈ بنائیں؛ کلاؤڈ اکاؤنٹ یا ایکٹیویشن درکار نہیں۔</value></data>
+  <data name="Trial_Create" xml:space="preserve"><value>ٹیسٹ اسٹور بنائیں</value></data>
+  <data name="Trial_Start" xml:space="preserve"><value>ٹیسٹ اسٹور کھولیں</value></data>
+  <data name="Retail_CashPayout" xml:space="preserve"><value>ادا کی جانے والی نقد رقم</value></data>
 </root>

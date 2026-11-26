@@ -14,6 +14,7 @@ public sealed class UnitOfWork : IUnitOfWork
 
     public async Task<T> ExecuteInTransactionAsync<T>(Func<CancellationToken, Task<T>> work, CancellationToken ct = default)
     {
+        if(_db.Database.CurrentTransaction is not null)return await work(ct);
         // Use the execution strategy so the whole unit retries/rolls back as one.
         var strategy = _db.Database.CreateExecutionStrategy();
         return await strategy.ExecuteAsync(async () =>

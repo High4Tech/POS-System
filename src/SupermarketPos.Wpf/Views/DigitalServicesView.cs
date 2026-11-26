@@ -11,7 +11,7 @@ using SupermarketPos.Wpf.Common;
 using SupermarketPos.Wpf.Localization;
 
 namespace SupermarketPos.Wpf.Views;
-public sealed class DigitalServicesView : UserControl
+public sealed partial class DigitalServicesView : UserControl
 {
     private readonly DigitalServiceLedger _ledger;private readonly IBusinessSetup _setup;private readonly ReceiptPreviewDialog _receipts;
     private readonly ContentControl _page=new();private readonly TextBlock _status=new(){TextWrapping=TextWrapping.Wrap};
@@ -20,9 +20,9 @@ public sealed class DigitalServicesView : UserControl
     public bool HasDraft{get;private set;}
     public void ChooseType(string? type){if(type is not ("LOAD" or "PACKAGE"))return;if(HasDraft&&_entry.Type!=type){_status.Text=T("Service_FinishDraft");return;}_entry.Type=type;if(IsLoaded)Record();}
     private static string T(string key)=>LocalizationManager.Instance[key];
-    public DigitalServicesView(DigitalServiceLedger ledger,IBusinessSetup setup,ReceiptPreviewDialog receipts,bool configuration=false)
+    public DigitalServicesView(DigitalServiceLedger ledger,IBusinessSetup setup,ReceiptPreviewDialog receipts,bool configuration=false,RetailInventory? inventory=null,RetailReferenceCatalog? references=null,IProductRepository? products=null)
     {
-        _ledger=ledger;_setup=setup;_receipts=receipts;var root=new DockPanel{Margin=new Thickness(4)};
+        _ledger=ledger;_setup=setup;_receipts=receipts;_retailInventory=inventory;_references=references;_products=products;var root=new DockPanel{Margin=new Thickness(4)};
         if(configuration)
         {
             var nav=new WrapPanel();foreach(var key in new[]{"Providers","Packages"})nav.Children.Add(BusinessForm.Button("Service_"+key,async(_,_)=>await Run(async()=>{await LoadAsync();await ShowAsync(key);}),"GhostButton"));DockPanel.SetDock(nav,Dock.Top);root.Children.Add(nav);
@@ -30,18 +30,18 @@ public sealed class DigitalServicesView : UserControl
         else
         {
             var more=new Button{Content="⋯",ToolTip=T("Service_History")+" / "+T("Service_Reports"),HorizontalAlignment=HorizontalAlignment.Right,VerticalAlignment=VerticalAlignment.Top,Padding=new Thickness(6,0,6,0)};
-            more.SetResourceReference(StyleProperty,"GhostButton");var menu=new ContextMenu();foreach(var key in new[]{"Record","History","Reports"})
+            more.SetResourceReference(StyleProperty,"GhostButton");var menu=new ContextMenu();foreach(var key in new[]{"Catalog","Record","Providers","Packages","History","Reports"})
             {var item=new MenuItem{Header=T("Service_"+key)};item.Click+=async(_,_)=>await Run(async()=>{await LoadAsync();await ShowAsync(key);});menu.Items.Add(item);}
             more.ContextMenu=menu;more.Click+=(_,_)=>{menu.PlacementTarget=more;menu.IsOpen=true;};DockPanel.SetDock(more,Dock.Right);root.Children.Add(more);
         }
         DockPanel.SetDock(_status,Dock.Bottom);root.Children.Add(_status);root.Children.Add(new ScrollViewer{Content=_page,VerticalScrollBarVisibility=ScrollBarVisibility.Auto});Content=root;
-        Loaded+=async(_,_)=>await Run(async()=>{await LoadAsync();await ShowAsync(configuration?"Providers":"Record");});
+        Loaded+=async(_,_)=>await Run(async()=>{await LoadAsync();await ShowAsync(configuration?"Providers":_retailInventory is null?"Record":"Catalog");});
     }
     private async Task LoadAsync(){_business=(await _setup.LoadAsync()).Profile;_providers=await _ledger.ProvidersAsync();_packages=await _ledger.PackagesAsync();_history=await _ledger.HistoryAsync();}
     private async Task ShowAsync(string page)
     {
         if(_business.IsPharmacy){_page.Content=BusinessForm.Label("Service_Disabled");return;}
-        switch(page){case "Record":Record();break;case "Providers":Providers();break;case "Packages":Packages();break;case "History":await HistoryAsync();break;case "Reports":await ReportsAsync();break;}
+        switch(page){case "Catalog":await CatalogAsync();break;case "Record":Record();break;case "Providers":Providers();break;case "Packages":Packages();break;case "History":await HistoryAsync();break;case "Reports":await ReportsAsync();break;}
     }
     private ComboBox ProviderSelect(BusinessForm f,int selected,Action<int> changed)
     {
@@ -52,7 +52,7 @@ public sealed class DigitalServicesView : UserControl
     private void Record()
     {
         var panel=new StackPanel();var types=new WrapPanel();
-        var allowed=new List<string>();if(_business.DigitalWalletAvailable)allowed.AddRange(["CASHIN","CASHOUT"]);if(_business.MobileRechargeAvailable)allowed.AddRange(["LOAD","PACKAGE"]);
+        var allowed=new List<string>();if(_business.DigitalWalletAvailable)allowed.AddRange(["CASHIN","CASHOUT","TRANSFER"]);if(_business.MobileRechargeAvailable)allowed.AddRange(["LOAD","PACKAGE"]);
         if(allowed.Count==0){_page.Content=BusinessForm.Label("Service_Disabled");return;}
         if(!allowed.Contains(_entry.Type))_entry.Type=allowed[0];
         foreach(var code in allowed)types.Children.Add(BusinessForm.Button("Service_"+code,(_,_)=>{_entry.ClearConfirmation();_entry.Type=code;_entry.PackageId=null;Record();},code==_entry.Type?"PrimaryButton":"GhostButton"));
@@ -65,7 +65,7 @@ public sealed class DigitalServicesView : UserControl
             var provider=new ComboBox{ItemsSource=providers,DisplayMemberPath="Name",SelectedValuePath="Id",SelectedValue=_entry.ProviderId};
             provider.SelectionChanged+=(_,_)=>{if(provider.SelectedItem is ServiceProviderAccount p){_entry.ClearConfirmation();_entry.ProviderId=p.Id;Record();}};
             f.Add("Service_Provider",provider);f.Text("Measure_Amount",_entry,nameof(_entry.Principal),true);
-            if(_entry.Type=="LOAD")f.Text("Customer_Phone",_entry,nameof(_entry.Phone),true,60);
+            if(_entry.Type is "LOAD" or "TRANSFER" or "CASHIN" or "CASHOUT")f.Text(_entry.Type=="TRANSFER"?"Retail_Recipient":"Customer_Phone",_entry,nameof(_entry.Phone),true,60);
             var summary=new TextBlock{TextWrapping=TextWrapping.Wrap,Margin=new Thickness(6)};
             void Quote(){try{var p=providers.SingleOrDefault(p=>p.Id==_entry.ProviderId);summary.Text=p is null?T("Service_SelectProvider"):Summary(DigitalServiceLedger.ProviderQuote(p,_entry.Type,N(_entry.Principal)));}catch{summary.Text=T("Service_InvalidAmount");}}
             f.FieldEdited+=_=>{_entry.ClearConfirmation();HasDraft=true;Quote();};Quote();panel.Children.Add(f);panel.Children.Add(summary);
@@ -76,15 +76,17 @@ public sealed class DigitalServicesView : UserControl
     private void PackageCatalog(StackPanel panel)
     {
         var providers=_providers.Where(p=>p.IsActive&&p.AllowedTypes.Split(',').Contains("PACKAGE")).ToArray();
-        var names=new[]{"Jazz","Zong","Ufone","Telenor"}.Concat(providers.Select(p=>p.Name)).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-        if(_network.Length==0)_network=providers.FirstOrDefault()?.Name??names[0];
-        var networks=new WrapPanel();foreach(var name in names)
+        var names=providers.Select(p=>p.Name).Distinct(StringComparer.OrdinalIgnoreCase).Order().ToArray();
+        if(!names.Contains(_network))_network=names.FirstOrDefault()??"";
+        var networks=new ComboBox{ItemsSource=names,SelectedItem=_network,Margin=new Thickness(4),MinWidth=220,HorizontalAlignment=HorizontalAlignment.Left};
+        var networkLabel=BusinessForm.Label("Retail_SelectNetwork");panel.Children.Add(networkLabel);panel.Children.Add(networks);
+        networks.SelectionChanged+=(_,_)=>{_entry.ClearConfirmation();_network=(string?)networks.SelectedItem??"";_entry.PackageId=null;Record();};
+        var accounts=new StackPanel{Orientation=Orientation.Horizontal,Margin=new Thickness(4,8,4,8)};
+        foreach(var account in new[]{"Prepaid","Postpaid"})
         {
-            var button=new Button{Content=name,Margin=new Thickness(4)};button.SetResourceReference(StyleProperty,name.Equals(_network,StringComparison.OrdinalIgnoreCase)?"PrimaryButton":"GhostButton");
-            button.Click+=(_,_)=>{_entry.ClearConfirmation();_network=name;_entry.PackageId=null;Record();};networks.Children.Add(button);
+            var radio=new RadioButton{Content=T("Service_"+account),GroupName=_accountGroup,IsChecked=_accountType==account,Margin=new Thickness(0,0,18,0)};
+            radio.Checked+=(_,_)=>{_entry.ClearConfirmation();_accountType=account;_entry.PackageId=null;Record();};accounts.Children.Add(radio);
         }
-        panel.Children.Add(networks);var accounts=new WrapPanel();
-        foreach(var account in new[]{"Prepaid","Postpaid"})accounts.Children.Add(BusinessForm.Button("Service_"+account,(_,_)=>{_entry.ClearConfirmation();_accountType=account;_entry.PackageId=null;Record();},_accountType==account?"PrimaryButton":"GhostButton"));
         panel.Children.Add(accounts);
         var provider=providers.SingleOrDefault(p=>p.Name.Equals(_network,StringComparison.OrdinalIgnoreCase));_entry.ProviderId=provider?.Id??0;
         var packages=_packages.Where(p=>p.ProviderId==_entry.ProviderId&&p.IsActive&&p.AccountType==_accountType).ToArray();
@@ -173,13 +175,13 @@ public sealed class DigitalServicesView : UserControl
     {
         var panel=new StackPanel();var f=new BusinessForm();var state=new ProviderEntry();
         var pick=new ComboBox{ItemsSource=_providers,DisplayMemberPath="Name"};f.Add("Service_EditProvider",pick,true);
-        pick.SelectionChanged+=(_,_)=>{if(pick.SelectedItem is ServiceProviderAccount p){state.Id=p.Id;state.Name=p.Name;state.Opening=p.OpeningFloat.ToString(CultureInfo.InvariantCulture);state.FeePolicy=p.FeePolicy;state.CommissionPolicy=p.CommissionPolicy;state.CustomerFee=p.DefaultCustomerFee.ToString(CultureInfo.InvariantCulture);state.ProviderFee=p.DefaultProviderFee.ToString(CultureInfo.InvariantCulture);state.Commission=p.DefaultCommission.ToString(CultureInfo.InvariantCulture);state.LoadCostRate=p.LoadCostRate.ToString(CultureInfo.InvariantCulture);state.Active=p.IsActive;state.CashIn=p.AllowedTypes.Contains("CASHIN");state.CashOut=p.AllowedTypes.Contains("CASHOUT");state.Load=p.AllowedTypes.Contains("LOAD");state.Package=p.AllowedTypes.Contains("PACKAGE");foreach(var input in f.Fields.Values){if(input is TextBox t)t.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();if(input is CheckBox c)c.GetBindingExpression(CheckBox.IsCheckedProperty)?.UpdateTarget();}}};
-        f.Text("Service_Provider",state,nameof(state.Name),limit:100);f.Text("Service_OpeningFloat",state,nameof(state.Opening),true);
-        f.Check("Service_CASHIN",state,nameof(state.CashIn));f.Check("Service_CASHOUT",state,nameof(state.CashOut));f.Check("Service_LOAD",state,nameof(state.Load));f.Check("Service_PACKAGE",state,nameof(state.Package));
+        pick.SelectionChanged+=(_,_)=>{if(pick.SelectedItem is ServiceProviderAccount p){state.Id=p.Id;state.CatalogKey=p.CatalogKey;state.Name=p.Name;state.Opening=p.OpeningFloat.ToString(CultureInfo.InvariantCulture);state.FeePolicy=p.FeePolicy;state.CommissionPolicy=p.CommissionPolicy;state.CustomerFee=p.DefaultCustomerFee.ToString(CultureInfo.InvariantCulture);state.ProviderFee=p.DefaultProviderFee.ToString(CultureInfo.InvariantCulture);state.Commission=p.DefaultCommission.ToString(CultureInfo.InvariantCulture);state.LoadCostRate=p.LoadCostRate.ToString(CultureInfo.InvariantCulture);state.Active=p.IsActive;state.CashIn=p.AllowedTypes.Contains("CASHIN");state.CashOut=p.AllowedTypes.Contains("CASHOUT");state.Transfer=p.AllowedTypes.Contains("TRANSFER");state.Load=p.AllowedTypes.Contains("LOAD");state.Package=p.AllowedTypes.Contains("PACKAGE");foreach(var input in f.Fields.Values){if(input is TextBox t)t.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();if(input is CheckBox c)c.GetBindingExpression(CheckBox.IsCheckedProperty)?.UpdateTarget();}}};
+        f.Add("",BusinessForm.Button("Category_New",(_,_)=>Providers(),"GhostButton"));f.Text("Service_Provider",state,nameof(state.Name),limit:100);f.Text("Service_OpeningFloat",state,nameof(state.Opening),true);
+        f.Check("Service_CASHIN",state,nameof(state.CashIn));f.Check("Service_CASHOUT",state,nameof(state.CashOut));f.Check("Service_TRANSFER",state,nameof(state.Transfer));f.Check("Service_LOAD",state,nameof(state.Load));f.Check("Service_PACKAGE",state,nameof(state.Package));
         f.Text("Service_DefaultCustomerFee",state,nameof(state.CustomerFee),true);f.Text("Service_DefaultProviderFee",state,nameof(state.ProviderFee),true);f.Text("Service_DefaultCommission",state,nameof(state.Commission),true);f.Text("Service_LoadCostRate",state,nameof(state.LoadCostRate),true);
         f.Add("",BusinessForm.Label("Service_SettlementDefaults"),true);
         f.Text("Service_FeePolicy",state,nameof(state.FeePolicy),limit:300);f.Text("Service_CommissionPolicy",state,nameof(state.CommissionPolicy),limit:300);f.Check("Service_Active",state,nameof(state.Active));
-        f.Add("",BusinessForm.Button("Service_SaveConfig",async(_,_)=>await Run(async()=>{var types=new List<string>();if(state.CashIn)types.Add("CASHIN");if(state.CashOut)types.Add("CASHOUT");if(state.Load)types.Add("LOAD");if(state.Package)types.Add("PACKAGE");await _ledger.SaveProviderAsync(new(){Id=state.Id,Name=state.Name.Trim(),OpeningFloat=N(state.Opening),DefaultCustomerFee=N(state.CustomerFee),DefaultProviderFee=N(state.ProviderFee),DefaultCommission=N(state.Commission),LoadCostRate=N(state.LoadCostRate),AllowedTypes=string.Join(',',types),FeePolicy=state.FeePolicy,CommissionPolicy=state.CommissionPolicy,IsActive=state.Active});await LoadAsync();Providers();_status.Text=T("Settings_Saved");})),true);
+        f.Add("",BusinessForm.Button("Service_SaveConfig",async(_,_)=>await Run(async()=>{var types=new List<string>();if(state.CashIn)types.Add("CASHIN");if(state.CashOut)types.Add("CASHOUT");if(state.Transfer)types.Add("TRANSFER");if(state.Load)types.Add("LOAD");if(state.Package)types.Add("PACKAGE");await _ledger.SaveProviderAsync(new(){Id=state.Id,CatalogKey=state.CatalogKey,Name=state.Name.Trim(),OpeningFloat=N(state.Opening),DefaultCustomerFee=N(state.CustomerFee),DefaultProviderFee=N(state.ProviderFee),DefaultCommission=N(state.Commission),LoadCostRate=N(state.LoadCostRate),AllowedTypes=string.Join(',',types),FeePolicy=state.FeePolicy,CommissionPolicy=state.CommissionPolicy,IsActive=state.Active});await LoadAsync();Providers();_status.Text=T("Settings_Saved");})),true);
         f.Add("",BusinessForm.Label("Service_ProviderSuggestions"),true);panel.Children.Add(f);_page.Content=panel;
     }
     private void Packages()
@@ -189,15 +191,17 @@ public sealed class DigitalServicesView : UserControl
         provider.SetBinding(ComboBox.SelectedValueProperty,new System.Windows.Data.Binding(nameof(state.ProviderId)){Source=state,Mode=System.Windows.Data.BindingMode.TwoWay});
         f.Field("Service_Provider",nameof(state.ProviderId),provider);
         var pick=new ComboBox{ItemsSource=_packages,DisplayMemberPath="Name",IsEditable=true,IsTextSearchEnabled=false};f.Add("Service_EditPackage",pick,true);
-        f.Select("Service_AccountType",state,nameof(state.AccountType),("Prepaid","Service_Prepaid"),("Postpaid","Service_Postpaid"));
+        var accountTypes=new StackPanel{Orientation=Orientation.Horizontal};var accountGroup="edit-package-"+Guid.NewGuid().ToString("N");
+        foreach(var code in new[]{"Prepaid","Postpaid"}){var radio=new RadioButton{Tag=code,Content=T("Service_"+code),GroupName=accountGroup,IsChecked=state.AccountType==code,Margin=new Thickness(4,0,16,0)};radio.Checked+=(_,_)=>state.AccountType=code;accountTypes.Children.Add(radio);}
+        f.Field("Service_AccountType",nameof(state.AccountType),accountTypes);f.Add("",BusinessForm.Button("Category_New",(_,_)=>Packages(),"GhostButton"));
         f.Text("Service_PackageId",state,nameof(state.Identifier),limit:100);f.Text("Service_PackageName",state,nameof(state.Name),limit:150);
         f.Text("Service_Benefits",state,nameof(state.Benefits),limit:1000);f.Text("Service_Validity",state,nameof(state.Validity),limit:100);
         f.Text("Products_Price",state,nameof(state.Price),true);f.Text("Service_ProviderCost",state,nameof(state.Cost),true);f.Text("Service_Commission",state,nameof(state.Commission),true);
         f.Text("Service_CustomerFee",state,nameof(state.CustomerFee),true);f.Text("Service_ProviderFee",state,nameof(state.ProviderFee),true);f.Check("Service_Active",state,nameof(state.Active));
         pick.SelectionChanged+=(_,_)=>{if(pick.SelectedItem is MobileServicePackage p)
         {
-            state.Id=p.Id;state.ProviderId=p.ProviderId;state.Name=p.Name;state.Kind=p.Kind;state.Price=p.Price.ToString(CultureInfo.InvariantCulture);state.Cost=p.ProviderCost.ToString(CultureInfo.InvariantCulture);state.Commission=p.Commission.ToString(CultureInfo.InvariantCulture);state.Validity=p.Validity;state.Active=p.IsActive;
-            state.AccountType=p.AccountType;state.Identifier=p.PackageIdentifier;state.Benefits=p.Benefits;state.CustomerFee=p.CustomerFee.ToString(CultureInfo.InvariantCulture);state.ProviderFee=p.ProviderFee.ToString(CultureInfo.InvariantCulture);
+            state.Id=p.Id;state.CatalogKey=p.CatalogKey;state.ProviderId=p.ProviderId;state.Name=p.Name;state.Kind=p.Kind;state.Price=p.Price.ToString(CultureInfo.InvariantCulture);state.Cost=p.ProviderCost.ToString(CultureInfo.InvariantCulture);state.Commission=p.Commission.ToString(CultureInfo.InvariantCulture);state.Validity=p.Validity;state.Active=p.IsActive;
+            state.AccountType=p.AccountType;foreach(var radio in accountTypes.Children.OfType<RadioButton>())radio.IsChecked=Equals(radio.Tag,state.AccountType);state.Identifier=p.PackageIdentifier;state.Benefits=p.Benefits;state.CustomerFee=p.CustomerFee.ToString(CultureInfo.InvariantCulture);state.ProviderFee=p.ProviderFee.ToString(CultureInfo.InvariantCulture);
             foreach(var input in f.Fields.Values){if(input is TextBox t)t.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();if(input is ComboBox c)c.GetBindingExpression(ComboBox.SelectedValueProperty)?.UpdateTarget();if(input is CheckBox b)b.GetBindingExpression(CheckBox.IsCheckedProperty)?.UpdateTarget();}
         }};
         f.Add("",BusinessForm.Button("Service_SaveConfig",async(_,_)=>await Run(async()=>
@@ -209,7 +213,7 @@ public sealed class DigitalServicesView : UserControl
             foreach(var field in new[]{nameof(state.Price),nameof(state.Cost),nameof(state.Commission),nameof(state.CustomerFee),nameof(state.ProviderFee)})
             {if(!decimal.TryParse((string)typeof(PackageEntry).GetProperty(field)!.GetValue(state)!,NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,out var n)||n<0||n!=Money.Round2(n)||field==nameof(state.Price)&&n<=0)errors[field]="Service_InvalidAmount";}
             f.ShowErrors(errors,true);if(errors.Count>0)return;
-            await _ledger.SavePackageAsync(new(){Id=state.Id,ProviderId=state.ProviderId,Name=state.Name.Trim(),Kind=state.Kind,AccountType=state.AccountType,PackageIdentifier=state.Identifier.Trim(),Benefits=state.Benefits.Trim(),CustomerFee=N(state.CustomerFee),ProviderFee=N(state.ProviderFee),Price=N(state.Price),ProviderCost=N(state.Cost),Commission=N(state.Commission),Validity=state.Validity,IsActive=state.Active});
+            await _ledger.SavePackageAsync(new(){Id=state.Id,CatalogKey=state.CatalogKey,ProviderId=state.ProviderId,Name=state.Name.Trim(),Kind=state.Kind,AccountType=state.AccountType,PackageIdentifier=state.Identifier.Trim(),Benefits=state.Benefits.Trim(),CustomerFee=N(state.CustomerFee),ProviderFee=N(state.ProviderFee),Price=N(state.Price),ProviderCost=N(state.Cost),Commission=N(state.Commission),Validity=state.Validity,IsActive=state.Active});
             await LoadAsync();Packages();_status.Text=T("Settings_Saved");
         })),true);_page.Content=f;
     }
@@ -218,7 +222,7 @@ public sealed class DigitalServicesView : UserControl
         var start=from??DateTime.Today;var end=to??DateTime.Today;var f=new BusinessForm();var first=new DatePicker{SelectedDate=start};var last=new DatePicker{SelectedDate=end};f.Add("Reports_From",first);f.Add("Reports_To",last);
         f.Add("",BusinessForm.Button("Reports_Generate",async(_,_)=>await Run(()=>ReportsAsync(first.SelectedDate,last.SelectedDate))),true);
         if(end<start)throw new DomainException("Service_Invalid");var report=await _ledger.ReportAsync(start,end.AddDays(1));
-        foreach(var pair in new[]{("Service_PhysicalRevenue",report.PhysicalRevenue),("Service_LooseRevenue",report.LooseRevenue),("Service_Income",report.Income),("Service_CashChange",report.CashChange),("Service_FloatChange",report.FloatChange),("Service_CASHIN",report.CashIn),("Service_CASHOUT",report.CashOut),("Service_RechargeCollected",report.RechargeCollected),("Service_Commission",report.Commissions)})f.Add(pair.Item1,new TextBlock{Text=Money.Format(pair.Item2)});
+        foreach(var pair in new[]{("Service_PhysicalRevenue",report.PhysicalRevenue),("Service_LooseRevenue",report.LooseRevenue),("Service_Income",report.Income),("Service_CashChange",report.CashChange),("Service_FloatChange",report.FloatChange),("Service_CASHIN",report.CashIn),("Service_CASHOUT",report.CashOut),("Service_TRANSFER",report.Transfers),("Service_RechargeCollected",report.RechargeCollected),("Service_Commission",report.Commissions)})f.Add(pair.Item1,new TextBlock{Text=Money.Format(pair.Item2)});
         f.Add("Service_Pending",new TextBlock{Text=report.Pending.ToString()});f.Add("Service_FailedReversed",new TextBlock{Text=report.FailedReversed.ToString()});
         foreach(var provider in _providers)f.Add("Service_RecordedFloat",new TextBlock{Text=provider.Name+" · "+Money.Format(await _ledger.FloatAsync(provider.Id))});_page.Content=f;
     }
@@ -237,8 +241,8 @@ public sealed class DigitalServicesView : UserControl
         public Guid Key=Guid.NewGuid();public int ProviderId{get;set;}public int? PackageId{get;set;}public string Type{get;set;}="CASHIN";public string Status{get;set;}="Confirmed";public string Principal{get;set;}="0";public string CustomerFee{get;set;}="0";public string ProviderFee{get;set;}="0";public string Commission{get;set;}="0";public string Cost{get;set;}="0";public string Collected{get;set;}="0";public string FloatChange{get;set;}="0";public string Reference{get;set;}="";public string Phone{get;set;}="";public DateTime? Date{get;set;}=DateTime.Today;public string Time{get;set;}=DateTime.Now.ToString("HH:mm");public bool External{get=>_external;set{_external=value;PropertyChanged?.Invoke(this,new(nameof(External)));}}
         public void Reset(){Key=Guid.NewGuid();Reference=Phone="";Principal=CustomerFee=ProviderFee=Commission=Cost=Collected=FloatChange="0";External=false;Status="Confirmed";PackageId=null;}
     }
-    private sealed class ProviderEntry{public string CustomerFee{get;set;}="0";public string ProviderFee{get;set;}="0";public string Commission{get;set;}="0";public string LoadCostRate{get;set;}="1";public int Id;public string Name{get;set;}="";public string Opening{get;set;}="0";public string FeePolicy{get;set;}="";public string CommissionPolicy{get;set;}="";public bool Active{get;set;}=true;public bool CashIn{get;set;}=true;public bool CashOut{get;set;}=true;public bool Load{get;set;}=true;public bool Package{get;set;}=true;}
-    private sealed class PackageEntry{public string AccountType{get;set;}="Prepaid";public string Identifier{get;set;}="";public string Benefits{get;set;}="";public string CustomerFee{get;set;}="0";public string ProviderFee{get;set;}="0";public int Id;public int ProviderId{get;set;}public string Name{get;set;}="";public string Kind{get;set;}="";public string Price{get;set;}="0";public string Cost{get;set;}="0";public string Commission{get;set;}="0";public string Validity{get;set;}="";public bool Active{get;set;}=true;}
+    private sealed class ProviderEntry{public string CatalogKey="";public string CustomerFee{get;set;}="0";public string ProviderFee{get;set;}="0";public string Commission{get;set;}="0";public string LoadCostRate{get;set;}="1";public int Id;public string Name{get;set;}="";public string Opening{get;set;}="0";public string FeePolicy{get;set;}="";public string CommissionPolicy{get;set;}="";public bool Active{get;set;}=true;public bool Transfer{get;set;}=true;public bool CashIn{get;set;}=true;public bool CashOut{get;set;}=true;public bool Load{get;set;}=true;public bool Package{get;set;}=true;}
+    private sealed class PackageEntry{public string CatalogKey="";public string AccountType{get;set;}="Prepaid";public string Identifier{get;set;}="";public string Benefits{get;set;}="";public string CustomerFee{get;set;}="0";public string ProviderFee{get;set;}="0";public int Id;public int ProviderId{get;set;}public string Name{get;set;}="";public string Kind{get;set;}="";public string Price{get;set;}="0";public string Cost{get;set;}="0";public string Commission{get;set;}="0";public string Validity{get;set;}="";public bool Active{get;set;}=true;}
 }
 public sealed record ServiceHistoryRow(ServiceTransaction Transaction,ServicePosting? Posting)
 {

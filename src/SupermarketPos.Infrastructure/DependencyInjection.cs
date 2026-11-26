@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<ITradeLedger, TradeLedger>();
         services.AddScoped<IBusinessSetup, BusinessSetup>();
         services.AddScoped<DigitalServiceLedger>();
+        services.AddScoped<RetailReferenceCatalog>();services.AddScoped<RetailInventory>();services.AddScoped<RetailCheckout>();
         services.AddScoped<MedicineCatalogService>();
         services.AddScoped<PharmacyInventory>();
         services.AddScoped<StockLocationService>();services.AddScoped<IStockLocations>(p=>p.GetRequiredService<StockLocationService>());

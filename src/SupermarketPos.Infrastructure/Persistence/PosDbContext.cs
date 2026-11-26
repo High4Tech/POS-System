@@ -85,6 +85,11 @@ public sealed class PosDbContext : DbContext
 
         b.Entity<Product>(e =>
         {
+            e.Ignore(p=>p.IsFinancialService);
+            e.Property(p=>p.Kind).HasMaxLength(16).HasDefaultValue("labeled");
+            e.Property(p=>p.ServiceType).HasMaxLength(16).HasDefaultValue("SERVICE");
+            e.Property(p=>p.CatalogKey).HasMaxLength(120).HasDefaultValue("");
+            e.HasIndex(p=>p.CatalogKey).IsUnique().HasFilter("\"CatalogKey\" <> ''");
             e.Property(p=>p.StockTracked).HasDefaultValue(true).HasSentinel(true);
             e.Property(p=>p.SellingUnit).HasDefaultValue("piece");e.Property(p=>p.UnitsPerStrip).HasDefaultValue(1);e.Property(p=>p.StripSellingPrice).HasColumnType("TEXT");
             e.HasIndex(p=>p.MedicineReferenceId).IsUnique();

@@ -27,7 +27,7 @@ public static class PanelHeights
     {
         if(sender is not Grid grid||GetKey(grid) is not{} key)return;
         foreach(var splitter in grid.Children.OfType<GridSplitter>()){splitter.MouseDoubleClick-=ResetOnDoubleClick;splitter.MouseDoubleClick+=ResetOnDoubleClick;}
-        var rows=Rows(grid);foreach(var row in rows)grid.RowDefinitions[row].MinHeight=Math.Max(96,grid.RowDefinitions[row].MinHeight);if(grid.GetValue(DefaultsProperty) is null)grid.SetValue(DefaultsProperty,rows.Select(r=>grid.RowDefinitions[r].Height).ToArray());
+        var rows=Rows(grid);foreach(var row in rows)if(grid.RowDefinitions[row].MinHeight<96)grid.RowDefinitions[row].MinHeight=96;if(grid.GetValue(DefaultsProperty) is null)grid.SetValue(DefaultsProperty,rows.Select(r=>grid.RowDefinitions[r].Height).ToArray());
         if(_sizes.TryGetValue(key,out var sizes)&&sizes is not null&&sizes.Length==rows.Length&&sizes.All(s=>double.IsFinite(s)&&s>0&&s<=1))
             for(var i=0;i<rows.Length;i++)grid.RowDefinitions[rows[i]].Height=new(sizes[i],GridUnitType.Star);
     }

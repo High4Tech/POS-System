@@ -14,7 +14,8 @@ public sealed partial class PosViewModel
     private Guid _checkoutId = Guid.NewGuid();
     private sealed record Draft(Guid CheckoutId, SaleCustomer? Customer, DraftDiscount? Discount, DraftLine[] Lines);
     private sealed record DraftLine(int ProductId, decimal Quantity, string Unit, int Factor, string? MedicineUnit, bool Packaged,
-        decimal? PriceOverride, DraftDiscount? Discount);
+        decimal? PriceOverride, DraftDiscount? Discount,string? RetailKind=null,Unit? RetailUnit=null,ServiceDraft? Service=null);
+    private sealed record ServiceDraft(Guid ConfirmationId,string Type,int? Provider,int? Package,string Recipient,string Reference,string Status,string Fee);
     private sealed record DraftDiscount(decimal? Rate, decimal? Amount)
     {
         internal static DraftDiscount? From(Discount? value) => value switch
@@ -40,9 +41,11 @@ public sealed partial class PosViewModel
         }
         try
         {
-            var lines = _cart.Lines.Select(line => new DraftLine(line.Product.Id, line.Quantity, line.UnitCode,
-                line.PackageSize, line.MedicineUnit, line.IsPackage && line.MedicineUnit is null,
-                line.HasPriceOverride ? line.GrossUnitPrice : null, DraftDiscount.From(line.LineDiscount))).ToArray();
+            var lines = Lines.Select(row => new DraftLine(row.Line.Product.Id,row.Line.Quantity,row.Line.UnitCode,
+                row.Line.PackageSize,row.Line.MedicineUnit,row.Line.IsPackage&&row.Line.MedicineUnit is null,
+                row.Line.HasPriceOverride?row.Line.GrossUnitPrice:null,DraftDiscount.From(row.Line.LineDiscount),
+                IsPharmacy?null:row.ProductKind,IsPharmacy?null:row.Line.Product.Unit,
+                row.IsFinancialService?new(row.ServiceConfirmationId,row.SelectedServiceType,row.SelectedServiceProviderId,row.SelectedServicePackageId,row.ServiceRecipient,row.ServiceReference,row.ServiceStatus,row.ServiceFeeText):null)).ToArray();
             var draft = new Draft(_checkoutId, Customer.Build(), DraftDiscount.From(_cart.CartDiscount), lines);
             _draftStorage.Write(DraftName(user), JsonSerializer.Serialize(draft));
             Status = Text["Trade_DraftSaved"];
@@ -72,6 +75,11 @@ public sealed partial class PosViewModel
                     (saved.MedicineUnit is not null && !IsPharmacy) || saved.PriceOverride is not null && !user.IsAdmin ||
                     IsPharmacy && (await _stockLocations.StockAsync(product.Id)).Length > 0)
                     throw new DomainException("Trade_DraftChanged");
+                if(!IsPharmacy&&product.QuickEntry&&saved.RetailKind is{} kind)
+                {
+                    product.SetUnit(saved.RetailUnit??product.Unit);product.SetRetailKind(kind);
+                    if(saved.Service is{} service)product.ConfigureService(service.Type,service.Provider,service.Package);
+                }
                 var line = staged.AddOrIncrement(product, saved.Quantity, packaged: saved.Packaged, medicineUnit: saved.MedicineUnit, merge: false);
                 if (line.PackageSize != saved.Factor || line.UnitCode != saved.Unit || product.StockTracked &&
                     staged.Lines.Where(item => item.Product.Id == product.Id).Sum(item => item.Quantity) > product.AvailableForSale(Today))
@@ -84,12 +92,20 @@ public sealed partial class PosViewModel
             Customer.Load(draft.Customer);
             _cart.ApplyCartDiscount(draft.Discount?.Build());
             CartDiscountText = _cart.CartDiscount?.Describe();
+            var draftIndex=0;
             foreach (var item in staged.Lines)
             {
                 var line = _cart.AddOrIncrement(item.Product, item.Quantity, packaged: item.IsPackage && item.MedicineUnit is null, medicineUnit: item.MedicineUnit, merge: false);
                 if (item.HasPriceOverride) line.SetUnitPrice(item.GrossUnitPrice);
                 line.ApplyDiscount(item.LineDiscount);
-                Lines.Add(CreateCartLine(line));
+                var row=CreateCartLine(line);
+                if(!IsPharmacy&&draft.Lines[draftIndex].Service is{} savedService&&row.IsFinancialService)
+                {
+                    row.SelectedServiceType=savedService.Type;row.SelectedServiceProviderId=savedService.Provider;row.SelectedServicePackageId=savedService.Package;
+                    row.ServiceRecipient=savedService.Recipient;row.ServiceReference=savedService.Reference;row.ServiceStatus=savedService.Status;row.ServiceFeeText=savedService.Fee;
+                    row.ServiceConfirmationId=savedService.ConfirmationId;row.ServiceExternallyConfirmed=false;
+                }
+                Lines.Add(row);draftIndex++;
             }
             Recalculate();
             Status = Text["Trade_DraftResumed"];

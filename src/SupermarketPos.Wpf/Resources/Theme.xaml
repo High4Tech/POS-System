@@ -25,6 +25,7 @@
     <sys:Double x:Key="TableHeadingTextSize">16</sys:Double>
     <sys:Double x:Key="TableSecondaryTextSize">15</sys:Double>
     <sys:Double x:Key="TableRowHeight">52</sys:Double>
+    <sys:Double x:Key="RegisterCartMinimumHeight">160</sys:Double>
     <sys:Double x:Key="TableLabelHeight">46</sys:Double>
     <sys:Double x:Key="InventoryThumbnailSize">36</sys:Double>
     <sys:Double x:Key="ProductDialogWidth">836</sys:Double>

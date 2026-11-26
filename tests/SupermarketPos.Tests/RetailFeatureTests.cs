@@ -6,10 +6,10 @@ public sealed class RetailFeatureTests
     [Theory]
     [InlineData("grocery",true,true,false)] [InlineData("supermarket",true,true,false)]
     [InlineData("retail",false,true,false)] [InlineData("pharmacy",false,true,false)]
-    [InlineData("electronics",false,false,true)] [InlineData("mobile",false,true,true)] [InlineData("other",false,false,false)]
+    [InlineData("electronics",true,false,true)] [InlineData("mobile",false,true,true)] [InlineData("other",false,false,false)]
     public void StoreDefaultsAreIndependentAndCanBeOverridden(string type,bool loose,bool packs,bool recharge)
     {
-        var p=new BusinessProfile{BusinessType=type};p.ApplyBusinessDefaults();Assert.Equal(loose,p.EnableLooseGoods);Assert.Equal(packs,p.EnablePackagedUnits);Assert.Equal(recharge,p.EnableMobileRecharge);Assert.False(p.EnableDigitalWalletServices);
+        var p=new BusinessProfile{BusinessType=type};p.ApplyBusinessDefaults();Assert.Equal(loose,p.EnableLooseGoods);Assert.Equal(packs,p.EnablePackagedUnits);Assert.Equal(recharge,p.EnableMobileRecharge);Assert.Equal(type is "electronics" or "mobile",p.EnableDigitalWalletServices);
         p.EnableDigitalWalletServices=true;Assert.Equal(loose,p.EnableLooseGoods);Assert.True(p.EnableDigitalWalletServices);
         Assert.Equal(type!="pharmacy",p.DigitalWalletAvailable);
     }

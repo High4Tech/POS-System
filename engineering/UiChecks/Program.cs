@@ -56,9 +56,15 @@ internal static partial class Program
             // Check actual WPF two-way bindings, including init-only profile properties.
             var profile=new SupermarketPos.Domain.Business.BusinessProfile();var form=new BusinessForm();var input=form.Text("Settings_StoreName",profile,nameof(profile.StoreName));input.Text="Bound shop";input.GetBindingExpression(TextBox.TextProperty)!.UpdateSource();Assert(profile.StoreName=="Bound shop","Business fields bind to the saved profile");
             var screenshots=Directory.CreateDirectory(Path.Combine(root,"screens")).FullName;
+            if(args.Contains("--trial-setup"))
+            {
+                Wait(RetailTestSetupChecks(sp,screenshots));Wait(scope.DisposeAsync().AsTask());Wait(provider.DisposeAsync().AsTask());
+                Console.WriteLine($"PASS: {_checks} isolated setup assertions.");app.Shutdown();return 0;
+            }
             if(args.Contains("--retail-flow"))
             {
-                Wait(setup.CompleteAsync(new(){StoreName="Tech Retail verification",BusinessType="electronics"},"retail-owner","IsolatedRetail123!"));
+                var retailProfile=new SupermarketPos.Domain.Business.BusinessProfile{StoreName="Tech Retail verification",BusinessType="electronics"};retailProfile.ApplyBusinessDefaults();
+                Wait(setup.CompleteAsync(retailProfile,"retail-owner","IsolatedRetail123!"));
                 Wait(auth.LoginAsync("retail-owner","IsolatedRetail123!"));
                 Wait(RetailKeyboardFlow(sp,screenshots),TimeSpan.FromMinutes(3));
                 Wait(scope.DisposeAsync().AsTask());Wait(provider.DisposeAsync().AsTask());

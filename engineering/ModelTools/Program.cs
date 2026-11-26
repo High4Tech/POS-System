@@ -94,7 +94,7 @@ if(args.Length==2&&args[0]=="upgrade-check")
     await using(var upgraded=new PosDbContext(new DbContextOptionsBuilder<PosDbContext>().UseSqlite("Data Source="+file).Options)){await upgraded.Database.MigrateAsync();if(upgraded.Database.HasPendingModelChanges())throw new Exception("Snapshot differs from schema");}
     await DataBackup.VerifyAsync(file);
     foreach(var (table,names) in columns)if(original[table]!=await Fingerprint(table,names))throw new Exception("Existing data changed during migration: "+table);
-    Console.WriteLine($"PASS: schema 14; all original columns/rows preserved in {columns.Count} existing tables; SQLite integrity verified.");return;
+    Console.WriteLine($"PASS: all original columns/rows preserved in {columns.Count} existing tables; current EF snapshot and SQLite integrity verified.");return;
 }
 if(args.Length==3&&args[0]=="restore-check")
 {
@@ -105,6 +105,19 @@ if(args.Length==3&&args[0]=="restore-check")
 if(args.Length==3&&args[0]=="backup")
 {
     Console.WriteLine(await DataBackup.CreateAsync(Path.GetFullPath(args[1]),Path.GetFullPath(args[2])));return;
+}
+if(args.Length==3&&args[0]=="enable-retail-services")
+{
+    var folder=Path.GetFullPath(args[1]);
+    var archive=await DataBackup.CreateAsync(folder,Path.GetFullPath(args[2]));
+    using var connection=new SqliteConnection(new SqliteConnectionStringBuilder{DataSource=Path.Combine(folder,"pos.db"),Pooling=false}.ToString());await connection.OpenAsync();
+    using var transaction=connection.BeginTransaction();using var command=connection.CreateCommand();command.Transaction=transaction;
+    command.CommandText="SELECT ProfileJson FROM BusinessConfigurations";
+    var profile=System.Text.Json.Nodes.JsonNode.Parse((string?)await command.ExecuteScalarAsync()??throw new Exception("Missing profile"))!.AsObject();
+    if(profile["BusinessType"]?.GetValue<string>() is not ("electronics" or "mobile"))throw new Exception("This command only configures an existing Tech Retail store.");
+    profile["EnableMobileRecharge"]=true;profile["EnableDigitalWalletServices"]=true;profile["EnableLooseGoods"]=true;profile["RetailTemplate"]="pakistan-tech";
+    command.CommandText="UPDATE BusinessConfigurations SET ProfileJson=$profile,Revision=Revision+1";command.Parameters.AddWithValue("$profile",profile.ToJsonString());
+    if(await command.ExecuteNonQueryAsync()!=1)throw new Exception("Expected one profile");await transaction.CommitAsync();Console.WriteLine("Configured Tech Retail modules; backup: "+archive);return;
 }
 if(args.Length==3&&args[0]=="switch-tech-retail")
 {
