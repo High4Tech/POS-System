@@ -15,3 +15,13 @@ Verify focused finance tests, navigation/modals/package keyboard actions, Englis
 The sale flow no longer creates physical inventory for packages. Bundled offers are available directly beside configured packages; unsupported postpaid combinations show the existing empty state. Configuration remains in Settings, and digital history and totals are in Reports. This supersedes the mixed physical/digital cashier workflow in the previous beta.
 
 Actual bank/carrier operations remain manual through an authorized provider. No live transfer, carrier activation or physical print is performed by these tests.
+
+The Release WPF run passed 259 assertions, including package Enter/double-click, optional cost, pending/confirmed sale posting, a single receipt overlay, restored background input, the selected Digital Services header, Reports history/totals, and English/Urdu layouts at 100%/200%. Existing keyboard, pharmacy, catalog-image preference and invoice-action checks remained green. Evidence: engineering/qa-data/digital-selling-beta2-5 outside the Git checkout.
+
+## Installed desktop
+
+The required Build-LocalDesktop and Update-LocalDesktop scripts installed 1.2.0-beta.2+gf2e79c0.ec49369b0d3e into D:\SupermarketPos\App. The automatic startup process was 4260, responding at the target of the existing Tech Store POS desktop shortcut. Native accessibility confirmed the existing store's Sign In screen.
+
+Independent comparison matched the EXE, DLL and runtime configuration to the verified payload. EXE SHA256: 680C43CA479D96E7A0DBC3F58E55933A114E2984770E9923EC14B8232977CD08. DLL SHA256: 8D8EA5C7A64156D2AE2EFB7E4936BDA2F287B5EA5270AF44EA1A5780E16DF067. Source fingerprint: EC49369B0D3EDB392987A39A96E4D07F4C259C933CAE8873728E19F787842EA8.
+
+Update backups in D:\SupermarketPos\Backups: Before-update-20261127-054821588.zip (29 entries, 5,398,528-byte database) and Previous-application-20261127-054821588.zip (427 entries, 163,840-byte EXE). The separate pre-migration backup is Before-digital-selling-beta2-20261127.zip. The protected cart draft hash remained unchanged after installation. Live sales/provider operations were not performed during verification.
