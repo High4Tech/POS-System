@@ -47,6 +47,11 @@ internal static partial class Program
             var types=Descendants(editor).OfType<ComboBox>().Single(c=>c.Name=="RetailProductType");Assert(types.Items.Count==3,"Standalone offers labeled, loose and packaged product types");types.SelectedValue="loose";Pump();Assert(!Descendants(editor).OfType<TextBox>().Single(t=>t.Name=="BarcodeField").IsVisible,"Loose selection hides the retail barcode field");
             Assert(Descendants(editor).OfType<CheckBox>().Any(c=>c.IsVisible&&Equals(c.Content,LocalizationManager.Instance["Trade_SerialTrack"]))&&Descendants(editor).OfType<CheckBox>().Any(c=>c.IsVisible&&Equals(c.Content,LocalizationManager.Instance["Retail_Warranty"])),"Serial/IMEI and warranty remain available as checkboxes");
             Capture(host,System.IO.Path.Combine(screenshots,"wijgandu-retail-product.png"));host.Close();products.CancelEditCommand.Execute(null);
+            var settings=ActivatorUtilities.CreateInstance<BusinessSettingsWindow>(sp);settings.Show();Pump();var tabs=(TabControl)settings.FindName("Tabs");
+            for(var i=0;(tabs.Items.Count==0||!settings.IsEnabled)&&i<400;i++){await Task.Delay(25);Pump();}
+            Assert(settings.IsEnabled&&tabs.Items.Count>0,"Standalone settings finish loading");
+            Assert(!tabs.Items.OfType<TabItem>().Any(t=>new[]{"license","FBR","pharmacy"}.Any(label=>t.Header.ToString()!.Contains(label,StringComparison.OrdinalIgnoreCase))),"Standalone settings have no licensing, FBR or pharmacy tabs");
+            Assert(!tabs.Items.OfType<TabItem>().Select(t=>t.Content).OfType<BusinessForm>().Any(f=>f.Fields.Keys.Any(k=>k is "BusinessType" or "Ntn" or "Strn" or "Registered")),"Standalone settings cannot switch business type or expose registration fields");settings.Close();Pump();
         }
     }
 }

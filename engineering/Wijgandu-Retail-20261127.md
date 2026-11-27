@@ -29,3 +29,5 @@ The full WPF retail workflow passed 372 assertions, including receipt actions, p
 The focused follow-up passed 230 assertions, including actual Alt page routing and opening/closing the existing scanner dialog. Native registration probes reported H/S/D/P/T/R/C/X/Z unavailable on this PC; all have the tested Alt fallback. No Windows keypress was simulated and no OS shortcut setting was changed.
 
 The standalone installer uses the friendly shortcut name Wijgandu Retail so installing it on the same PC does not replace the existing Wijgandu desktop shortcut. Its executable product name and app caption remain Wijgandu.
+
+The standalone beta.4 payload passed 23 setup assertions and 230 checkout/receipt/navigation assertions. Visual review then caught the logo chooser using an unresolved resource key; it now reuses Profile_ChooseLogo in both languages. The final deliverables advance to beta.5 and are rebuilt from the corrected source. The interim beta.4 artifacts remain versioned; they were not installed over the live POS.

@@ -26,7 +26,7 @@ public sealed class RetailTestSetupWindow:Window
         {
             form.Field("Setup_Owner","owner",owner);form.Field("Customer_Phone","phone",phone);form.Field("Customer_Email","email",email);form.Field("Settings_StoreAddress","address",address,true);
             var logoLabel=new TextBlock{Text=LocalizationManager.Instance["Setup_YourLogo"]};form.Add("",logoLabel);
-            form.Add("",BusinessForm.Button("Setup_ChooseLogo",(_,_)=>
+            form.Add("",BusinessForm.Button("Profile_ChooseLogo",(_,_)=>
             {
                 var picker=new Microsoft.Win32.OpenFileDialog{Filter="Images|*.png;*.jpg;*.jpeg;*.bmp;*.gif"};
                 if(picker.ShowDialog(this)!=true)return;

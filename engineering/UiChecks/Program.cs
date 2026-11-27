@@ -59,6 +59,7 @@ internal static partial class Program
             var screenshots=Directory.CreateDirectory(Path.Combine(root,"screens")).FullName;
             if(args.Contains("--trial-setup"))
             {
+                if(args.Contains("--standalone"))Assert(RetailTestEdition.Standalone&&RetailTestEdition.Enabled&&RetailTestEdition.DefaultDataDirectory.EndsWith(Path.Combine("WijganduRetail","Data"),StringComparison.OrdinalIgnoreCase),"Published standalone edition has its own local data folder");
                 Wait(RetailTestSetupChecks(sp,screenshots));Wait(scope.DisposeAsync().AsTask());Wait(provider.DisposeAsync().AsTask());
                 Console.WriteLine($"PASS: {_checks} isolated setup assertions.");app.Shutdown();return 0;
             }
