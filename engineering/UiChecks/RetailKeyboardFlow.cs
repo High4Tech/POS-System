@@ -10,7 +10,7 @@ using SupermarketPos.Wpf.Views;
 
 internal static partial class Program
 {
-    private static async Task RetailKeyboardFlow(IServiceProvider sp,string screenshots)
+    private static async Task RetailKeyboardFlow(IServiceProvider sp,string screenshots,bool digitalOnly=false)
     {
         var shell=sp.GetRequiredService<MainViewModel>();
         shell.IsLoggedIn=true;
@@ -26,6 +26,7 @@ internal static partial class Program
         window.Show();
         await shell.ShowPosCommand.ExecuteAsync(null);
         Pump();
+        if(digitalOnly){await DigitalCartChecks(sp,shell,window,screenshots);window.Close();return;}
         view=Descendants(window).OfType<PosView>().Single();
         var model=(PosViewModel)shell.CurrentViewModel;
         var search=Descendants(view).OfType<TextBox>().Single(text=>text.Name=="SearchBox");

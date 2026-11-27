@@ -6,7 +6,7 @@ using SupermarketPos.Domain.Entities;
 using SupermarketPos.Infrastructure.Persistence;
 
 namespace SupermarketPos.Infrastructure.Business;
-public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthService auth,IBusinessSetup setup)
+public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthService auth,IBusinessSetup setup)
 {
     public async Task<IReadOnlyList<ServiceProviderAccount>> ProvidersAsync()=>await db.ServiceProviders.AsNoTracking().OrderBy(p=>p.Name).ToListAsync();
     public async Task<IReadOnlyList<MobileServicePackage>> PackagesAsync()=>await db.MobileServicePackages.AsNoTracking().OrderBy(p=>p.Name).ToListAsync();
@@ -47,9 +47,9 @@ public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthS
         var user=auth.CurrentUser??throw new DomainException("Service_SignIn");entry.Validate();
         var business=(await setup.LoadAsync(ct)).Profile;
         if(entry.Type is "CASHIN" or "CASHOUT" or "TRANSFER"?!business.DigitalWalletAvailable:!business.MobileRechargeAvailable)throw new DomainException("Service_Disabled");
-        if(await db.ServiceTransactions.SingleOrDefaultAsync(t=>t.ConfirmationId==entry.ConfirmationId,ct) is{} prior)
+        if(await db.ServiceTransactions.AsNoTracking().SingleOrDefaultAsync(t=>t.ConfirmationId==entry.ConfirmationId,ct) is{} prior)
         {
-            if(prior.ProviderId!=entry.ProviderId||prior.PackageId!=entry.PackageId||prior.Principal!=entry.Principal||prior.Type!=entry.Type||prior.CustomerFee!=entry.CustomerFee||prior.ProviderFee!=entry.ProviderFee||prior.Commission!=entry.Commission||prior.ProviderCost!=entry.ProviderCost||prior.ProviderCostKnown!=entry.ProviderCostKnown||prior.Collected!=entry.Collected||prior.FloatChange!=entry.FloatChange||prior.CustomerPhone!=entry.CustomerPhone||prior.Reference!=entry.Reference)throw new DomainException("Service_ConfirmationConflict");
+            if(prior.ProviderId!=entry.ProviderId||prior.PackageId!=entry.PackageId||prior.Principal!=entry.Principal||prior.Type!=entry.Type||prior.CustomerFee!=entry.CustomerFee||prior.ProviderFee!=entry.ProviderFee||prior.Commission!=entry.Commission||prior.ProviderCost!=entry.ProviderCost||prior.ProviderCostKnown!=entry.ProviderCostKnown||prior.Collected!=entry.Collected||prior.FloatChange!=entry.FloatChange||prior.CustomerPhone!=entry.CustomerPhone||prior.Reference!=entry.Reference||prior.PaymentMethod!=entry.PaymentMethod||prior.CheckoutId!=entry.CheckoutId)throw new DomainException("Service_ConfirmationConflict");
             return prior;
         }
         var provider=await db.ServiceProviders.SingleOrDefaultAsync(p=>p.Id==entry.ProviderId,ct)??throw new DomainException("Service_SelectProvider");
@@ -62,8 +62,7 @@ public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthS
             entry.PackageName=pack.Name;entry.PackageIdentifier=pack.PackageIdentifier;entry.AccountType=pack.AccountType;entry.PackageBenefits=pack.Benefits;entry.PackageValidity=pack.Validity;
         }
         else if(entry.PackageId.HasValue)throw new DomainException("Service_Invalid");
-        if(entry.Status=="Confirmed"&&!confirmedExternally)throw new DomainException("Service_ExternalRequired");
-        if(entry.Status=="Confirmed"&&await db.ServiceTransactions.AnyAsync(t=>t.ProviderId==entry.ProviderId&&t.Reference==entry.Reference&&t.ReversesId==null&&(t.Status=="Confirmed"||t.Status=="Reversed"),ct))throw new DomainException("Service_DuplicateReference");
+        if(entry.Status=="Confirmed"&&entry.Reference.Length>0&&await db.ServiceTransactions.AnyAsync(t=>t.ProviderId==entry.ProviderId&&t.Reference==entry.Reference&&t.ReversesId==null&&(t.Status=="Confirmed"||t.Status=="Reversed"),ct))throw new DomainException("Service_DuplicateReference");
         entry.InvoiceProfileJson=System.Text.Json.JsonSerializer.Serialize(business);
         entry.Operator=user.DisplayName;entry.StoreName=business.StoreName;entry.ProviderName=provider.Name;db.ServiceTransactions.Add(entry);await db.SaveChangesAsync(ct);
         if(entry.Status=="Confirmed")await PostAsync(entry,provider,ct);await db.SaveChangesAsync(ct);return entry;
@@ -74,22 +73,20 @@ public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthS
         _=auth.CurrentUser??throw new DomainException("Service_SignIn");var entry=await db.ServiceTransactions.SingleAsync(t=>t.Id==id,ct);
         if(entry.Status==status)return entry;
         if(entry.Status is not ("Draft" or "Pending")||status is not ("Pending" or "Confirmed" or "Failed"))throw new DomainException("Service_Immutable");
-        if(status=="Confirmed"&&!confirmedExternally)throw new DomainException("Service_ExternalRequired");
         if(reference is not null)entry.Reference=reference.Trim();entry.Status=status;entry.Validate();entry.Revision++;
-        if(status=="Confirmed"&&await db.ServiceTransactions.AnyAsync(t=>t.Id!=id&&t.ProviderId==entry.ProviderId&&t.Reference==entry.Reference&&t.ReversesId==null&&(t.Status=="Confirmed"||t.Status=="Reversed"),ct))throw new DomainException("Service_DuplicateReference");
+        if(status=="Confirmed"&&entry.Reference.Length>0&&await db.ServiceTransactions.AnyAsync(t=>t.Id!=id&&t.ProviderId==entry.ProviderId&&t.Reference==entry.Reference&&t.ReversesId==null&&(t.Status=="Confirmed"||t.Status=="Reversed"),ct))throw new DomainException("Service_DuplicateReference");
         if(status=="Confirmed")await PostAsync(entry,await db.ServiceProviders.SingleAsync(p=>p.Id==entry.ProviderId,ct),ct);
         await db.SaveChangesAsync(ct);return entry;
     });
     private async Task PostAsync(ServiceTransaction entry,ServiceProviderAccount provider,CancellationToken ct)
     {
         if(await db.ServicePostings.AnyAsync(p=>p.TransactionId==entry.Id,ct))return;
-        if(await FloatAsync(provider.Id)+entry.FloatChange<0)throw new DomainException("Service_FloatShort");
         provider.Revision++;db.ServicePostings.Add(new(){TransactionId=entry.Id,CashChange=entry.CashChange,FloatChange=entry.FloatChange,Income=entry.Income});
     }
     public Task<ServiceTransaction> ReverseAsync(int id,string reference,bool confirmedExternally)=>work.ExecuteInTransactionAsync(async ct=>
     {
         if((await setup.LoadAsync()).Profile.DigitalServicesAvailable==false)throw new DomainException("Service_Disabled");
-        auth.RequireAdmin();if(!confirmedExternally||string.IsNullOrWhiteSpace(reference)||reference.Length>80)throw new DomainException("Service_ExternalRequired");
+        auth.RequireAdmin();if(!confirmedExternally||reference.Length>80)throw new DomainException("Service_ExternalRequired");
         if(await db.ServiceTransactions.SingleOrDefaultAsync(t=>t.ReversesId==id,ct) is{} repeated)return repeated;
         var original=await db.ServiceTransactions.SingleAsync(t=>t.Id==id,ct);if(original.Status!="Confirmed"||original.ReversesId.HasValue)throw new DomainException("Service_Immutable");
         var posting=await db.ServicePostings.SingleAsync(p=>p.TransactionId==id,ct);
@@ -109,15 +106,15 @@ public sealed class DigitalServiceLedger(PosDbContext db,IUnitOfWork work,IAuthS
         decimal Net(Func<ServiceTransaction,decimal> amount,params string[] types)=>rows.Where(t=>posted.Contains(t.Id)).Sum(t=>t.ReversesId is{} id?(types.Length==0||types.Contains(originals[id].Type)?-amount(originals[id]):0):(types.Length==0||types.Contains(t.Type)?amount(t):0));
         var retail=await db.Sales.AsNoTracking().Include(s=>s.Lines).Where(s=>s.CreatedAt>=from&&s.CreatedAt<to).ToListAsync();
         var loose=retail.SelectMany(s=>s.Lines).Where(l=>l.UnitCode is "kg" or "litre").Sum(l=>l.LineGross);
-        return new(posts.Sum(p=>p.Income),posts.Sum(p=>p.CashChange),posts.Sum(p=>p.FloatChange),Net(t=>t.Principal,"CASHIN"),Net(t=>t.Principal,"CASHOUT"),Net(t=>t.Collected,"LOAD","PACKAGE"),Net(t=>t.Commission),rows.Count(t=>t.Status is "Draft" or "Pending"),rows.Count(t=>t.Status is "Failed" or "Reversed"),retail.Sum(s=>s.GrossTotal)-loose,loose,Net(t=>t.Principal,"TRANSFER"),rows.Count(t=>posted.Contains(t.Id)&&t.Type=="PACKAGE"&&!t.ProviderCostKnown));
+        return new(posts.Sum(p=>p.Income),posts.Sum(p=>p.CashChange),posts.Sum(p=>p.FloatChange),Net(t=>t.Principal,"CASHIN"),Net(t=>t.Principal,"CASHOUT"),Net(t=>t.Collected,"LOAD","PACKAGE"),Net(t=>t.Commission),rows.Count(t=>t.Status is "Draft" or "Pending"),rows.Count(t=>t.Status is "Failed" or "Reversed"),retail.Sum(s=>s.GrossTotal)-loose,loose,Net(t=>t.Principal,"TRANSFER"),rows.Count(t=>posted.Contains(t.Id)&&(t.Type=="PACKAGE"||t.Type=="LOAD")&&!t.ProviderCostKnown));
     }
     public Task<List<ServicePosting>> PostingsAsync()=>db.ServicePostings.AsNoTracking().ToListAsync();
-    public static ServiceTransaction PackageQuote(MobileServicePackage p,decimal? collected=null,decimal? cost=null,bool? costKnown=null)=>new(){Type="PACKAGE",ProviderId=p.ProviderId,PackageId=p.Id,PackageName=p.Name,PackageIdentifier=p.PackageIdentifier,AccountType=p.AccountType,PackageBenefits=p.Benefits,PackageValidity=p.Validity,Principal=(collected??(p.Price+p.CustomerFee))-p.CustomerFee,Collected=collected??(p.Price+p.CustomerFee),ProviderCost=cost??p.ProviderCost,ProviderCostKnown=costKnown??p.ProviderCostKnown,CustomerFee=p.CustomerFee,ProviderFee=p.ProviderFee,Commission=p.Commission,FloatChange=-((costKnown??p.ProviderCostKnown)?cost??p.ProviderCost:0)+p.Commission-p.ProviderFee};
+    public static ServiceTransaction PackageQuote(MobileServicePackage p,decimal? collected=null,decimal? cost=null,bool? costKnown=null)=>new(){Type="PACKAGE",ProviderId=p.ProviderId,PackageId=p.Id,PackageName=p.Name,PackageIdentifier=p.PackageIdentifier,AccountType=p.AccountType,PackageBenefits=p.Benefits,PackageValidity=p.Validity,Principal=(collected??(p.Price+p.CustomerFee))-p.CustomerFee,Collected=collected??(p.Price+p.CustomerFee),ProviderCost=(costKnown??p.ProviderCostKnown)?cost??p.ProviderCost:0,ProviderCostKnown=costKnown??p.ProviderCostKnown,CustomerFee=p.CustomerFee,ProviderFee=p.ProviderFee,Commission=p.Commission,FloatChange=0};
     public static ServiceTransaction ProviderQuote(ServiceProviderAccount p,string type,decimal amount)
     {
         if(type is not ("CASHIN" or "CASHOUT" or "TRANSFER" or "LOAD"))throw new DomainException("Service_Invalid");
         var cost=type=="LOAD"?Money.Round2(amount*p.LoadCostRate):0;
-        return new(){Type=type,ProviderId=p.Id,Principal=amount,CustomerFee=p.DefaultCustomerFee,ProviderFee=p.DefaultProviderFee,Commission=p.DefaultCommission,ProviderCost=cost,Collected=amount+p.DefaultCustomerFee,FloatChange=(type is "CASHIN" or "TRANSFER"?-amount:type=="CASHOUT"?amount:-cost)+p.DefaultCommission-p.DefaultProviderFee};
+        return new(){Type=type,ProviderId=p.Id,Principal=amount,CustomerFee=p.DefaultCustomerFee,ProviderFee=p.DefaultProviderFee,Commission=p.DefaultCommission,ProviderCost=cost,Collected=amount+p.DefaultCustomerFee,FloatChange=0};
     }
 }
 public sealed record ServicePeriodReport(decimal Income,decimal CashChange,decimal FloatChange,decimal CashIn,decimal CashOut,decimal RechargeCollected,decimal Commissions,int Pending,int FailedReversed,decimal PhysicalRevenue,decimal LooseRevenue,decimal Transfers,int UnknownCosts=0);

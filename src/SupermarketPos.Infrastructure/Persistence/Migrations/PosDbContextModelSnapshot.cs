@@ -1170,6 +1170,48 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.ToTable("SerializedUnits");
                 });
 
+            modelBuilder.Entity("SupermarketPos.Domain.Entities.ServiceCheckout", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("ConfirmationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InvoiceProfileJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Operator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StoreName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Tendered")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConfirmationId")
+                        .IsUnique();
+
+                    b.ToTable("ServiceCheckouts");
+                });
+
             modelBuilder.Entity("SupermarketPos.Domain.Entities.ServicePosting", b =>
                 {
                     b.Property<int>("Id")
@@ -1262,6 +1304,9 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("CheckoutId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<decimal>("Collected")
                         .HasColumnType("TEXT");
 
@@ -1310,6 +1355,10 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("Principal")
                         .HasColumnType("TEXT");
 
@@ -1355,6 +1404,8 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CheckoutId");
 
                     b.HasIndex("ConfirmationId")
                         .IsUnique();
@@ -1737,6 +1788,11 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("SupermarketPos.Domain.Entities.ServiceTransaction", b =>
                 {
+                    b.HasOne("SupermarketPos.Domain.Entities.ServiceCheckout", null)
+                        .WithMany("Lines")
+                        .HasForeignKey("CheckoutId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SupermarketPos.Domain.Entities.ServiceProviderAccount", null)
                         .WithMany()
                         .HasForeignKey("ProviderId")
@@ -1803,6 +1859,11 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                 });
 
             modelBuilder.Entity("SupermarketPos.Domain.Entities.Sale", b =>
+                {
+                    b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("SupermarketPos.Domain.Entities.ServiceCheckout", b =>
                 {
                     b.Navigation("Lines");
                 });

@@ -13,8 +13,23 @@ namespace SupermarketPos.Wpf.Common;
 public sealed class ReceiptPreviewDialog(IReceiptService receipts, PosStorage storage,IBusinessSetup setup,ISettingsRepository settings,BulkRecordService records,PosDbContext db)
 {
     private bool _open;
+    public async Task ShowCheckoutAsync(ServiceCheckout checkout)
+    {
+        if(_open)return;_open=true;
+        try
+        {
+            var business=JsonSerializer.Deserialize<BusinessProfile>(checkout.InvoiceProfileJson)??(await setup.LoadAsync()).Profile;
+            var ids=checkout.Lines.Select(t=>t.Id).ToArray();var posts=await db.ServicePostings.AsNoTracking().Where(p=>ids.Contains(p.TransactionId)).ToArrayAsync();
+            var preview=await Task.Run(()=>{var document=new SupermarketPos.Infrastructure.Documents.ServiceReceiptDocument(checkout.Lines,posts,business.InvoiceLanguage,business.Paper,checkout);return new ReceiptPreview(QuestPDF.Fluent.GenerateExtensions.GeneratePdf(document),QuestPDF.Fluent.GenerateExtensions.GenerateImages(document,new QuestPDF.Infrastructure.ImageGenerationSettings{RasterDpi=144}).ToArray());});
+            var phones=checkout.Lines.Where(t=>t.Type is "LOAD" or "PACKAGE").Select(t=>t.CustomerPhone).Distinct().ToArray();var phone=phones.Length==1&&checkout.Lines.All(t=>t.Type is "LOAD" or "PACKAGE")?phones[0]:null;
+            var info=new InvoiceActionInfo(checkout.ReceiptNumber,checkout.CreatedAt,Math.Abs(checkout.Total),checkout.StoreName,null,phone,business.InvoiceLanguage,business.Paper,business.Printer,business.InvoiceExportFolder,business.WhatsAppTemplate,JsonSerializer.Serialize(new{checkout,posts,business}));
+            info=info with{SavePrinter=SavePrinterAsync};var panel=new ReceiptPreviewWindow(preview,checkout.ReceiptNumber,storage,info);await InAppDialog.ShowAsync(panel,c=>panel.RequestClose=c);
+        }
+        finally{_open=false;}
+    }
     public async Task ShowServiceAsync(ServiceTransaction transaction,ServicePosting posting,SupermarketPos.Domain.Business.BusinessProfile business)
     {
+        if(transaction.CheckoutId is{} checkoutId){var checkout=await db.ServiceCheckouts.AsNoTracking().Include(c=>c.Lines.OrderBy(t=>t.Id)).SingleAsync(c=>c.Id==checkoutId);await ShowCheckoutAsync(checkout);return;}
         if(_open)return;_open=true;try{
         var preview=await Task.Run(()=>
         {

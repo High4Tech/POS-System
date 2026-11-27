@@ -21,6 +21,12 @@ $repo=(Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 if($out -eq $repo-or$out.StartsWith($repo+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Stage builds outside the source checkout.'}
 if(Test-Path -LiteralPath $out){throw 'Choose a new, empty test release folder.'}
 New-Item -ItemType Directory -Path $out | Out-Null
+$previousProcessorCount=$env:DOTNET_PROCESSOR_COUNT
+$buildProcess=[Diagnostics.Process]::GetCurrentProcess()
+$previousPriority=$buildProcess.PriorityClass
+try {
+    $env:DOTNET_PROCESSOR_COUNT='2'
+    $buildProcess.PriorityClass='BelowNormal'
 $payload=Join-Path $out 'app'
 & (Join-Path $PSScriptRoot 'Build-LocalDesktop.ps1') -Output $payload -Version $Version -Dotnet $Dotnet -TestRetailEdition -NoRestore:$NoRestore
 Move-Item -LiteralPath (Join-Path $payload 'SupermarketPos.exe') -Destination (Join-Path $payload 'High4TechPosTest.exe')
@@ -28,7 +34,7 @@ $notes=@'
 High4Tech POS Test — isolated Tech Retail edition
 Create your local store name, username and password on first start. No cloud signup or activation is required.
 The test app installs separately from Tech Store POS. Its data is stored separately in %LOCALAPPDATA%\High4TechPosTest\Data.
-Digital services are manual records: activate or transfer through an authorized provider and confirm the actual result/reference in the POS.
+Digital services are manual records. Complete the real activation or transfer through your authorized provider; provider references in the POS are optional.
 Catalog prices are dated reference data. Confirm the current package, eligibility and your own selling price/provider cost before use.
 This local testing installer is unsigned. It is not the final production distribution.
 '@
@@ -49,3 +55,8 @@ try {
 } finally { $zip.Dispose() }
 Get-ChildItem -LiteralPath (Join-Path $out 'packages') -File | Get-FileHash | Select-Object Path,Hash | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $out 'package-hashes.json')
 Write-Output "Verified isolated test installer: $out"
+
+} finally {
+    $env:DOTNET_PROCESSOR_COUNT=$previousProcessorCount
+    $buildProcess.PriorityClass=$previousPriority
+}

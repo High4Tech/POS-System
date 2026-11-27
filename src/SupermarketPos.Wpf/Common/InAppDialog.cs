@@ -11,7 +11,7 @@ public static class InAppDialog
     private static int _openCount;
     public static bool IsOpen=>_openCount>0;
     public static async Task ShowAsync(FrameworkElement content,Action<Action> setClose,Window? owner=null,double? contentWidth=null,
-        bool sizeToContent=false,IInputElement? returnFocus=null,IInputElement? initialFocus=null)
+        bool sizeToContent=false,IInputElement? returnFocus=null,IInputElement? initialFocus=null,Func<bool>? canClose=null)
     {
         owner??=System.Windows.Application.Current.MainWindow;
         if(owner.Content is not Panel root)throw new InvalidOperationException("The host must contain a panel.");
@@ -34,7 +34,7 @@ public static class InAppDialog
         FitCard();
         root.SizeChanged+=ResizeCard;
         overlay.Children.Add(card);KeyboardNavigation.SetTabNavigation(overlay,KeyboardNavigationMode.Cycle);
-        void Close(){done.TrySetResult();}
+        void Close(){if(canClose?.Invoke()!=false)done.TrySetResult();}
         void DismissOutside(object sender,MouseButtonEventArgs e)
         {
             if(e.ChangedButton!=MouseButton.Left||!ReferenceEquals(e.OriginalSource,overlay))return;
@@ -42,7 +42,7 @@ public static class InAppDialog
         }
         void Escape(object sender,KeyEventArgs e){if(e.Key==Key.Escape){e.Handled=true;Close();}}
         void KeepFocus(object sender,KeyboardFocusChangedEventArgs e){if(root.Children[root.Children.Count-1]!=overlay)return;if(e.NewFocus is DependencyObject target&&!overlay.IsAncestorOf(target)&&!ReferenceEquals(target,overlay))e.Handled=true;}
-        void OwnerClosed(object? sender,EventArgs e)=>Close();
+        void OwnerClosed(object? sender,EventArgs e)=>done.TrySetResult();
         setClose(Close);overlay.PreviewKeyDown+=Escape;overlay.MouseDown+=DismissOutside;owner.Closed+=OwnerClosed;owner.PreviewGotKeyboardFocus+=KeepFocus;_openCount++;root.Children.Add(overlay);
         owner.UpdateLayout();
         if(initialFocus is not null)Keyboard.Focus(initialFocus);

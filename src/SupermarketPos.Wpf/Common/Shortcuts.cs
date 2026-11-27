@@ -121,8 +121,17 @@ internal static class Shortcuts
                 yield return new(Key.F12, alt, "Trade_CustomerLedger", ledger, "Shortcut_CustomerAccountRequired");
             }
         }
+        var digital=page as DigitalServicesView;
+        if(digital is not null||reference&&screen=="digital")
+        {
+            if(!shell.IsReadOnly){yield return new(Key.F1,0,"Pos_Cash",Run(digital?.OpenCashCommand),"Shortcut_CartRequired");yield return new(Key.F2,0,"Pos_Card",Run(digital?.OpenCardCommand),digital?.Cart.Any(r=>r.Type=="CASHOUT")==true?"Digital_CashOutCashOnly":"Shortcut_CartRequired");
+                yield return new(Key.S,ctrl,"Trade_SaveDraft",Run(digital?.SaveDraftCommand),"Shortcut_CartRequired");
+                yield return new(Key.O,ctrl|shift,"Trade_ResumeDraft",Run(digital?.ResumeDraftCommand),"Trade_DraftEmptyCart");}
+            yield return new(Key.F4,0,"Pos_Clear",Run(digital?.ClearCartCommand),"Shortcut_CartRequired");
+            yield return new(Key.Delete,ctrl|shift,"Trade_RemoveCartLine",Run(digital?.RemoveSelectedCommand),"Shortcut_ProductRequired");
+        }
         var search = otherPage is null && (reference || routedKey is Key.F or Key.OemQuestion) ? FindSearch(window) : null;
-        if (search is not null || reference && (screen is "pos" or "products" or "customers" or "reports" ||
+        if (search is not null || reference && (screen is "pos" or "products" or "customers" or "reports" or "digital" ||
             screen == "purchases" && shell.CanManageStock))
         {
             yield return new(Key.F, ctrl, "Shortcut_FocusSearch", search is null ? null : () => { search.Focus(); search.SelectAll(); });
@@ -195,7 +204,7 @@ internal static class Shortcuts
         var controls = Descendants(root).ToArray();
         if (controls.OfType<MedicineSearchBox>().FirstOrDefault(s => s.IsVisible && s.IsEnabled)?.Input is { } medicine) return medicine;
         return controls.OfType<TextBox>().FirstOrDefault(t => t.IsVisible && t.IsEnabled && !t.IsReadOnly &&
-            (t.Name == "SearchBox" || t.Name == "InvoiceSearchBox" ||
+            (t.Name == "SearchBox" || t.Name == "InvoiceSearchBox" || t.Name == "PackageSearch" || t.Name == "DigitalAmount" ||
              t.GetBindingExpression(TextBox.TextProperty)?.ParentBinding.Path?.Path is "Search" or "Filter" or "ProductSearch"));
     }
 

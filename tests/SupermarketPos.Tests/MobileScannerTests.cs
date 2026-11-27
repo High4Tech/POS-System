@@ -46,7 +46,7 @@ public sealed class MobileScannerTests
     [Fact]
     public async Task PinnedHttpsPairingAuthorizesScansAndDistinguishesRepeatsFromRedelivery()
     {
-        var session = new ScannerSession();
+        var session = new ScannerSession(new AdjustableClock());
         session.SetWorkflow(ScanMode.Scanning, "Test Register");
         var applied = 0;
         await using var host = new MobileScannerHost(session);

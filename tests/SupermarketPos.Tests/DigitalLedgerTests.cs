@@ -7,7 +7,7 @@ using SupermarketPos.Infrastructure.Business;
 using SupermarketPos.Infrastructure.Persistence;
 
 namespace SupermarketPos.Tests;
-public sealed class DigitalLedgerTests
+public sealed partial class DigitalLedgerTests
 {
     private static async Task<(DigitalServiceLedger Ledger,int Provider)> Fixture(TestDb db,bool techRetail=false)
     {
@@ -16,7 +16,7 @@ public sealed class DigitalLedgerTests
         var profile=new BusinessProfile{StoreName="Shop",EnableDigitalWalletServices=true,EnableMobileRecharge=true};
         if(techRetail){profile.BusinessType="electronics";profile.ApplyBusinessDefaults();}
         await setup.CompleteAsync(profile,"owner","TestPassword123");await auth.LoginAsync("owner","TestPassword123");
-        var ledger=new DigitalServiceLedger(db.Context,work,auth,setup);var provider=new ServiceProviderAccount{Name="Test provider",OpeningFloat=2000};await ledger.SaveProviderAsync(provider);return(ledger,provider.Id);
+        var ledger=new DigitalServiceLedger(db.Context,work,auth,setup);var provider=new ServiceProviderAccount{Name="Test provider",AllowedTypes="CASHIN,CASHOUT,TRANSFER,LOAD,PACKAGE",OpeningFloat=2000};await ledger.SaveProviderAsync(provider);return(ledger,provider.Id);
     }
     private static ServiceTransaction Entry(int provider,string type="CASHIN",string status="Confirmed")=>new(){ConfirmationId=Guid.NewGuid(),ProviderId=provider,Type=type,Status=status,Principal=1000,Reference="TEST-REFERENCE",OccurredAt=DateTime.Now,FloatChange=-1000};
     [Fact]public async Task TechRetailDefaultsSupportLoadAndConfiguredPackagesWithoutPhysicalStock()
@@ -55,10 +55,12 @@ public sealed class DigitalLedgerTests
     {
         using var db=new TestDb();var (ledger,provider)=await Fixture(db);await ledger.SaveAsync(Entry(provider,status:state),false);Assert.Empty(db.Context.ServicePostings);Assert.Equal(2000,await ledger.FloatAsync(provider));
     }
-    [Fact]public async Task ConfirmationRequiresExternalResultAndInsufficientFloatRollsBack()
+    [Fact]public async Task ManualRecordsDoNotRequireVerificationReferenceOrFundedBalance()
     {
-        using var db=new TestDb();var (ledger,provider)=await Fixture(db);await Assert.ThrowsAsync<DomainException>(()=>ledger.SaveAsync(Entry(provider),false));Assert.Empty(db.Context.ServiceTransactions);
-        var tx=Entry(provider);tx.FloatChange=-3000;await Assert.ThrowsAsync<DomainException>(()=>ledger.SaveAsync(tx,true));Assert.Empty(db.Context.ServiceTransactions);Assert.Empty(db.Context.ServicePostings);
+        using var db=new TestDb();var (ledger,provider)=await Fixture(db);
+        var account=await db.Context.ServiceProviders.FindAsync(provider);account!.OpeningFloat=0;await db.Context.SaveChangesAsync();
+        var tx=DigitalServiceLedger.ProviderQuote(account,"CASHOUT",1000);tx.Status="Confirmed";tx.ConfirmationId=Guid.NewGuid();tx.OccurredAt=DateTime.Now;
+        await ledger.SaveAsync(tx,false);Assert.Equal(-1000,db.Context.ServicePostings.Single().CashChange);Assert.Equal(0,db.Context.ServicePostings.Single().FloatChange);
     }
     [Fact]public async Task RechargeRecordsActualCostsAndNoPhysicalInventory()
     {
@@ -77,7 +79,7 @@ public sealed class DigitalLedgerTests
         var tx=DigitalServiceLedger.PackageQuote(package);tx.ConfirmationId=Guid.NewGuid();tx.CustomerPhone="923001234567";tx.OccurredAt=DateTime.Now;tx.Status="Pending";
         await ledger.SaveAsync(tx,false);Assert.Empty(db.Context.ServicePostings);
         await ledger.SetStatusAsync(tx.Id,"Confirmed",true,"PACKAGE-CONFIRMED");await ledger.SetStatusAsync(tx.Id,"Confirmed",true,"PACKAGE-CONFIRMED");
-        var post=Assert.Single(db.Context.ServicePostings);Assert.Equal(510,post.CashChange);Assert.Equal(33,post.Income);Assert.Equal(-477,post.FloatChange);
+        var post=Assert.Single(db.Context.ServicePostings);Assert.Equal(510,post.CashChange);Assert.Equal(33,post.Income);Assert.Equal(0,post.FloatChange);
         package.Name="Changed catalog";package.Benefits="Changed benefits";await ledger.SavePackageAsync(package);
         Assert.Equal("Configured test package",tx.PackageName);Assert.Equal("Test benefits",tx.PackageBenefits);Assert.Equal("Postpaid",tx.AccountType);Assert.Equal("TEST-ONLY",tx.PackageIdentifier);
         Assert.Empty(db.Context.Products);Assert.Empty(db.Context.Sales);
@@ -94,11 +96,11 @@ public sealed class DigitalLedgerTests
         using var db=new TestDb();var (ledger,provider)=await Fixture(db);var package=new MobileServicePackage{ProviderId=provider,Name="Test package",Price=100};
         Assert.Equal("Prepaid",package.AccountType);package.AccountType="Anything";await Assert.ThrowsAsync<DomainException>(()=>ledger.SavePackageAsync(package));Assert.Empty(db.Context.MobileServicePackages);
     }
-    [Theory][InlineData("CASHIN",-993,1010)][InlineData("CASHOUT",1007,-990)][InlineData("LOAD",-973,1010)]
-    public void CompactTransactionsUseConfiguredFeesWithoutManualReentry(string type,decimal expectedFloat,decimal expectedCash)
+    [Theory][InlineData("CASHIN",1010)][InlineData("CASHOUT",-990)][InlineData("LOAD",1010)]
+    public void CompactTransactionsUseConfiguredFeesWithoutManualReentry(string type,decimal expectedCash)
     {
         var quote=DigitalServiceLedger.ProviderQuote(new(){Id=1,DefaultCustomerFee=10,DefaultProviderFee=3,DefaultCommission=10,LoadCostRate=.98m},type,1000);
-        Assert.Equal(expectedFloat,quote.FloatChange);Assert.Equal(expectedCash,quote.CashChange);
+        Assert.Equal(0,quote.FloatChange);Assert.Equal(expectedCash,quote.CashChange);
     }
     [Fact]public async Task ExistingPackagesMigrateWithoutInventingTariffsOrUnknownAccountTypes()
     {

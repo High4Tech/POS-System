@@ -34,6 +34,7 @@ internal static partial class Program
             var root=Path.GetFullPath(args.Length>0?args[0]:"engineering/qa-data/"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(root);
             AppContext.SetData("SupermarketPos.DataDirectory",root);AppContext.SetData("SupermarketPos.IsolatedDataDirectory",true);
             var app=new System.Windows.Application{ShutdownMode=ShutdownMode.OnExplicitShutdown};
+            Console.WriteLine($"WPF rendering tier: {System.Windows.Media.RenderCapability.Tier >> 16}; process rendering: {System.Windows.Media.RenderOptions.ProcessRenderMode}");
             app.Resources.MergedDictionaries.Add(new ResourceDictionary{Source=new Uri("/SupermarketPos;component/Resources/Theme.xaml",UriKind.Relative)});
             app.Resources.MergedDictionaries.Add(new ResourceDictionary{Source=new Uri("/SupermarketPos;component/Resources/DataEntry.xaml",UriKind.Relative)});
             app.Resources["BoolToVis"]=new BooleanToVisibilityConverter();
@@ -61,12 +62,12 @@ internal static partial class Program
                 Wait(RetailTestSetupChecks(sp,screenshots));Wait(scope.DisposeAsync().AsTask());Wait(provider.DisposeAsync().AsTask());
                 Console.WriteLine($"PASS: {_checks} isolated setup assertions.");app.Shutdown();return 0;
             }
-            if(args.Contains("--retail-flow"))
+            if(args.Contains("--retail-flow")||args.Contains("--digital-cart"))
             {
                 var retailProfile=new SupermarketPos.Domain.Business.BusinessProfile{StoreName="Tech Retail verification",BusinessType="electronics"};retailProfile.ApplyBusinessDefaults();
                 Wait(setup.CompleteAsync(retailProfile,"retail-owner","IsolatedRetail123!"));
                 Wait(auth.LoginAsync("retail-owner","IsolatedRetail123!"));
-                Wait(RetailKeyboardFlow(sp,screenshots),TimeSpan.FromMinutes(3));
+                Wait(RetailKeyboardFlow(sp,screenshots,args.Contains("--digital-cart")),TimeSpan.FromMinutes(8));
                 Wait(setup.SaveDraftAsync(retailProfile,Wait(setup.LoadAsync()).Step));
                 Wait(InvoiceActionChecks(sp,storage,root,screenshots));
                 Wait(scope.DisposeAsync().AsTask());Wait(provider.DisposeAsync().AsTask());

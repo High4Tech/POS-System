@@ -66,10 +66,10 @@ public sealed class RetailWorkflowTests
         Assert.Equal(-980,db.Context.ServicePostings.Single().CashChange);Assert.Equal(9,(await db.Context.Products.FindAsync(goods.Id))!.StockQuantity);
         await f.Checkout.CheckoutAsync(cart,null,0,f.Auth.CurrentUser!,null,key,[tx]);Assert.Single(db.Context.Sales);Assert.Single(db.Context.ServicePostings);Assert.Equal(9,(await db.Context.Products.FindAsync(goods.Id))!.StockQuantity);
     }
-    [Fact]public async Task FailedServiceRollsBackTheGoodsSaleAndStock()
+    [Fact]public async Task InvalidServiceRollsBackTheGoodsSaleAndStock()
     {
         using var db=new TestDb();var f=await Setup(db);var goods=await Goods(db);var service=await f.Inventory.QuickAddAsync("Mobile load","digital",price:3000);service.ConfigureService("LOAD",f.Provider);
-        var cart=new Cart();cart.AddOrIncrement(goods,1);cart.AddOrIncrement(service,1);var tx=Service(f.Provider,"LOAD",3000);tx.Transaction.CustomerPhone="03001234567";
+        var cart=new Cart();cart.AddOrIncrement(goods,1);cart.AddOrIncrement(service,1);var tx=Service(f.Provider,"LOAD",3000);tx.Transaction.CustomerPhone="invalid";
         await Assert.ThrowsAsync<DomainException>(()=>f.Checkout.CheckoutAsync(cart,new CashPayment(3500,3500),3500,f.Auth.CurrentUser!,null,Guid.NewGuid(),[tx]));
         Assert.Empty(db.Context.Sales);Assert.Empty(db.Context.ServicePostings);Assert.Empty(db.Context.ServiceTransactions);
         Assert.Equal(10,(await db.Context.Products.AsNoTracking().SingleAsync(p=>p.Id==goods.Id)).StockQuantity);

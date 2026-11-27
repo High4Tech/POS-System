@@ -213,14 +213,14 @@
         </Setter>
     </Style>
 
-    <Style TargetType="CheckBox">
+    <Style x:Key="ChoiceToggle" TargetType="ToggleButton">
         <Setter Property="Foreground" Value="{StaticResource FieldText}" />
         <Setter Property="FontSize" Value="{DynamicResource TextSize14}" />
         <Setter Property="MinHeight" Value="25" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="CheckBox">
+                <ControlTemplate TargetType="ToggleButton">
                     <DockPanel Background="Transparent">
                         <Grid DockPanel.Dock="Left" Width="20" Height="20">
                             <Border x:Name="Box" BorderThickness="1" BorderBrush="{StaticResource FieldBorderHover}"
@@ -262,6 +262,9 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="CheckBox" BasedOn="{StaticResource ChoiceToggle}" />
+    <Style TargetType="RadioButton" BasedOn="{StaticResource ChoiceToggle}" />
 
     <Style x:Key="CalendarAction" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />

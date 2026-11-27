@@ -787,7 +787,7 @@
   <data name="Service_ManualNotice" xml:space="preserve"><value>صرف دستی ریکارڈ۔ اصل لین دین مجاز فراہم کنندہ سے مکمل کریں۔ یہاں رقم منتقل یا ریچارج نہیں ہوتا۔</value></data>
   <data name="Service_Record" xml:space="preserve"><value>لین دین درج کریں</value></data>
   <data name="Service_History" xml:space="preserve"><value>لین دین کی تاریخ</value></data>
-  <data name="Service_Providers" xml:space="preserve"><value>فراہم کنندگان اور درج شدہ فلوٹ</value></data>
+  <data name="Service_Providers" xml:space="preserve"><value>فراہم کنندگان اور نیٹ ورکس</value></data>
   <data name="Service_Packages" xml:space="preserve"><value>موبائل پیکیجز</value></data>
   <data name="Service_Reports" xml:space="preserve"><value>سروس رپورٹ</value></data>
   <data name="Service_Provider" xml:space="preserve"><value>فراہم کنندہ / سروس اکاؤنٹ</value></data>
@@ -903,7 +903,7 @@
   <data name="Service_DefaultProviderFee" xml:space="preserve"><value>فراہم کنندہ کی مقررہ فیس (روپے)</value></data>
   <data name="Service_DefaultCommission" xml:space="preserve"><value>مقررہ کمیشن (روپے)</value></data>
   <data name="Service_LoadCostRate" xml:space="preserve"><value>ریچارج لاگت کا تناسب (1 = پوری رقم)</value></data>
-  <data name="Service_SettlementDefaults" xml:space="preserve"><value>فیس اور کمیشن ہر لین دین کی مقررہ رقم ہیں۔ فلوٹ میں والیٹ کی اصل رقم یا ریچارج لاگت، کمیشن اور فراہم کنندہ فیس کے مطابق تبدیلی آتی ہے۔ مجاز فراہم کنندہ کے معاہدے کے مطابق ترتیب دیں۔</value></data>
+  <data name="Service_SettlementDefaults" xml:space="preserve"><value>ہر لین دین کی فیس اور کمیشن اختیاری ہیں۔ اکاؤنٹ میں پہلے سے رقم درج کرنا ضروری نہیں۔</value></data>
   <data name="Service_CatalogChanged" xml:space="preserve"><value>پیکیج کی قیمت یا چارجز بدل گئے ہیں۔ ریکارڈ کرنے سے پہلے پیکیج دوبارہ منتخب کریں۔</value></data>
   <data name="Service_ToPay" xml:space="preserve"><value>نقد رقم کی ادائیگی</value></data>
   <data name="Service_ToCollect" xml:space="preserve"><value>وصول ہونے والی رقم</value></data>
@@ -1222,10 +1222,23 @@
   <data name="Digital_Specs" xml:space="preserve"><value>خصوصیات</value></data>
   <data name="Digital_Variants" xml:space="preserve"><value>اقسام</value></data>
   <data name="Digital_Category" xml:space="preserve"><value>زمرہ</value></data>
-  <data name="Digital_UnknownCosts" xml:space="preserve"><value>لاگت درج نہیں: منافع اور فراہم کنندہ کے بیلنس کے حسابات نامکمل ہیں</value></data>
+  <data name="Digital_UnknownCosts" xml:space="preserve"><value>لاگت درج نہیں: منافع کے کل حساب نامکمل ہیں</value></data>
   <data name="Digital_PhysicalHistory" xml:space="preserve"><value>عام اشیاء کی فروخت</value></data>
   <data name="Digital_PackageSettings" xml:space="preserve"><value>پیکیج منتخب یا تلاش کریں</value></data>
   <data name="Digital_SourceNote" xml:space="preserve"><value>کیٹلاگ کی تفصیلات بدل سکتی ہیں۔ اس فروخت کی قیمت درج کریں۔</value></data>
 <data name="Digital_PriceOnSale" xml:space="preserve"><value>فروخت کی قیمت درج کریں</value></data>
 <data name="Digital_NotRecorded" xml:space="preserve"><value>لاگت درج نہیں</value></data>
+  <data name="Digital_InvalidPayment" xml:space="preserve"><value>کیش آؤٹ کی ادائیگی نقد کریں۔</value></data>
+  <data name="Digital_InvalidTendered" xml:space="preserve"><value>وصول شدہ رقم کل رقم سے کم نہیں ہو سکتی۔</value></data>
+  <data name="Digital_ReferenceOptional" xml:space="preserve"><value>فراہم کنندہ کا حوالہ (اختیاری)</value></data>
+  <data name="Digital_Recipient" xml:space="preserve"><value>وصول کنندہ / فون / اکاؤنٹ</value></data>
+  <data name="Digital_Fee" xml:space="preserve"><value>سروس چارج</value></data>
+  <data name="Digital_AddToCart" xml:space="preserve"><value>کارٹ میں شامل کریں</value></data>
+  <data name="Digital_ToCollect" xml:space="preserve"><value>وصول کرنے کی رقم</value></data>
+  <data name="Digital_ToPay" xml:space="preserve"><value>گاہک کو دینے والی نقد رقم</value></data>
+  <data name="Digital_OnlineTransfer" xml:space="preserve"><value>آن لائن ٹرانسفر</value></data>
+  <data name="Digital_CashOutCashOnly" xml:space="preserve"><value>کیش آؤٹ کی ادائیگی نقد ہوتی ہے۔</value></data>
+  <data name="Digital_ManualReceipt" xml:space="preserve"><value>دستی سروس کی رسید۔</value></data>
+  <data name="Digital_ServiceName"><value>سروس</value></data>
+  <data name="Digital_DraftResumed" xml:space="preserve"><value>محفوظ ڈیجیٹل کارٹ بحال کر دی گئی۔</value></data>
 </root>

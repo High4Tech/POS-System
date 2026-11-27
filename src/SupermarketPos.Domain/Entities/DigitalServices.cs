@@ -20,6 +20,8 @@ public sealed class MobileServicePackage
 }
 public sealed class ServiceTransaction
 {
+    public int? CheckoutId{get;set;}
+    public string PaymentMethod{get;set;}="CASH";
     public bool ProviderCostKnown{get;set;}=true;
     public string? InvoiceProfileJson{get;set;}
     public int Id{get;set;}public Guid ConfirmationId{get;set;}public int ProviderId{get;set;}public int? PackageId{get;set;}public int? ReversesId{get;set;}
@@ -29,9 +31,10 @@ public sealed class ServiceTransaction
     public string PackageIdentifier{get;set;}="";public string AccountType{get;set;}="";public string PackageBenefits{get;set;}="";public string PackageValidity{get;set;}="";
     public decimal Principal{get;set;}public decimal CustomerFee{get;set;}public decimal ProviderFee{get;set;}public decimal Commission{get;set;}
     public decimal ProviderCost{get;set;}public decimal Collected{get;set;}public decimal FloatChange{get;set;}public int Revision{get;set;}
-    public string ReceiptNumber=>$"SVC-{Id:000000}";
-    public decimal CashChange=>Type=="CASHOUT"?-Principal+CustomerFee:Type is "CASHIN" or "TRANSFER"?Principal+CustomerFee:Collected;
-    public decimal Income=>Type=="PACKAGE"&&!ProviderCostKnown?0:(Type is "CASHIN" or "CASHOUT" or "TRANSFER"?CustomerFee:Collected-ProviderCost)+Commission-ProviderFee;
+    public string ReceiptNumber=>CheckoutId is{} checkout?$"DS-{checkout:000000}":$"SVC-{Id:000000}";
+    public decimal SettlementAmount=>Type=="CASHOUT"?-Principal+CustomerFee:Type is "CASHIN" or "TRANSFER"?Principal+CustomerFee:Collected;
+    public decimal CashChange=>PaymentMethod=="CARD"?0:SettlementAmount;
+    public decimal Income=>Type is "LOAD" or "PACKAGE"&&!ProviderCostKnown?0:(Type is "CASHIN" or "CASHOUT" or "TRANSFER"?CustomerFee:Collected-ProviderCost)+Commission-ProviderFee;
     public void Validate()
     {
         if(ConfirmationId==Guid.Empty||Type is not ("CASHIN" or "CASHOUT" or "TRANSFER" or "LOAD" or "PACKAGE")||Status is not ("Draft" or "Pending" or "Confirmed" or "Failed"))throw new DomainException("Service_Invalid");
@@ -39,10 +42,20 @@ public sealed class ServiceTransaction
         if(Reference.Length>80||Reference.Any(char.IsControl)||CustomerPhone.Length>60||OccurredAt.Year<2000||OccurredAt>DateTime.Now.AddDays(1))throw new DomainException("Service_Invalid");
         if(Type is "LOAD" or "PACKAGE"&&(CustomerPhone.Count(char.IsAsciiDigit) is <7 or >15))throw new DomainException("Validation_Phone");
         if(Type=="TRANSFER"&&string.IsNullOrWhiteSpace(CustomerPhone))throw new DomainException("Retail_RecipientRequired");
-        if(Status=="Confirmed"&&string.IsNullOrWhiteSpace(Reference))throw new DomainException("Service_ReferenceRequired");
+        if(PaymentMethod is not ("CASH" or "CARD")||PaymentMethod=="CARD"&&Type=="CASHOUT")throw new DomainException("Digital_InvalidPayment");
     }
 }
 public sealed class ServicePosting
 {
     public int Id{get;set;}public int TransactionId{get;set;}public decimal CashChange{get;set;}public decimal FloatChange{get;set;}public decimal Income{get;set;}
+}
+
+public sealed class ServiceCheckout
+{
+    public int Id{get;set;}public Guid ConfirmationId{get;set;}public DateTime CreatedAt{get;set;}
+    public string PaymentMethod{get;set;}="CASH";public decimal Total{get;set;}public decimal Tendered{get;set;}
+    public string InvoiceProfileJson{get;set;}="";public string StoreName{get;set;}="";public string Operator{get;set;}="";
+    public List<ServiceTransaction> Lines{get;set;}=[];
+    public string ReceiptNumber=>$"DS-{Id:000000}";
+    public decimal Change=>PaymentMethod=="CASH"&&Total>0?Tendered-Total:0;
 }

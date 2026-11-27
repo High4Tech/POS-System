@@ -44,14 +44,25 @@ $build = "$Version+g$($revision.Substring(0,7)).$($fingerprint.Substring(0,12).T
 $project = Join-Path $repo 'src\SupermarketPos.Wpf\SupermarketPos.Wpf.csproj'
 $restoreOptions = if($NoRestore) { ,@('--no-restore') } else { ,@() }
 $editionOptions = if($TestRetailEdition) { @('-p:RetailTestEdition=true','-p:CommercialBuild=false','-p:PosDataDirectory=') } else { @('-p:RetailTestEdition=false',"-p:PosDataDirectory=$directory") }
-& $Dotnet publish $project -c Release -r win-x64 --self-contained true -o $out --disable-build-servers '-m:1' '-nodeReuse:false' '-p:UseSharedCompilation=false' @restoreOptions "-p:Version=$Version" `
-    '-p:IncludeSourceRevisionInInformationalVersion=false' "-p:InformationalVersion=$build" `
-    "-p:BuildTimestampUtc=$builtAt" "-p:BuildSourceFingerprint=$fingerprint" @editionOptions
-if ($LASTEXITCODE -ne 0) { throw 'POS publish failed.' }
+$previousProcessorCount = $env:DOTNET_PROCESSOR_COUNT
+$buildProcess = [Diagnostics.Process]::GetCurrentProcess()
+$previousPriority = $buildProcess.PriorityClass
+try {
+    $env:DOTNET_PROCESSOR_COUNT = '2'
+    $buildProcess.PriorityClass = 'BelowNormal'
+    & $Dotnet publish $project -c Release -r win-x64 --self-contained true -o $out --disable-build-servers '-m:1' '-nodeReuse:false' '-p:UseSharedCompilation=false' @restoreOptions "-p:Version=$Version" `
+        '-p:IncludeSourceRevisionInInformationalVersion=false' "-p:InformationalVersion=$build" `
+        "-p:BuildTimestampUtc=$builtAt" "-p:BuildSourceFingerprint=$fingerprint" @editionOptions
+    if ($LASTEXITCODE -ne 0) { throw 'POS publish failed.' }
 
-$assembly = Join-Path $out 'SupermarketPos.dll'
-& $Dotnet run --project (Join-Path $PSScriptRoot 'ModelTools\ModelTools.csproj') --disable-build-servers --property:UseSharedCompilation=false --property:BuildInParallel=false @restoreOptions -- verify-local-build $assembly
-if ($LASTEXITCODE -ne 0) { throw 'Release verification failed.' }
+    $assembly = Join-Path $out 'SupermarketPos.dll'
+    & $Dotnet run --project (Join-Path $PSScriptRoot 'ModelTools\ModelTools.csproj') --disable-build-servers --property:UseSharedCompilation=false --property:BuildInParallel=false @restoreOptions -- verify-local-build $assembly
+    if ($LASTEXITCODE -ne 0) { throw 'Release verification failed.' }
+
+} finally {
+    $env:DOTNET_PROCESSOR_COUNT = $previousProcessorCount
+    $buildProcess.PriorityClass = $previousPriority
+}
 if($TestRetailEdition) {
     $runtime = Get-Content -LiteralPath (Join-Path $out 'SupermarketPos.runtimeconfig.json') -Raw | ConvertFrom-Json
     if($runtime.runtimeOptions.configProperties.'SupermarketPos.DataDirectory') { throw 'A test edition must not contain the production data path.' }
