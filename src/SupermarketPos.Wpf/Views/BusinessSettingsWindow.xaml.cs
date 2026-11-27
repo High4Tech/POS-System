@@ -42,7 +42,7 @@ public partial class BusinessSettingsWindow : Window
         ProfileTab();FeaturesTab(); if(_profile.Registered){FbrTab(); await TaxTab();} InvoiceTab(); if(!RetailTestEdition.Enabled){LicenseTab();UpdatesTab();} StorageTab(); SupportTab();
         if(_profile.IsPharmacy)await CatalogTab();
         if(_profile.DigitalWalletAvailable||_profile.MobileRechargeAvailable)
-            Tab("Service_Config",new DigitalServicesView(Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<DigitalServiceLedger>(_provider),_setup,Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ReceiptPreviewDialog>(_provider),configuration:true));
+            Tab("Service_Config",new DigitalServicesView(Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<DigitalServiceLedger>(_provider),_setup,Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ReceiptPreviewDialog>(_provider),configuration:true,inventory:Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<RetailInventory>(_provider),references:Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<RetailReferenceCatalog>(_provider)));
     }
     private void ProfileTab()
     {

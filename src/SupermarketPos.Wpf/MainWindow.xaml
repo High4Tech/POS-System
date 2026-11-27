@@ -23,6 +23,11 @@
             <Border Background="{StaticResource BrandGradient}" Padding="8,4">
               <DockPanel x:Name="NavigationBar" SizeChanged="FitNavigation">
                 <Button x:Name="MoreButton" DockPanel.Dock="Right" Content="{loc:T Common_More}" Style="{StaticResource TopButton}" Click="OpenMore"/>
+                <Button x:Name="SettingsDestination" DockPanel.Dock="Right" Command="{Binding ShowSettingsCommand}" Content="{loc:T Nav_Settings}" Tag="settings">
+    <Button.Style><Style TargetType="Button" BasedOn="{StaticResource TopButton}"><Style.Triggers>
+      <DataTrigger Binding="{Binding ActiveScreen}" Value="settings"><Setter Property="Background" Value="White"/><Setter Property="Foreground" Value="{StaticResource SelectedNavTextBrush}"/></DataTrigger>
+    </Style.Triggers></Style></Button.Style>
+</Button>
                 <StackPanel x:Name="TopActions" DockPanel.Dock="Right" Orientation="Horizontal">
                   <Button Command="{Binding Scanner.OpenPanelCommand}" AutomationProperties.Name="{loc:T Scanner_Panel}" ToolTip="{Binding Scanner.Status}">
                     <Button.Style><Style TargetType="Button" BasedOn="{StaticResource TopButton}">
@@ -44,14 +49,16 @@
       <DataTrigger Binding="{Binding ActiveScreen}" Value="pos"><Setter Property="Background" Value="White"/><Setter Property="Foreground" Value="{StaticResource SelectedNavTextBrush}"/></DataTrigger>
     </Style.Triggers></Style></Button.Style>
 </Button>
-<Button Command="{Binding ShowProductsCommand}" Content="{loc:T Nav_Products}" Tag="products">
-    <Button.Style><Style TargetType="Button" BasedOn="{StaticResource TopButton}"><Style.Triggers>
-      <DataTrigger Binding="{Binding ActiveScreen}" Value="products"><Setter Property="Background" Value="White"/><Setter Property="Foreground" Value="{StaticResource SelectedNavTextBrush}"/></DataTrigger>
-    </Style.Triggers></Style></Button.Style>
-</Button>
+
+<Button x:Name="DigitalDestination" Tag="digital" Content="{loc:T Service_Title}" Command="{Binding ShowDigitalServicesCommand}"><Button.Style><Style TargetType="Button" BasedOn="{StaticResource TopButton}"><Style.Triggers><DataTrigger Binding="{Binding ActiveScreen}" Value="digital"><Setter Property="Background" Value="White"/><Setter Property="Foreground" Value="{StaticResource SelectedNavTextBrush}"/></DataTrigger></Style.Triggers></Style></Button.Style></Button>
 <Button Command="{Binding ShowPurchasesCommand}" Content="{loc:T Nav_Purchases}" Tag="purchases">
     <Button.Style><Style TargetType="Button" BasedOn="{StaticResource TopButton}"><Style.Triggers>
       <DataTrigger Binding="{Binding ActiveScreen}" Value="purchases"><Setter Property="Background" Value="White"/><Setter Property="Foreground" Value="{StaticResource SelectedNavTextBrush}"/></DataTrigger>
+    </Style.Triggers></Style></Button.Style>
+</Button>
+<Button Command="{Binding ShowProductsCommand}" Content="{loc:T Nav_Products}" Tag="products">
+    <Button.Style><Style TargetType="Button" BasedOn="{StaticResource TopButton}"><Style.Triggers>
+      <DataTrigger Binding="{Binding ActiveScreen}" Value="products"><Setter Property="Background" Value="White"/><Setter Property="Foreground" Value="{StaticResource SelectedNavTextBrush}"/></DataTrigger>
     </Style.Triggers></Style></Button.Style>
 </Button>
 <Button Command="{Binding ShowReportsCommand}" Content="{loc:T Nav_Reports}" Tag="reports">
@@ -64,12 +71,8 @@
       <DataTrigger Binding="{Binding ActiveScreen}" Value="customers"><Setter Property="Background" Value="White"/><Setter Property="Foreground" Value="{StaticResource SelectedNavTextBrush}"/></DataTrigger>
     </Style.Triggers></Style></Button.Style>
 </Button>
-<Button Command="{Binding ShowSettingsCommand}" Content="{loc:T Nav_Settings}" Tag="settings">
-    <Button.Style><Style TargetType="Button" BasedOn="{StaticResource TopButton}"><Style.Triggers>
-      <DataTrigger Binding="{Binding ActiveScreen}" Value="settings"><Setter Property="Background" Value="White"/><Setter Property="Foreground" Value="{StaticResource SelectedNavTextBrush}"/></DataTrigger>
-    </Style.Triggers></Style></Button.Style>
-</Button>
-                  <Button x:Name="DigitalDestination" Tag="digital" Content="{loc:T Service_Title}" Command="{Binding ShowDigitalServicesCommand}" Style="{StaticResource TopButton}"/>
+
+
                 </StackPanel>
               </DockPanel>
             </Border>

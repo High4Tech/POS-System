@@ -126,6 +126,7 @@ public sealed partial class PosViewModel
             return new ScanOutcome("unknown");
         }
         var product = match.Product;
+        if(product.Kind=="digital"){Status=Text["Digital_Separate"];return new("invalid",product.Name);}
         if (IsPharmacy && !product.SellingUnitConfigured) { Status=Text["Pharmacy_MissingUnit"]; return new("invalid"); }
         if(IsPharmacy&&product.Unit!=Unit.Piece){Status=Text["Pharmacy_PackedOnly"];return new("invalid",product.Name);}
         var needsLocation=false;

@@ -67,6 +67,8 @@ internal static partial class Program
                 Wait(setup.CompleteAsync(retailProfile,"retail-owner","IsolatedRetail123!"));
                 Wait(auth.LoginAsync("retail-owner","IsolatedRetail123!"));
                 Wait(RetailKeyboardFlow(sp,screenshots),TimeSpan.FromMinutes(3));
+                Wait(setup.SaveDraftAsync(retailProfile,Wait(setup.LoadAsync()).Step));
+                Wait(InvoiceActionChecks(sp,storage,root,screenshots));
                 Wait(scope.DisposeAsync().AsTask());Wait(provider.DisposeAsync().AsTask());
                 Console.WriteLine($"PASS: {_checks} retail keyboard assertions.");app.Shutdown();return 0;
             }
@@ -230,7 +232,7 @@ internal static partial class Program
             var share=(Task)typeof(ReceiptPreviewWindow).GetMethod("ShareAsync",BindingFlags.Instance|BindingFlags.NonPublic)!.Invoke(receipt,[false])!;await share;Assert(handoff.Opened.Count==1&&handoff.Opened[0].Scheme=="whatsapp"&&handoff.Opened[0].Query.Contains("923001234567"),"Desktop handoff targets saved customer once");
             CheckWindow(window,$"invoice-actions-{lang}-{size}");Capture(window,Path.Combine(screens,$"invoice-actions-{lang}-{size}.png"));closeButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));await overlay;Assert(behind.IsEnabled&&host.Children.Count==1,"Close button dismisses the popup and restores the existing screen");
             overlay=InAppDialog.ShowAsync(receipt,close=>receipt.RequestClose=close,window);Pump();var layer=host.Children.OfType<Grid>().Single();
-            ((Image)receipt.FindName("PagePreview")).RaiseEvent(new System.Windows.Input.MouseButtonEventArgs(System.Windows.Input.Mouse.PrimaryDevice,Environment.TickCount,System.Windows.Input.MouseButton.Left){RoutedEvent=System.Windows.Input.Mouse.MouseDownEvent});Pump();Assert(!overlay.IsCompleted&&!behind.IsEnabled,"Clicks inside the receipt do not dismiss it or reach the screen underneath");
+            ((Image)receipt.FindName("PagePreview")).RaiseEvent(new System.Windows.Input.MouseButtonEventArgs(System.Windows.Input.Mouse.PrimaryDevice,Environment.TickCount,System.Windows.Input.MouseButton.Left){RoutedEvent=System.Windows.Input.Mouse.MouseDownEvent});Pump();Assert(!overlay.IsCompleted&&behind.IsEnabled&&!behind.IsHitTestVisible,"Clicks inside the receipt do not dismiss it or reach the screen underneath");
             var outside=new System.Windows.Input.MouseButtonEventArgs(System.Windows.Input.Mouse.PrimaryDevice,Environment.TickCount,System.Windows.Input.MouseButton.Left){RoutedEvent=System.Windows.Input.Mouse.MouseDownEvent};layer.RaiseEvent(outside);await overlay;Assert(outside.Handled&&behind.IsEnabled&&host.Children.Count==1,"Clicking the backdrop dismisses the popup without passing the click through");
             overlay=InAppDialog.ShowAsync(receipt,close=>receipt.RequestClose=close,window);Pump();layer=host.Children.OfType<Grid>().Single();layer.RaiseEvent(new System.Windows.Input.KeyEventArgs(System.Windows.Input.Keyboard.PrimaryDevice,PresentationSource.FromVisual(window),Environment.TickCount,System.Windows.Input.Key.Escape){RoutedEvent=System.Windows.Input.Keyboard.PreviewKeyDownEvent});await overlay;Assert(behind.IsEnabled&&host.Children.Count==1,"Escape dismisses the shared popup");window.Close();Pump();
         }
@@ -305,31 +307,12 @@ internal static partial class Program
         Assert(second.Items.Count==2,"Filtering one dropdown preserves another field's options");first.IsDropDownOpen=false;Pump();Assert(first.Items.Count==2,"Closing restores the complete list");
         var optionalCustomer=new CustomerFieldsViewModel();first.SetBinding(ComboBox.SelectedItemProperty,new Binding(nameof(optionalCustomer.SelectedCustomer)){Source=optionalCustomer,Mode=BindingMode.TwoWay});first.SelectedItem=source[0];optionalCustomer.IncludeDetails=false;
         comboWindow.Content=null;Pump();Assert(!optionalCustomer.IncludeDetails,"Unloading a searched customer field never re-enables optional customer details");comboWindow.Content=root;Pump();first.SelectedItem=null;first.IsDropDownOpen=true;Pump();System.Windows.Input.Keyboard.Focus(editable);editable.Text="Bob";Pump();Assert(first.Items.Count==1&&first.Items.Cast<CustomerChoice>().Single().Customer.Name=="Bob","Search still filters after returning to the same control");comboWindow.Close();Pump();
-        var ledger=sp.GetRequiredService<SupermarketPos.Infrastructure.Business.DigitalServiceLedger>();var provider=(await ledger.ProvidersAsync()).First();
-        await ledger.SavePackageAsync(new(){ProviderId=provider.Id,Name="Test catalog prepaid",Price=100,ProviderCost=95,AccountType="Prepaid",Benefits="Isolated QA record",Validity="Test only",PackageIdentifier="QA-PRE"});
-        await ledger.SavePackageAsync(new(){ProviderId=provider.Id,Name="Test catalog postpaid",Price=200,ProviderCost=190,AccountType="Postpaid",Benefits="Isolated QA record",Validity="Test only",PackageIdentifier="QA-POST"});
-        var setup=sp.GetRequiredService<IBusinessSetup>();
-        foreach(var language in new[]{"en","ur"})foreach(var scale in new[]{100,200})
-        {
-            LocalizationManager.Instance.SetLanguage(language);sp.GetRequiredService<DesktopTextSize>().Save(scale);
-            var digital=new DigitalServicesView(ledger,setup,sp.GetRequiredService<ReceiptPreviewDialog>());var digitalWindow=new Window{Content=digital,Width=1240,Height=900,FlowDirection=LocalizationManager.Instance.FlowDirection};digitalWindow.Show();Pump();
-            await (Task)typeof(DigitalServicesView).GetMethod("LoadAsync",BindingFlags.Instance|BindingFlags.NonPublic)!.Invoke(digital,null)!;digital.ChooseType("PACKAGE");Pump();
-            var cards=Descendants(digital).OfType<Button>().Where(b=>ReferenceEquals(b.Style,digital.FindResource("CatalogChoiceCard"))).ToArray();Assert(cards.Length==1,"Network/account catalog only shows its configured prepaid package");
-            var postpaid=Descendants(digital).OfType<Button>().Single(b=>Equals(b.Content,LocalizationManager.Instance["Service_Postpaid"]));postpaid.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));Pump();
-            cards=Descendants(digital).OfType<Button>().Where(b=>ReferenceEquals(b.Style,digital.FindResource("CatalogChoiceCard"))).ToArray();Assert(cards.Length==1&&Descendants(cards[0]).OfType<TextBlock>().Any(t=>t.Text=="Test catalog postpaid"),"Postpaid filter shows only saved postpaid packages");
-            Capture(digitalWindow,Path.Combine(screens,$"package-catalog-{language}-{scale}.png"));
-            cards[0].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));Pump();var fields=Descendants(digital).OfType<BusinessForm>().SelectMany(f=>f.Fields.Keys).ToArray();
-            Assert(fields.Contains("Phone")&&!fields.Contains("Cost")&&!fields.Contains("Principal"),"Selected package asks for phone and confirmation, never manual tariff or customer profile");
-            Capture(digitalWindow,Path.Combine(screens,$"package-checkout-{language}-{scale}.png"));digitalWindow.Close();Pump();
-        }
-        foreach(var size in new[]{100,200})
-        {
-            LocalizationManager.Instance.SetLanguage("en");sp.GetRequiredService<DesktopTextSize>().Save(size);var main=sp.GetRequiredService<MainViewModel>();await main.ShowPosCommand.ExecuteAsync(null);
-            var pos=(PosViewModel)typeof(MainViewModel).GetField("_pos",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(main)!;var register=new PosView{DataContext=pos};var hostRegister=new Window{DataContext=main,Width=1600,Height=1000,Content=register};hostRegister.SetResourceReference(Control.FontSizeProperty,"TextSize14");hostRegister.Show();Pump();
-            Assert(Descendants((FrameworkElement)register.FindName("ContextActions")).OfType<Button>().Count(b=>b.IsVisible)==2,"Register has exactly two contextual entries when both modules are enabled");
-            await pos.LooseItemsCommand.ExecuteAsync(null);Pump();var cart=(DataGrid)register.FindName("CartTable");Assert(cart.IsVisible&&cart.ActualHeight>25,"Cart remains visible beside the inline loose panel");Capture(hostRegister,Path.Combine(screens,$"register-inline-loose-{size}.png"));
-            await main.ShowDigitalServicesCommand.ExecuteAsync(null);Pump();Assert(pos.ContextPanel is DigitalServicesView&&cart.IsVisible&&cart.ActualHeight>25,"Digital workspace stays inside the Register with its existing cart");Capture(hostRegister,Path.Combine(screens,$"register-inline-digital-{size}.png"));pos.CloseContextPanelCommand.Execute(null);hostRegister.Close();Pump();
-        }
+        var main=sp.GetRequiredService<MainViewModel>();await main.ShowPosCommand.ExecuteAsync(null);
+        var pos=(PosViewModel)main.CurrentViewModel;
+        Assert(!pos.CatalogKinds.Any(k=>k.Code=="digital"),"Physical register exposes only physical product kinds");
+        await main.ShowDigitalServicesCommand.ExecuteAsync(null);Pump();
+        Assert(main.CurrentViewModel is DigitalServicesView&&main.ActiveScreen=="digital","Digital sales has its own destination");
+        await main.ShowPosCommand.ExecuteAsync(null);
     }
     private static async Task PharmacyScreenChecks(IServiceProvider sp,string screens)
     {

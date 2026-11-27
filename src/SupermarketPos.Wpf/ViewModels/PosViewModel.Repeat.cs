@@ -32,7 +32,7 @@ public sealed partial class PosViewModel
             {
                 if (!CanKeepScan()) break;
                 var product = await _products.GetCurrentForRegisterAsync(prior.ProductId);
-                if (product is null || product.TrackSerial || product.TrackExpiry || product.RequiresPrescription ||
+                if (product is null || product.Kind=="digital" || product.TrackSerial || product.TrackExpiry || product.RequiresPrescription ||
                     product.RequiresDispensingReference || prior.SerialNumber is not null || prior.BatchId is not null ||
                     !product.SellingUnitConfigured || IsPharmacy && product.Unit != Domain.Common.Unit.Piece)
                 { skipped.Add(prior.Name); continue; }

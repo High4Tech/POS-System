@@ -80,6 +80,7 @@ public sealed partial class PosViewModel
                     product.SetUnit(saved.RetailUnit??product.Unit);product.SetRetailKind(kind);
                     if(saved.Service is{} service)product.ConfigureService(service.Type,service.Provider,service.Package);
                 }
+                if(product.Kind=="digital"||saved.RetailKind=="digital")throw new DomainException("Digital_Separate");
                 var line = staged.AddOrIncrement(product, saved.Quantity, packaged: saved.Packaged, medicineUnit: saved.MedicineUnit, merge: false);
                 if (line.PackageSize != saved.Factor || line.UnitCode != saved.Unit || product.StockTracked &&
                     staged.Lines.Where(item => item.Product.Id == product.Id).Sum(item => item.Quantity) > product.AvailableForSale(Today))

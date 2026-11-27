@@ -28,7 +28,7 @@ public sealed class RetailReferenceCatalog(PosDbContext db)
         {
             "model"=>"""
                 SELECT 'model:'||m.id,'model',b.name||' '||m.model_name,c.name,b.name,m.model_name,
-                m.specs_json||' · '||COALESCE((SELECT GROUP_CONCAT(variant_label,' / ') FROM variants WHERE model_id=m.id),'')||' · '||COALESCE(c.parent_name,''),
+                json_object('Digital_Specs',json(m.specs_json),'Digital_Variants',(SELECT GROUP_CONCAT(variant_label,' / ') FROM variants WHERE model_id=m.id),'Digital_Category',c.parent_name),
                 COALESCE(CAST((SELECT price_pkr FROM market_price_refs WHERE model_id=m.id ORDER BY observed_date DESC,id DESC LIMIT 1) AS TEXT),''),
                 COALESCE(m.source_url,''),m.verification_status,COALESCE(b.logo_path,'')
                 FROM models m JOIN brands b ON b.id=m.brand_id JOIN categories c ON c.id=m.category_id
@@ -36,7 +36,7 @@ public sealed class RetailReferenceCatalog(PosDbContext db)
                 """,
             "package"=>"""
                 SELECT 'package:'||p.id,'package',p.name,COALESCE(p.category,''),o.name,p.operator_id,
-                COALESCE(p.validity,'')||' · '||COALESCE(p.base_data_gb,'')||' GB · '||COALESCE(p.social_data_gb,'')||' Social GB · '||COALESCE(p.onnet_minutes,0)||' on-net min · '||COALESCE(p.offnet_minutes,0)||' off-net min · '||COALESCE(p.sms,0)||' SMS · '||COALESCE(p.eligibility,'')||' · '||COALESCE((SELECT GROUP_CONCAT(region_label||' '||COALESCE(eligibility_detail,''),' / ') FROM package_region_rules WHERE package_id=p.id),'')||' · '||COALESCE(p.remarks,''),
+                json_object('Service_Validity',p.validity,'Digital_Data',p.base_data_gb,'Digital_Social',p.social_data_gb,'Digital_OnNet',p.onnet_minutes,'Digital_OffNet',p.offnet_minutes,'Digital_SMS',p.sms,'Digital_Eligibility',p.eligibility,'Digital_Region',(SELECT GROUP_CONCAT(region_label,' / ') FROM package_region_rules WHERE package_id=p.id)),
                 COALESCE(p.price_pkr,''),p.source_url,p.verification_state,''
                 FROM mobile_packages p JOIN mobile_operators o ON o.id=p.operator_id
                 WHERE lower(p.name||' '||o.name||' '||COALESCE(p.category,'')) LIKE $term ESCAPE '\' ORDER BY o.name,p.name LIMIT $limit

@@ -25,6 +25,7 @@ public partial class MainWindow : Window
         Loaded += (_, _) => QueueFit();
         TopActions.SizeChanged += (_, _) => QueueFit();
         MoreButton.SizeChanged += (_, _) => QueueFit();
+        SettingsDestination.SizeChanged += (_, _) => QueueFit();
         LocalizationManager.Instance.PropertyChanged += LanguageChanged;
         Closed += (_, _) => LocalizationManager.Instance.PropertyChanged -= LanguageChanged;
         PreviewKeyDown += RouteShortcut;
@@ -58,7 +59,7 @@ public partial class MainWindow : Window
         {
             _fitQueued = false;
             if (!IsLoaded || NavigationBar.ActualWidth <= 0) return;
-            var available = NavigationBar.ActualWidth - MoreButton.ActualWidth - TopActions.ActualWidth - 28;
+            var available = NavigationBar.ActualWidth - MoreButton.ActualWidth - SettingsDestination.ActualWidth - TopActions.ActualWidth - 28;
             var active = (DataContext as MainViewModel)?.ActiveScreen;
             MoreButton.FontWeight = FontWeights.SemiBold;
             foreach (var button in Destinations.Children.OfType<Button>())

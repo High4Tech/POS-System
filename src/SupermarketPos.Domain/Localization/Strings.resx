@@ -1207,4 +1207,25 @@
   <data name="Trial_Create" xml:space="preserve"><value>Create test store</value></data>
   <data name="Trial_Start" xml:space="preserve"><value>Open test store</value></data>
   <data name="Retail_CashPayout" xml:space="preserve"><value>Cash to pay</value></data>
+  <data name="Digital_Sell" xml:space="preserve"><value>Sell</value></data>
+  <data name="Digital_Price" xml:space="preserve"><value>Selling price (PKR)</value></data>
+  <data name="Digital_OptionalCost" xml:space="preserve"><value>Provider cost (optional)</value></data>
+  <data name="Digital_Back" xml:space="preserve"><value>Back to Digital Services</value></data>
+  <data name="Digital_Separate" xml:space="preserve"><value>Sell digital services from the Digital Services tab.</value></data>
+  <data name="Digital_Data" xml:space="preserve"><value>Data (GB)</value></data>
+  <data name="Digital_Social" xml:space="preserve"><value>Social data (GB)</value></data>
+  <data name="Digital_OnNet" xml:space="preserve"><value>On-network minutes</value></data>
+  <data name="Digital_OffNet" xml:space="preserve"><value>Other-network minutes</value></data>
+  <data name="Digital_SMS" xml:space="preserve"><value>SMS</value></data>
+  <data name="Digital_Eligibility" xml:space="preserve"><value>Eligibility</value></data>
+  <data name="Digital_Region" xml:space="preserve"><value>Region</value></data>
+  <data name="Digital_Specs" xml:space="preserve"><value>Specifications</value></data>
+  <data name="Digital_Variants" xml:space="preserve"><value>Variants</value></data>
+  <data name="Digital_Category" xml:space="preserve"><value>Category</value></data>
+  <data name="Digital_UnknownCosts" xml:space="preserve"><value>Cost not recorded: profit and provider balance totals are incomplete</value></data>
+  <data name="Digital_PhysicalHistory" xml:space="preserve"><value>Physical sales</value></data>
+  <data name="Digital_PackageSettings" xml:space="preserve"><value>Select or search a package</value></data>
+  <data name="Digital_SourceNote" xml:space="preserve"><value>Catalog details can change. Enter the price for this sale.</value></data>
+<data name="Digital_PriceOnSale" xml:space="preserve"><value>Enter selling price</value></data>
+<data name="Digital_NotRecorded" xml:space="preserve"><value>Cost not recorded</value></data>
 </root>

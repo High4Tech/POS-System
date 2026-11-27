@@ -471,6 +471,11 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("ProviderCost")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("ProviderCostKnown")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true);
+
                     b.Property<decimal>("ProviderFee")
                         .HasColumnType("TEXT");
 
@@ -1310,6 +1315,11 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
 
                     b.Property<decimal>("ProviderCost")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("ProviderCostKnown")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true);
 
                     b.Property<decimal>("ProviderFee")
                         .HasColumnType("TEXT");

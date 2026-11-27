@@ -28,7 +28,7 @@ public sealed class ServiceReceiptDocument(ServiceTransaction transaction,Servic
             if(transaction.PackageValidity.Length>0)c.Item().Text(T("Service_Validity")+": "+transaction.PackageValidity);
             c.Item().Text(T("Service_Status")+": "+T("Service_"+transaction.Status));
             c.Item().Text(T("Service_Reference")+": "+transaction.Reference);
-            if(transaction.CustomerPhone.Length>0)c.Item().Text(T("Customer_Phone")+": "+transaction.CustomerPhone);
+            if(transaction.CustomerPhone.Length>0)c.Item().Text(T(transaction.Type=="TRANSFER"?"Retail_Recipient":"Customer_Phone")+": "+transaction.CustomerPhone);
             foreach(var pair in new[]{("Service_Principal",transaction.Principal),("Service_CustomerFee",transaction.CustomerFee),("Service_CashChange",posting.CashChange)})c.Item().Text(T(pair.Item1)+": "+Money.Format(pair.Item2));
             c.Item().PaddingTop(6).Text(T("Service_ManualNotice")).FontSize(7);
             if(business is not null)foreach(var note in business.ReceiptNotes.Where(n=>n.Enabled&&!string.IsNullOrWhiteSpace(n.Text)).OrderBy(n=>n.Order))c.Item().PaddingTop(3).Text(note.Text).FontSize(7);

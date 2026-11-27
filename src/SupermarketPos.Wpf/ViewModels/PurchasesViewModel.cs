@@ -115,7 +115,7 @@ public sealed partial class PurchasesViewModel(
             }
             if(IsPharmacy)await LoadLocationsAsync();
             var productId = SelectedProduct?.Id;
-            Products = await products.GetAllAsync();
+            Products = (await products.GetAllAsync()).Where(p=>p.Kind!="digital").ToArray();
             SelectedProduct = Products.FirstOrDefault(product => product.Id == productId);
             var supplierId = SelectedSupplier?.Id;
             var historySupplierId = HistorySupplier?.Id;
@@ -295,6 +295,7 @@ public sealed partial class PurchasesViewModel(
             if (exact.Length == 1) SelectedProduct = exact[0];
             else if (await lookup.FindAsync(query) is { } match && ProductSearch.Trim() == query)
             {
+                if(match.Product.Kind=="digital"){Warn("Digital_Separate");return;}
                 SelectedProduct = match.Product;
                 if (match.Quantity is { } quantity) Quantity = quantity.ToString(CultureInfo.InvariantCulture);
             }
@@ -339,6 +340,7 @@ public sealed partial class PurchasesViewModel(
             }
 
             var product = match.Product;
+            if(product.Kind=="digital"){Warn("Digital_Separate");return new ScanOutcome("invalid");}
             var quantity = match.Packaged?1m:match.Quantity??1m;
             if(match.Packaged&&!_packagingEnabled){Error=_text["Measure_FeatureDisabled"];return new ScanOutcome("paused");}
             if (product.TrackExpiry)
@@ -423,14 +425,14 @@ public sealed partial class PurchasesViewModel(
             if(IsPharmacy&&!trackExpiry)
             {
                 var createdId=await productEditor.CreateMedicineForPurchaseAsync(barcode??"",name??"",referenceId,SelectedSupplier?.Id);
-                if(createdId is null)return false;Products=await products.GetAllAsync();ResetProductEntry();Status=_text["Scanner_Rescan"];return true;
+                if(createdId is null)return false;Products=(await products.GetAllAsync()).Where(p=>p.Kind!="digital").ToArray();ResetProductEntry();Status=_text["Scanner_Rescan"];return true;
             }
             await productEditor.BeginScannerEntryAsync(barcode, purchasing: true, supplierId: SelectedSupplier?.Id,
                 productName: name, trackExpiry: trackExpiry);
             var window = new ScannedProductWindow(productEditor) { Owner = System.Windows.Application.Current.MainWindow };
             if (window.ShowDialog() == true && productEditor.SavedProductId is { } id)
             {
-                Products = await products.GetAllAsync();
+                Products = (await products.GetAllAsync()).Where(p=>p.Kind!="digital").ToArray();
                 var created = Products.Single(p => p.Id == id);
                 if (rescan||IsPharmacy)
                 {

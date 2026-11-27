@@ -11,7 +11,7 @@ public sealed partial class CartLineViewModel
     private IReadOnlyList<MobileServicePackage> _packages=[];
     private bool _loadingServiceOptions;
     public record RetailChoice(string Code,string Name);
-    public RetailChoice[] ProductKinds=>new[]{"labeled","loose","digital"}.Select(c=>new RetailChoice(c,LocalizationManager.Instance["Retail_"+c])).ToArray();
+    public RetailChoice[] ProductKinds=>new[]{"labeled","loose"}.Select(c=>new RetailChoice(c,LocalizationManager.Instance["Retail_"+c])).ToArray();
     public RetailChoice[] ServiceTypes=>new[]{"SERVICE","LOAD","PACKAGE","CASHIN","CASHOUT","TRANSFER"}.Select(c=>new RetailChoice(c,LocalizationManager.Instance["Service_"+c])).ToArray();
     public RetailChoice[] ServiceStates=>new[]{"Confirmed","Pending","Failed"}.Select(c=>new RetailChoice(c,LocalizationManager.Instance["Service_"+c])).ToArray();
     public bool CanChooseKind=>_retail&&Line.Product.QuickEntry;
@@ -25,6 +25,7 @@ public sealed partial class CartLineViewModel
         set
         {
             if(!CanChooseKind||value==ProductKind)return;
+            if(value=="digital"){EditError=LocalizationManager.Instance["Digital_Separate"];OnPropertyChanged();return;}
             try{if(value!="loose")Line.SetQuickUnit(Unit.Piece);Line.Product.SetRetailKind(value);NotifyRetail();EditError=null;}
             catch(DomainException e){EditError=LocalizationManager.Instance[e.Message];OnPropertyChanged();}
         }

@@ -35,12 +35,8 @@ public sealed partial class MainViewModel : ObservableObject
     {
         if(!(await _provider.GetRequiredService<IBusinessSetup>().LoadAsync()).Profile.DigitalServicesAvailable)return;
         if(!_auth.IsLoggedIn)return;
-        if(_digital is null)
-        {
-            _digital=_provider.GetRequiredService<DigitalServicesView>();
-            _digital.ProductChosen+=async product=>{await ShowPosAsync();await _pos!.AddFromResultsCommand.ExecuteAsync(product);};
-        }
-        _digital.ChooseType(kind);CurrentViewModel=_digital;ActiveScreen="digital";
+        _digital??=_provider.GetRequiredService<DigitalServicesView>();
+        CurrentViewModel=_digital;ActiveScreen="digital";await _digital.OpenSalesAsync(kind);
     }
     public async Task RefreshFeaturesAsync()
     {
@@ -50,6 +46,7 @@ public sealed partial class MainViewModel : ObservableObject
         DigitalServicesVisible=business.DigitalServicesAvailable;
         StockAlerts.ShowProductImages=business.EnableCatalogImages;
     }
+    public DigitalServicesView DigitalSection(string section)=>new(_provider.GetRequiredService<Infrastructure.Business.DigitalServiceLedger>(),_provider.GetRequiredService<IBusinessSetup>(),_provider.GetRequiredService<ReceiptPreviewDialog>(),section:section);
 
     public MainViewModel(IServiceProvider provider, IAuthService auth, LoginViewModel login, StoreProfile storeProfile,
         ScannerController scanner, StockAlertsViewModel stockAlerts, LicenseClient license, SoftwareUpdates updates)

@@ -90,7 +90,6 @@ public sealed partial class PosViewModel : ObservableObject
     {
         Customer.SetExisting(await _saleHistory.GetCustomerSalesAsync());
         _business=(await _businessSetup.LoadAsync()).Profile;OnPropertyChanged(nameof(IsPharmacy));OnPropertyChanged(nameof(ShowProductImages));OnPropertyChanged(nameof(EnableLooseGoods));OnPropertyChanged(nameof(EnablePackagedUnits));OnPropertyChanged(nameof(EnableGoodsPanel));OnPropertyChanged(nameof(EnableDigitalServices));OnPropertyChanged(nameof(EnableMobileRecharge));
-        if(!IsPharmacy){await _retailInventory.EnsureProviderTemplateAsync();await _retailInventory.EnsureConfiguredPackagesAsync();}
         _serviceProviders=await _digitalLedger.ProvidersAsync();_servicePackages=await _digitalLedger.PackagesAsync();
         foreach(var line in Lines)line.SetServiceOptions(_serviceProviders,_servicePackages);
         if(IsPharmacy&&PharmacyWorkspace is null)
@@ -102,14 +101,16 @@ public sealed partial class PosViewModel : ObservableObject
             PharmacyWorkspace.Search.BarcodeSubmitted+=async code=>{await _scanner.DispatchPhysicalAsync(code);};
         }
         var cats = await _categoryRepo.GetAllAsync();
+        var allProducts = await _products.GetAllAsync();
+        var digitalCategories = allProducts.Where(p=>p.Kind=="digital").Select(p=>p.CategoryId).Except(allProducts.Where(p=>p.Kind!="digital").Select(p=>p.CategoryId)).ToHashSet();
         Categories.Clear();
         var i = 0;
-        foreach (var c in cats)
+        foreach (var c in cats.Where(c=>!digitalCategories.Contains(c.Id)))
             Categories.Add(new CategoryTileViewModel(c, i++, _storage.CategoryImagePath(c.ImageFileName))
                 { IsSelected = c.Id == SelectedCategoryId });
         foreach (var line in Lines)
             line.UpdateAvailability(line.Line.Product.Id==0?line.Line.Product:await _products.GetCurrentForRegisterAsync(line.Line.Product.Id));
-        _registerProducts=(await _products.GetAllAsync()).Where(p=>p.IsActive&&(!IsPharmacy||p.Kind!="digital")).ToArray();
+        _registerProducts=allProducts.Where(p=>p.IsActive&&p.Kind!="digital").ToArray();
         _registerMetadata=IsPharmacy?await _medicineCatalog.DescribeAsync(_registerProducts):[];
         if(!Categories.Any(tile=>tile.IsSelected))SelectedCategoryId=0;
         ApplyRegisterFilter();

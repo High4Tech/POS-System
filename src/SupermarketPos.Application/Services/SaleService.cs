@@ -39,7 +39,7 @@ public sealed class SaleService : ISaleService
     {
         if (cart is null || cart.IsEmpty)
             throw new DomainException("Cannot check out an empty cart.");
-        if(cart.Lines.Any(line=>line.Product.IsFinancialService))throw new DomainException("Retail_ServiceCheckoutRequired");
+        if(cart.Lines.Any(line=>line.Product.Kind=="digital"))throw new DomainException("Digital_Separate");
         if (payment is null)
             throw new DomainException("A payment is required.");
         if (cashier is null)
@@ -78,7 +78,7 @@ public sealed class SaleService : ISaleService
                               ?? throw new DomainException($"Product '{charge.Line.Product.Name}' no longer exists.");
                 if (!product.IsActive)
                     throw new DomainException($"Product '{product.Name}' is inactive.");
-                if(product.IsFinancialService)throw new DomainException("Retail_ServiceCheckoutRequired");
+                if(product.Kind=="digital")throw new DomainException("Digital_Separate");
                 if(product.VatRate!=charge.Line.VatRate)throw new DomainException("Tax_RateMismatch");
                 if(!product.SellingUnitConfigured)throw new DomainException("Pharmacy_MissingUnit");
                 if(product.Unit!=charge.Line.Product.Unit||charge.Line.MedicineUnit is{} medicineUnit&&product.SellingUnitSize(medicineUnit)!=charge.Line.PackageSize||charge.Line.MedicineUnit is null&&charge.Line.IsPackage&&product.UnitsPerPackage!=charge.Line.PackageSize)throw new DomainException("Measure_ChangedUnit");

@@ -98,13 +98,33 @@ public sealed class RetailWorkflowTests
         await f.Inventory.SaveServiceAsync(0,"Transfer",100,"TRANSFER",f.Provider);
         var product=await db.Context.Products.SingleAsync();Assert.True(product.IsFinancialService);Assert.Equal(f.Provider,product.ServiceProviderId);Assert.Equal(100,product.UnitPrice);
     }
-    [Fact]public async Task ConfiguredPackagesAppearOnceInTheSharedCatalogAndFollowPackageChanges()
+    [Fact]public async Task DigitalPackagesDoNotCreatePhysicalProducts()
     {
-        using var db=new TestDb();var f=await Setup(db);
-        var package=new MobileServicePackage{ProviderId=f.Provider,Name="Configured package",Price=200,ProviderCost=180,PackageIdentifier="LOCAL-1",Benefits="Configured benefits",Validity="7 days"};
-        await f.Ledger.SavePackageAsync(package);await f.Inventory.EnsureConfiguredPackagesAsync();await f.Inventory.EnsureConfiguredPackagesAsync();
-        var product=await db.Context.Products.SingleAsync();Assert.True(product.IsFinancialService);Assert.Equal(package.Id,product.ServicePackageId);Assert.False(product.StockTracked);Assert.False(product.QuickEntry);Assert.Equal(200,product.UnitPrice);Assert.Empty(db.Context.ServicePostings);
-        package.Price=250;package.IsActive=false;await f.Ledger.SavePackageAsync(package);await f.Inventory.EnsureConfiguredPackagesAsync();
-        Assert.Equal(250,product.UnitPrice);Assert.False(product.IsActive);Assert.Single(db.Context.Products);
+        using var db=new TestDb();var f=await Setup(db);var reference=(await f.Catalog.SearchAsync("Hajj","package")).First(p=>p.Category!="directory");
+        var package=await f.Inventory.PrepareReferencePackageAsync(reference,200,"Prepaid");
+        var account=await db.Context.ServiceProviders.FindAsync(package.ProviderId);account!.OpeningFloat=2000;await db.Context.SaveChangesAsync();
+        Assert.False(package.ProviderCostKnown);Assert.Empty(db.Context.Products);Assert.Empty(db.Context.ServicePostings);
+        var tx=await f.Ledger.SellPackageAsync(package.Id,250,null,"03001234567","COST-UNKNOWN","Confirmed",true,Guid.NewGuid());
+        Assert.False(tx.ProviderCostKnown);Assert.Equal(250,tx.CashChange);Assert.Equal(0,tx.Income);Assert.Equal(1,(await f.Ledger.ReportAsync(DateTime.Today,DateTime.Today.AddDays(1))).UnknownCosts);
+        var known=await f.Ledger.SellPackageAsync(package.Id,270,180,"03001234567","COST-KNOWN","Confirmed",true,Guid.NewGuid());Assert.Equal(90,known.Income);Assert.Equal(200, (await db.Context.MobileServicePackages.FindAsync(package.Id))!.Price);Assert.Empty(db.Context.Products);
+    }
+    [Fact]public async Task LegacyDigitalItemsCannotEnterPhysicalSalesOrPurchases()
+    {
+        using var db=new TestDb();var f=await Setup(db);var product=await f.Inventory.QuickAddAsync("Legacy package","digital",price:100);
+        var cart=new Cart();cart.AddOrIncrement(product,1);
+        await Assert.ThrowsAsync<DomainException>(()=>f.Sales.CheckoutAsync(cart,new CashPayment(100,100),f.Auth.CurrentUser!));
+        var purchases=new PurchaseService(new ProductRepository(db.Context),new PurchaseRepository(db.Context),new UnitOfWork(db.Context));
+        await Assert.ThrowsAsync<DomainException>(()=>purchases.ReceiveAsync("Supplier",null,[new(product.Id,1,50)],f.Auth.CurrentUser!));
+        Assert.Empty(db.Context.Sales);Assert.Empty(db.Context.Purchases);
+    }
+    [Fact]public async Task CashierCanSellBundledPackagesWithoutConfigurationPermission()
+    {
+        using var db=new TestDb();var f=await Setup(db);await f.Inventory.EnsureProviderTemplateAsync();
+        db.Context.Users.Add(new User("cashier",new BCryptPasswordHasher().Hash("CashierTest123!"),"Cashier",UserRole.Cashier));await db.Context.SaveChangesAsync();f.Auth.Logout();await f.Auth.LoginAsync("cashier","CashierTest123!");
+        var reference=(await f.Catalog.SearchAsync("Hajj","package")).First(p=>p.Category!="directory");
+        var package=await f.Inventory.PrepareReferencePackageAsync(reference,250,"Prepaid");
+        var saved=await f.Ledger.SellPackageAsync(package.Id,250,null,"03001234567","","Pending",false,Guid.NewGuid());
+        Assert.Equal("Pending",saved.Status);Assert.Empty(db.Context.Products);Assert.Empty(db.Context.ServicePostings);
+        await Assert.ThrowsAsync<AuthException>(()=>f.Ledger.SavePackageAsync(new(){ProviderId=package.ProviderId,Name="Unauthorized edit",Price=1}));
     }
 }

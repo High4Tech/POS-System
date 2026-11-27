@@ -86,6 +86,7 @@ public sealed class PurchaseService(IProductRepository products, IPurchaseReposi
         {
             var product = await products.GetByIdAsync(item.ProductId, ct)
                 ?? throw new DomainException("A product on this purchase is no longer available.");
+            if(product.Kind=="digital")throw new DomainException("Digital_Separate");
             var factor=item.MedicineUnit is{} medicineUnit?product.SellingUnitSize(medicineUnit):item.Packaged?product.UnitsPerPackage:1;
             if(item.ExpectedUnitSize is{} expected&&expected!=factor||item.ExpectedUnit is{} unit&&unit!=product.Unit)throw new DomainException("Measure_ChangedUnit");
             var line = new PurchaseLine(product, item.Quantity, item.UnitCost,item.Packaged,item.MedicineUnit);

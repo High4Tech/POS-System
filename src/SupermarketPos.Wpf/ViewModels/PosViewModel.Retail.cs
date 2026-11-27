@@ -16,7 +16,7 @@ public sealed partial class PosViewModel
     private IReadOnlyList<MobileServicePackage> _servicePackages=[];
     [ObservableProperty]private string _catalogKind="all";
     [ObservableProperty]private string _registerSort="name";
-    public CartLineViewModel.RetailChoice[] CatalogKinds=>new[]{"all","labeled","loose","digital"}.Select(k=>new CartLineViewModel.RetailChoice(k,Text["Retail_"+k])).ToArray();
+    public CartLineViewModel.RetailChoice[] CatalogKinds=>new[]{"all","labeled","loose"}.Select(k=>new CartLineViewModel.RetailChoice(k,Text["Retail_"+k])).ToArray();
     public CartLineViewModel.RetailChoice[] RegisterSorts=>new[]{"name","recent","price"}.Select(k=>new CartLineViewModel.RetailChoice(k,Text["Retail_Sort_"+k])).ToArray();
     public bool CanQuickAddProduct=>!IsPharmacy&&_auth.CurrentUser?.IsAdmin==true&&SearchText.Trim().Length>0&&ProductTiles.Count==0;
     public string QuickAddCaption=>Text.Format("Retail_AddNamed",SearchText.Trim());
@@ -32,9 +32,9 @@ public sealed partial class PosViewModel
         {
             await Task.Delay(150);if(version!=_retailSearchVersion)return;
             var references=await _retailCatalog.SearchAsync(value,"model",8);
-            var packages=EnableMobileRecharge?await _retailCatalog.SearchAsync(value,"package",4):[];
+
             if(version!=_retailSearchVersion)return;RetailReferenceMatches.Clear();
-            foreach(var row in references.Concat(packages))RetailReferenceMatches.Add(row);
+            foreach(var row in references)RetailReferenceMatches.Add(row);
         }
         catch(Exception e){System.Diagnostics.Trace.TraceWarning("Retail reference search: {0}",e.Message);}
     }
@@ -43,7 +43,7 @@ public sealed partial class PosViewModel
         if(!CanQuickAddProduct||!CanReadBarcode())return;
         try
         {
-            var product=await _retailInventory.QuickAddAsync(SearchText.Trim(),CatalogKind is "loose" or "digital"?CatalogKind:"labeled");
+            var product=await _retailInventory.QuickAddAsync(SearchText.Trim(),CatalogKind=="loose"?"loose":"labeled");
             RegisterSort="recent";CatalogKind="all";SearchText="";await InitializeAsync();await AddFromResultsCommand.ExecuteAsync(product);
         }
         catch(Exception e){Status=Text[e.Message];}
@@ -54,8 +54,7 @@ public sealed partial class PosViewModel
         try
         {
             Product? product;
-            if(reference.Kind=="package")product=await RetailTemplatePanel.ConfigurePackageAsync(_retailInventory,reference);
-            else product=await _retailInventory.QuickAddAsync(reference.Name,"labeled",reference);
+            product=await _retailInventory.QuickAddAsync(reference.Name,"labeled",reference);
             if(product is null)return;RegisterSort="recent";CatalogKind="all";SearchText="";await InitializeAsync();await AddFromResultsCommand.ExecuteAsync(product);
         }
         catch(Exception e){Status=Text[e.Message];}

@@ -5,7 +5,8 @@
              xmlns:layout="clr-namespace:SupermarketPos.Wpf.Common"
              xmlns:views="clr-namespace:SupermarketPos.Wpf.Views"
              Background="{StaticResource BgBrush}">
-    <Grid Margin="24">
+    <TabControl Margin="16"><TabItem Header="{loc:T Digital_PhysicalHistory}">
+    <Grid Margin="8">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MaxWidth="340" />
             <ColumnDefinition Width="3.5*" />
@@ -172,4 +173,5 @@
             </Border>
         </DockPanel>
     </Grid>
+    </TabItem><TabItem x:Name="DigitalHistoryTab" Header="{loc:T Service_History}" Visibility="Collapsed"><ContentControl x:Name="DigitalHistory"/></TabItem><TabItem x:Name="DigitalReportTab" Header="{loc:T Service_Reports}" Visibility="Collapsed"><ContentControl x:Name="DigitalReport"/></TabItem></TabControl>
 </UserControl>

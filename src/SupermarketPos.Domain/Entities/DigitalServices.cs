@@ -11,6 +11,7 @@ public sealed class ServiceProviderAccount
 }
 public sealed class MobileServicePackage
 {
+    public bool ProviderCostKnown{get;set;}=true;
     public string CatalogKey{get;set;}="";
     public int Id{get;set;}public int ProviderId{get;set;}public string Name{get;set;}="";public string Kind{get;set;}="";
     public decimal Price{get;set;}public decimal ProviderCost{get;set;}public decimal Commission{get;set;}public string Validity{get;set;}="";public bool IsActive{get;set;}=true;
@@ -19,6 +20,7 @@ public sealed class MobileServicePackage
 }
 public sealed class ServiceTransaction
 {
+    public bool ProviderCostKnown{get;set;}=true;
     public string? InvoiceProfileJson{get;set;}
     public int Id{get;set;}public Guid ConfirmationId{get;set;}public int ProviderId{get;set;}public int? PackageId{get;set;}public int? ReversesId{get;set;}
     public string Type{get;set;}="CASHIN";public string Status{get;set;}="Draft";public string Reference{get;set;}="";
@@ -29,7 +31,7 @@ public sealed class ServiceTransaction
     public decimal ProviderCost{get;set;}public decimal Collected{get;set;}public decimal FloatChange{get;set;}public int Revision{get;set;}
     public string ReceiptNumber=>$"SVC-{Id:000000}";
     public decimal CashChange=>Type=="CASHOUT"?-Principal+CustomerFee:Type is "CASHIN" or "TRANSFER"?Principal+CustomerFee:Collected;
-    public decimal Income=>(Type is "CASHIN" or "CASHOUT" or "TRANSFER"?CustomerFee:Collected-ProviderCost)+Commission-ProviderFee;
+    public decimal Income=>Type=="PACKAGE"&&!ProviderCostKnown?0:(Type is "CASHIN" or "CASHOUT" or "TRANSFER"?CustomerFee:Collected-ProviderCost)+Commission-ProviderFee;
     public void Validate()
     {
         if(ConfirmationId==Guid.Empty||Type is not ("CASHIN" or "CASHOUT" or "TRANSFER" or "LOAD" or "PACKAGE")||Status is not ("Draft" or "Pending" or "Confirmed" or "Failed"))throw new DomainException("Service_Invalid");

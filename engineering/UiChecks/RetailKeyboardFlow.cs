@@ -20,6 +20,8 @@ internal static partial class Program
         window.Resources.Add(template.DataTemplateKey,template);
         var productsTemplate=new DataTemplate(typeof(ProductsViewModel)){VisualTree=new FrameworkElementFactory(typeof(ProductsView))};
         window.Resources.Add(productsTemplate.DataTemplateKey,productsTemplate);
+        var reportsTemplate=new DataTemplate(typeof(ReportsViewModel)){VisualTree=new FrameworkElementFactory(typeof(ReportsView))};
+        window.Resources.Add(reportsTemplate.DataTemplateKey,reportsTemplate);
         System.Windows.Application.Current.MainWindow=window;
         window.Show();
         await shell.ShowPosCommand.ExecuteAsync(null);

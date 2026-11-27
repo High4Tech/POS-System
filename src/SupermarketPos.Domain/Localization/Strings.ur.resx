@@ -1207,4 +1207,25 @@
   <data name="Trial_Create" xml:space="preserve"><value>ٹیسٹ اسٹور بنائیں</value></data>
   <data name="Trial_Start" xml:space="preserve"><value>ٹیسٹ اسٹور کھولیں</value></data>
   <data name="Retail_CashPayout" xml:space="preserve"><value>ادا کی جانے والی نقد رقم</value></data>
+  <data name="Digital_Sell" xml:space="preserve"><value>فروخت کریں</value></data>
+  <data name="Digital_Price" xml:space="preserve"><value>فروخت کی قیمت (روپے)</value></data>
+  <data name="Digital_OptionalCost" xml:space="preserve"><value>فراہم کنندہ کی لاگت (اختیاری)</value></data>
+  <data name="Digital_Back" xml:space="preserve"><value>ڈیجیٹل سروسز پر واپس</value></data>
+  <data name="Digital_Separate" xml:space="preserve"><value>ڈیجیٹل خدمات ڈیجیٹل سروسز ٹیب سے فروخت کریں۔</value></data>
+  <data name="Digital_Data" xml:space="preserve"><value>ڈیٹا (جی بی)</value></data>
+  <data name="Digital_Social" xml:space="preserve"><value>سوشل ڈیٹا (جی بی)</value></data>
+  <data name="Digital_OnNet" xml:space="preserve"><value>اسی نیٹ ورک کے منٹ</value></data>
+  <data name="Digital_OffNet" xml:space="preserve"><value>دیگر نیٹ ورکس کے منٹ</value></data>
+  <data name="Digital_SMS" xml:space="preserve"><value>ایس ایم ایس</value></data>
+  <data name="Digital_Eligibility" xml:space="preserve"><value>اہلیت</value></data>
+  <data name="Digital_Region" xml:space="preserve"><value>علاقہ</value></data>
+  <data name="Digital_Specs" xml:space="preserve"><value>خصوصیات</value></data>
+  <data name="Digital_Variants" xml:space="preserve"><value>اقسام</value></data>
+  <data name="Digital_Category" xml:space="preserve"><value>زمرہ</value></data>
+  <data name="Digital_UnknownCosts" xml:space="preserve"><value>لاگت درج نہیں: منافع اور فراہم کنندہ کے بیلنس کے حسابات نامکمل ہیں</value></data>
+  <data name="Digital_PhysicalHistory" xml:space="preserve"><value>عام اشیاء کی فروخت</value></data>
+  <data name="Digital_PackageSettings" xml:space="preserve"><value>پیکیج منتخب یا تلاش کریں</value></data>
+  <data name="Digital_SourceNote" xml:space="preserve"><value>کیٹلاگ کی تفصیلات بدل سکتی ہیں۔ اس فروخت کی قیمت درج کریں۔</value></data>
+<data name="Digital_PriceOnSale" xml:space="preserve"><value>فروخت کی قیمت درج کریں</value></data>
+<data name="Digital_NotRecorded" xml:space="preserve"><value>لاگت درج نہیں</value></data>
 </root>

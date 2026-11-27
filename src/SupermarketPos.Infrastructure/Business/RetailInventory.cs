@@ -42,7 +42,7 @@ public sealed class RetailInventory(PosDbContext db,IUnitOfWork work,IAuthServic
                     var package=await db.MobileServicePackages.FirstOrDefaultAsync(p=>p.CatalogKey==reference.Key,ct);
                     if(package is null)
                     {
-                        package=new(){CatalogKey=reference.Key,Name=reference.Name,ProviderId=provider.Id,Price=price,ProviderCost=cost??throw new DomainException("Validation_Required"),PackageIdentifier=reference.Key,Validity=await catalog.PackageValidityAsync(reference.Key),Benefits=reference.Details[..Math.Min(1000,reference.Details.Length)],AccountType="Prepaid"};
+                        package=new(){CatalogKey=reference.Key,Name=reference.Name,ProviderId=provider.Id,Price=price,ProviderCost=cost??throw new DomainException("Validation_Required"),PackageIdentifier=reference.Key,Validity=await catalog.PackageValidityAsync(reference.Key),Benefits=PackageDetails(reference),AccountType="Prepaid"};
                         await digital.SavePackageAsync(package);
                     }
                     product.ConfigureService("PACKAGE",provider.Id,package.Id);
@@ -51,32 +51,26 @@ public sealed class RetailInventory(PosDbContext db,IUnitOfWork work,IAuthServic
             db.Products.Add(product);await db.SaveChangesAsync(ct);db.Entry(product).State=EntityState.Detached;return product;
         });
     }
-    public async Task EnsureConfiguredPackagesAsync()
+    private static string PackageDetails(RetailReference reference)
     {
-        var profile=(await setup.LoadAsync()).Profile;
-        if(profile.IsPharmacy||!profile.MobileRechargeAvailable||auth.CurrentUser?.IsAdmin!=true)return;
-        await work.ExecuteInTransactionAsync(async ct=>
-        {
-            var providers=await db.ServiceProviders.ToDictionaryAsync(p=>p.Id,ct);
-            foreach(var package in await db.MobileServicePackages.AsNoTracking().ToListAsync(ct))
-            {
-                if(!providers.TryGetValue(package.ProviderId,out var provider))continue;
-                var key=package.CatalogKey.Length>0?package.CatalogKey:"configured-package:"+package.Id;
-                var product=await db.Products.SingleOrDefaultAsync(p=>p.CatalogKey==key,ct);
-                if(product is null)
-                {
-                    if(!package.IsActive||!provider.IsActive)continue;
-                    var category=await db.Categories.FirstOrDefaultAsync(c=>c.Name=="Digital Services",ct);
-                    if(category is null){category=new Category("Digital Services");db.Categories.Add(category);await db.SaveChangesAsync(ct);}
-                    var name=provider.Name+" · "+package.Name;
-                    product=new Product("INTERNAL-"+Guid.NewGuid().ToString("N"),name.Length<=200?name:package.Name,package.Price,0,Unit.Piece,0,category.Id);
-                    product.MarkStockUntracked();product.SetRetailKind("digital");product.SetCatalogKey(key);db.Products.Add(product);
-                }
-                product.ConfigureService("PACKAGE",provider.Id,package.Id);product.SetPrice(package.Price);product.SetPurchaseCost(package.ProviderCost);
-                product.SetActive(package.IsActive&&provider.IsActive);product.CompleteQuickEntry();
-            }
-            await db.SaveChangesAsync(ct);return true;
-        });
+        using var json=System.Text.Json.JsonDocument.Parse(reference.Details);
+        var text=string.Join("\n",json.RootElement.EnumerateObject().Where(p=>p.Value.ValueKind!=System.Text.Json.JsonValueKind.Null&&p.Value.ToString() is not ("" or "0" or "0.0")).Select(p=>SupermarketPos.Domain.Localization.PosText.Get(p.Name,SupermarketPos.Domain.Localization.PosText.Culture("en"))+": "+p.Value));
+        return text[..Math.Min(1000,text.Length)];
+    }
+    public async Task<MobileServicePackage> PrepareReferencePackageAsync(RetailReference reference,decimal price,string accountType)
+    {
+        if(auth.CurrentUser is null)throw new DomainException("Service_SignIn");
+        if(!(await setup.LoadAsync()).Profile.MobileRechargeAvailable)throw new DomainException("Service_Disabled");
+        reference=await catalog.FindAsync(reference.Key)??throw new DomainException("Service_NoPackages");
+        if(reference.Kind!="package"||reference.Category is "directory" or "directory_only"||reference.State=="directory_not_sellable"||accountType!="Prepaid")throw new DomainException("Service_NoPackages");
+        if(price<=0||price!=Money.Round2(price)||reference.Name.Length>150)throw new DomainException("Service_InvalidAmount");
+        var existing=await db.MobileServicePackages.AsNoTracking().FirstOrDefaultAsync(p=>p.CatalogKey==reference.Key);if(existing is not null)return existing;
+        var network=(await catalog.FindAsync("network:"+reference.Model))??throw new DomainException("Service_SelectProvider");
+        var provider=await db.ServiceProviders.FirstOrDefaultAsync(p=>p.CatalogKey==network.Key||p.Name==network.Name)
+            ??await UseProviderAsync(network);
+        if(!provider.IsActive||!provider.AllowedTypes.Split(',').Contains("PACKAGE"))throw new DomainException("Service_SelectProvider");
+        var package=new MobileServicePackage{CatalogKey=reference.Key,Name=reference.Name,ProviderId=provider.Id,Price=price,ProviderCostKnown=false,AccountType=accountType,PackageIdentifier=reference.Key,Validity=await catalog.PackageValidityAsync(reference.Key),Benefits=PackageDetails(reference)};
+        db.MobileServicePackages.Add(package);await db.SaveChangesAsync();return package;
     }
     public async Task<ServiceProviderAccount> UseProviderAsync(RetailReference reference)
     {
