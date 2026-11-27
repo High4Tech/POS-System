@@ -25,3 +25,11 @@ The required Build-LocalDesktop and Update-LocalDesktop scripts installed 1.2.0-
 Independent comparison matched the EXE, DLL and runtime configuration to the verified payload. EXE SHA256: 680C43CA479D96E7A0DBC3F58E55933A114E2984770E9923EC14B8232977CD08. DLL SHA256: 8D8EA5C7A64156D2AE2EFB7E4936BDA2F287B5EA5270AF44EA1A5780E16DF067. Source fingerprint: EC49369B0D3EDB392987A39A96E4D07F4C259C933CAE8873728E19F787842EA8.
 
 Update backups in D:\SupermarketPos\Backups: Before-update-20261127-054821588.zip (29 entries, 5,398,528-byte database) and Previous-application-20261127-054821588.zip (427 entries, 163,840-byte EXE). The separate pre-migration backup is Before-digital-selling-beta2-20261127.zip. The protected cart draft hash remained unchanged after installation. Live sales/provider operations were not performed during verification.
+
+## Separate testing edition
+
+The local-credential setup passed 12 assertions. The exact packaged High4TechPosTest.exe started successfully with its own fresh QA directory, remained responsive at High4Tech POS Test, and left setup incomplete until local credentials are entered. That controlled smoke-test process was closed; the installed desktop store process was left running. No existing store data or accounts were used by this test.
+
+The refreshed installer is C:\Users\nas\Downloads\High4Tech-POS-Test-1.2.0-beta.2-Setup.exe (107,453,080 bytes). SHA256: 352E15AD57D86265071075F7449002C662204AD841145434F9F33587047AD5B1. All three packaged executable/assembly/runtime-configuration hashes matched the test payload. This is the separate, unsigned testing edition; installation on a second PC and physical provider/printer operations remain untested. No final production distribution installer was generated.
+
+The source checkpoint is tag v1.2.0-beta.2 at f2e79c022651cab24547a4019ec3fbe9e73ecf3a. The previous beta tag remains available.
