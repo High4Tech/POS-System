@@ -103,7 +103,8 @@ public sealed class MobileScannerTests
     [InlineData(ScanTransport.Usb, "usb")]
     public async Task EachTransportLabelsItsPairingLinkAndUsesTheSameReceiver(ScanTransport transport, string wireName)
     {
-        var session = new ScannerSession();
+        // Transport routing is independent of wall-clock stalls; heartbeat expiry has dedicated clock-driven tests.
+        var session = new ScannerSession(new AdjustableClock());
         session.SetWorkflow(ScanMode.Scanning, "Register");
         await using var host = new MobileScannerHost(session);
         await host.StartAsync(new LanEndpoint("Test", IPAddress.Loopback, IPAddress.Parse("255.0.0.0")),

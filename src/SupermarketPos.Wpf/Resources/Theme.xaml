@@ -259,6 +259,7 @@
     </Style>
 
     <Style x:Key="CaptionWindow" TargetType="Window">
+        <Setter Property="Icon" Value="/SupermarketPos;component/Assets/app.ico"/>
         <Setter Property="FontFamily" Value="{DynamicResource UiFont}"/>
         <Setter Property="WindowStyle" Value="SingleBorderWindow"/>
         <Setter Property="layout:WindowCaption.Native" Value="True"/>

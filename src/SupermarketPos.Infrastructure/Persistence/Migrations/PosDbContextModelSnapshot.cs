@@ -1244,6 +1244,10 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("AccountNumberLengths")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("AllowedTypes")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -1254,6 +1258,13 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("CommissionPolicy")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CustomerFeeMode")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("CustomerFeePercent")
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("DefaultCommission")

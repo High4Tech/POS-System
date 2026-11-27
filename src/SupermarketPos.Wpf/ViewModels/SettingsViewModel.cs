@@ -45,6 +45,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string? _operatorStatus;
     [ObservableProperty] private int _textSizePercent = 100;
     [ObservableProperty] private string? _textSizeStatus;
+    public string BusinessSettingsTitle=>LocalizationManager.Instance[Common.RetailTestEdition.Standalone?"Retail_Settings":"Business_Settings"];
+    public string BusinessSettingsHelp=>LocalizationManager.Instance[Common.RetailTestEdition.Standalone?"Retail_SettingsHelp":"Business_SettingsHelp"];
     public string Username => _auth.CurrentUser?.Username ?? string.Empty;
     public ScannerFeedback Sounds { get; }
     public TextSizeOption[] TextSizes { get; } =

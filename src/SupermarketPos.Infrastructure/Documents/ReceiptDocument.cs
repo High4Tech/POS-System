@@ -14,7 +14,7 @@ namespace SupermarketPos.Infrastructure.Documents;
 /// <summary>QuestPDF thermal-style (80mm) receipt for a single sale, receipt layout.</summary>
 public sealed class ReceiptDocument : IDocument
 {
-    public const string SoftwareFooter="Software by: High4Tech || 03256138361";
+    public const string SoftwareFooter="Wijgandu by High4Tech || 03256138361";
     private readonly CultureInfo _culture;
     private readonly Sale _sale;
     private readonly AppSettings _settings;

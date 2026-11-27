@@ -5,7 +5,8 @@ param(
     [string]$DataDirectory = 'D:\SupermarketPos',
     [string]$Dotnet = 'dotnet',
     [switch]$NoRestore,
-    [switch]$TestRetailEdition
+    [switch]$TestRetailEdition,
+    [switch]$RetailStandaloneEdition
 )
 
 $ErrorActionPreference = 'Stop'
@@ -43,7 +44,7 @@ $builtAt = [DateTime]::UtcNow.ToString('O')
 $build = "$Version+g$($revision.Substring(0,7)).$($fingerprint.Substring(0,12).ToLowerInvariant())"
 $project = Join-Path $repo 'src\SupermarketPos.Wpf\SupermarketPos.Wpf.csproj'
 $restoreOptions = if($NoRestore) { ,@('--no-restore') } else { ,@() }
-$editionOptions = if($TestRetailEdition) { @('-p:RetailTestEdition=true','-p:CommercialBuild=false','-p:PosDataDirectory=') } else { @('-p:RetailTestEdition=false',"-p:PosDataDirectory=$directory") }
+$editionOptions = if($RetailStandaloneEdition) { @('-p:RetailStandaloneEdition=true','-p:RetailTestEdition=false','-p:CommercialBuild=false','-p:PosDataDirectory=') } elseif($TestRetailEdition) { @('-p:RetailStandaloneEdition=false','-p:RetailTestEdition=true','-p:CommercialBuild=false','-p:PosDataDirectory=') } else { @('-p:RetailStandaloneEdition=false','-p:RetailTestEdition=false',"-p:PosDataDirectory=$directory") }
 $previousProcessorCount = $env:DOTNET_PROCESSOR_COUNT
 $buildProcess = [Diagnostics.Process]::GetCurrentProcess()
 $previousPriority = $buildProcess.PriorityClass
@@ -63,7 +64,7 @@ try {
     $env:DOTNET_PROCESSOR_COUNT = $previousProcessorCount
     $buildProcess.PriorityClass = $previousPriority
 }
-if($TestRetailEdition) {
+if($TestRetailEdition -or $RetailStandaloneEdition) {
     $runtime = Get-Content -LiteralPath (Join-Path $out 'SupermarketPos.runtimeconfig.json') -Raw | ConvertFrom-Json
     if($runtime.runtimeOptions.configProperties.'SupermarketPos.DataDirectory') { throw 'A test edition must not contain the production data path.' }
 }

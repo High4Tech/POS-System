@@ -10,17 +10,18 @@
     <RootNamespace>SupermarketPos.Wpf</RootNamespace>
     <AssemblyName>SupermarketPos</AssemblyName>
     <Version>1.0.0</Version>
-    <Product>Tech Store POS</Product>
-    <AssemblyTitle>Tech Store POS</AssemblyTitle>
+    <Product>Wijgandu</Product>
+    <AssemblyTitle>Wijgandu</AssemblyTitle>
     <SatelliteResourceLanguages>ur</SatelliteResourceLanguages>
     <StartupObject>SupermarketPos.Wpf.Program</StartupObject>
     <CommercialBuild Condition="'$(CommercialBuild)' == ''">false</CommercialBuild>
+    <RetailStandaloneEdition Condition="'$(RetailStandaloneEdition)' == ''">false</RetailStandaloneEdition>
     <RetailTestEdition Condition="'$(RetailTestEdition)' == ''">false</RetailTestEdition>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(RetailTestEdition)' == 'true'">
-    <Product>High4Tech POS Test</Product>
-    <AssemblyTitle>High4Tech POS Test</AssemblyTitle>
+    <Product>Wijgandu Test</Product>
+    <AssemblyTitle>Wijgandu Test</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +29,9 @@
     <Page Include="App.xaml" />
     <AssemblyMetadata Include="CommercialBuild" Value="$(CommercialBuild)" />
     <AssemblyMetadata Include="RetailTestEdition" Value="$(RetailTestEdition)" />
+    <AssemblyMetadata Include="RetailStandaloneEdition" Value="$(RetailStandaloneEdition)" />
+    <Content Include="Assets\app.ico" Link="Branding\Wijgandu.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Resource Include="Assets\wijgandu.png" />
     <AssemblyMetadata Include="BuildConfiguration" Value="$(Configuration)" />
     <AssemblyMetadata Include="BuildTimestampUtc" Value="$(BuildTimestampUtc)" />
     <AssemblyMetadata Include="BuildSourceFingerprint" Value="$(BuildSourceFingerprint)" />
@@ -48,7 +52,7 @@
     <RuntimeHostConfigurationOption Include="SupermarketPos.DataDirectory" Value="$(PosDataDirectory)" />
   </ItemGroup>
   <Target Name="ValidateCommercialConfiguration" BeforeTargets="PrepareForBuild" Condition="'$(CommercialBuild)' == 'true'">
-    <Error Condition="'$(RetailTestEdition)' == 'true'" Text="The isolated retail test edition cannot be a commercial licensing build." />
+    <Error Condition="'$(RetailTestEdition)' == 'true' Or '$(RetailStandaloneEdition)' == 'true'" Text="The isolated retail test edition cannot be a commercial licensing build." />
     <Error Condition="'$(PublisherApi)' == '' Or !$(PublisherApi.StartsWith('https://'))" Text="Commercial builds require an HTTPS PublisherApi." />
     <Error Condition="'$(PublisherPublicKey)' == '' Or '$(ReleasePublishedAt)' == ''" Text="Commercial builds require the public verification key and immutable release publication date." />
     <Error Condition="'$(ReleaseChannel)' != 'stable' And '$(ReleaseChannel)' != 'testing'" Text="Choose stable or an explicitly authorized testing channel for a commercial build." />

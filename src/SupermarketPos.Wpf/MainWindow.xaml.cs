@@ -11,10 +11,13 @@ namespace SupermarketPos.Wpf;
 public partial class MainWindow : Window
 {
     private bool _fitQueued;
+    private readonly WindowsNavigation _windowsNavigation;
+    internal bool WindowsKeyConflict(Key key)=>_windowsNavigation.IsConflict(key);
 
     public MainWindow(PosStorage storage, ScannerController? scanner = null)
     {
         InitializeComponent();
+        _windowsNavigation=new WindowsNavigation(this);
         if (scanner is not null) PhysicalBarcodeInput.Attach(this, scanner);
         DataContextChanged += (_, e) =>
         {
@@ -46,6 +49,7 @@ public partial class MainWindow : Window
 
     private void ModelChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
+        if(e.PropertyName is nameof(MainViewModel.IsLoggedIn) or nameof(MainViewModel.DigitalServicesVisible) or nameof(MainViewModel.CanManageStock))_windowsNavigation.Refresh();
         if (e.PropertyName is nameof(MainViewModel.DigitalServicesVisible) or nameof(MainViewModel.IsLoggedIn) or nameof(MainViewModel.ActiveScreen) or nameof(MainViewModel.CanManageStock)) QueueFit();
     }
 

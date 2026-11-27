@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
         xmlns:views="clr-namespace:SupermarketPos.Wpf.Views"
-        Title="{Binding StoreProfile.Name}" Height="820" Width="1320" Style="{StaticResource CaptionWindow}"
+        Title="{Binding StoreProfile.Name, StringFormat='Wijgandu · {0}'}" Height="820" Width="1320" Style="{StaticResource CaptionWindow}"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BgBrush}"
         Icon="Assets/app.ico"

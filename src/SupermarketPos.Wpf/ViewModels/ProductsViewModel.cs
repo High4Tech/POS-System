@@ -432,7 +432,7 @@ public sealed partial class ProductsViewModel : ObservableObject
                 {
                     product = new Product(code, Editor.Name, price, vatRate.Value, unit, Editor.TrackExpiry ? 0m : stock, categoryId);
                     if(IsPharmacy&&stock==0)product.MarkStockUntracked();
-                    if(!IsPharmacy)product.SetRetailKind(unit==Unit.Piece?"labeled":"loose");
+                    if(!IsPharmacy)product.SetRetailKind(Editor.RetailType=="loose"?"loose":unit==Unit.Piece?"labeled":"loose");
                     product.SetExpiryTracking(Editor.TrackExpiry);
                     product.SetSerialTracking(Editor.TrackSerial, warrantyMonths);
                     if(DeviceTrackingAvailable)product.SetRetailDetails(Editor.Brand,Editor.Model,Editor.Sku);

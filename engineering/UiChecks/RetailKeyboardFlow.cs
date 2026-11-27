@@ -24,6 +24,7 @@ internal static partial class Program
         window.Resources.Add(reportsTemplate.DataTemplateKey,reportsTemplate);
         System.Windows.Application.Current.MainWindow=window;
         window.Show();
+        Assert(window.Title.StartsWith("Wijgandu",StringComparison.Ordinal)&&window.Icon is not null,"Main app caption and icon use Wijgandu branding");
         await shell.ShowPosCommand.ExecuteAsync(null);
         Pump();
         if(digitalOnly){await DigitalCartChecks(sp,shell,window,screenshots);window.Close();return;}
@@ -73,6 +74,7 @@ internal static partial class Program
         SendKey(search,Key.OemQuestion);
         Assert(search.IsKeyboardFocused,"Slash inside a text field keeps normal editing focus");
         model.OpenCashCommand.Execute(null);Pump();
+        Assert(!model.Customer.IncludeDetails,"Customer details start unchecked in checkout");
         var cash=Descendants(view).OfType<TextBox>().Single(text=>text.Name=="CashAmountInput");
         Assert(cash.IsKeyboardFocused&&cash.SelectionLength==cash.Text.Length,"Cash starts with amount received selected");
         model.CancelPaymentCommand.Execute(null);Pump();

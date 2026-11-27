@@ -18,7 +18,7 @@
   </ControlTemplate></Setter.Value></Setter><Setter Property="ItemsPanel"><Setter.Value><ItemsPanelTemplate><UniformGrid Columns="4"/></ItemsPanelTemplate></Setter.Value></Setter></Style>
  </Window.Resources>
  <Border Style="{StaticResource Card}" Margin="20">
-  <DockPanel><TextBlock DockPanel.Dock="Top" Text="{loc:T Business_Settings}" Style="{StaticResource H1}" Margin="6,0,6,12"/>
+  <DockPanel><TextBlock DockPanel.Dock="Top" Text="{Binding RelativeSource={RelativeSource AncestorType=Window},Path=Heading}" Style="{StaticResource H1}" Margin="6,0,6,12"/>
    <Button DockPanel.Dock="Bottom" Content="{loc:T Common_Close}" IsCancel="True" Style="{StaticResource GhostButton}" HorizontalAlignment="Right" Margin="6,8,6,0"/>
    <TextBlock DockPanel.Dock="Bottom" x:Name="Status" TextWrapping="Wrap" Margin="6,10" Foreground="{StaticResource AccentBrush}"/>
    <TabControl x:Name="Tabs" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>

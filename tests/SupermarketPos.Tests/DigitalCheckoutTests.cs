@@ -48,4 +48,11 @@ public sealed partial class DigitalLedgerTests
         foreach(var price in new[]{100,200}){var row=CartEntry(account,"LOAD",price);row.ProviderCost=0;row.ProviderCostKnown=false;await ledger.CheckoutAsync(Guid.NewGuid(),[row],"CASH",price);}
         Assert.Equal(2,await db.Context.ServiceCheckouts.CountAsync());var report=await ledger.ReportAsync(DateTime.Today,DateTime.Today.AddDays(1));Assert.Equal(0,report.Income);Assert.Equal(2,report.UnknownCosts);
     }
+    [Fact]public async Task ProviderChargeDefaultsPersistAndInvalidDestinationsCannotPost()
+    {
+        using var db=new TestDb();var(ledger,_)=await Fixture(db);var provider=(await ledger.ProvidersAsync()).Single();provider.CustomerFeeMode="PERCENT";provider.CustomerFeePercent=2;provider.AccountNumberLengths="14";await ledger.SaveProviderAsync(provider);
+        var saved=(await ledger.ProvidersAsync()).Single();Assert.Equal(20,saved.CustomerCharge(1000));Assert.Equal("14",saved.AccountNumberLengths);
+        var row=CartEntry(saved,"TRANSFER",1000,20);row.CustomerPhone="123";await Assert.ThrowsAsync<DomainException>(()=>ledger.CheckoutAsync(Guid.NewGuid(),[row],"CASH",1020));Assert.Empty(db.Context.ServicePostings);
+        row=CartEntry(saved,"TRANSFER",1000,25);row.CustomerPhone="00123456789012";await ledger.CheckoutAsync(Guid.NewGuid(),[row],"CASH",1025);Assert.Equal(2,(await ledger.ProvidersAsync()).Single().CustomerFeePercent);Assert.Equal(25,db.Context.ServicePostings.Single().Income);
+    }
 }

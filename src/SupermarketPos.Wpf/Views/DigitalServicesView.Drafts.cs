@@ -12,13 +12,13 @@ public sealed partial class DigitalServicesView
     public IRelayCommand SaveDraftCommand{get;private set;}=null!;
     public IAsyncRelayCommand ResumeDraftCommand{get;private set;}=null!;
     private sealed record DigitalDraft(int Version,Guid CheckoutId,DigitalDraftRow[] Lines);
-    private sealed record DigitalDraftRow(Guid Key,string Type,int Provider,int? Package,string? CatalogKey,string AccountType,string Name,string Amount,string Fee,string Cost,string Recipient,string Reference);
+    private sealed record DigitalDraftRow(Guid Key,string Type,int Provider,int? Package,string? CatalogKey,string AccountType,string Name,string Amount,string Fee,string Cost,string Recipient,string Reference,bool FeeOverridden=true);
     private string DraftName=>"digital-cart-"+(_auth?.CurrentUser?.Id??throw new DomainException("Service_SignIn"));
     private void SaveDraft()
     {
         try
         {
-            var lines=_cart.Select(r=>new DigitalDraftRow(r.ConfirmationId,r.Type,r.Provider.Id,r.Package?.Id,r.ReferencePackage?.Key,r.AccountType,r.Name,r.AmountText,r.FeeText,r.CostText,r.Recipient,r.Reference)).ToArray();
+            var lines=_cart.Select(r=>new DigitalDraftRow(r.ConfirmationId,r.Type,r.Provider.Id,r.Package?.Id,r.ReferencePackage?.Key,r.AccountType,r.Name,r.AmountText,r.FeeText,r.CostText,r.Recipient,r.Reference,r.FeeOverridden)).ToArray();
             _draftStore!.Write(DraftName,JsonSerializer.Serialize(new DigitalDraft(1,_checkoutKey,lines)));_status.Text=T("Trade_DraftSaved");
         }
         catch(Exception){_status.Text=T("Trade_DraftError");}
@@ -38,7 +38,7 @@ public sealed partial class DigitalServicesView
             if(package?.IsActive==false||saved.Package is not null&&package is null)throw new DomainException("Service_CatalogChanged");
             var reference=package is null&&saved.CatalogKey is{} key&&_references is not null?await _references.FindAsync(key):null;
             if(saved.Type=="PACKAGE"&&package is null&&(reference is null||reference.Kind!="package"||reference.Category is "directory" or "directory_only"))throw new DomainException("Service_CatalogChanged");
-            staged.Add(new(){ConfirmationId=saved.Key,Type=saved.Type,Provider=provider,Package=package,ReferencePackage=reference,AccountType=saved.AccountType,Name=package?.Name??reference?.Name??saved.Name,AmountText=saved.Amount,FeeText=saved.Fee,CostText=saved.Cost,Recipient=saved.Recipient,Reference=saved.Reference});
+            staged.Add(new(){ConfirmationId=saved.Key,Type=saved.Type,Provider=provider,Package=package,ReferencePackage=reference,AccountType=saved.AccountType,Name=package?.Name??reference?.Name??saved.Name,AmountText=saved.Amount,FeeText=saved.Fee,CostText=saved.Cost,Recipient=saved.Recipient,Reference=saved.Reference,FeeOverridden=saved.FeeOverridden});
         }
         _checkoutKey=draft.CheckoutId;foreach(var row in staged){row.PropertyChanged+=RowChanged;_cart.Add(row);}_entryDirty=false;Record();_status.Text=T("Digital_DraftResumed");
     }

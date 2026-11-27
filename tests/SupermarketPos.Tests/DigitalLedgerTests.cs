@@ -18,7 +18,7 @@ public sealed partial class DigitalLedgerTests
         await setup.CompleteAsync(profile,"owner","TestPassword123");await auth.LoginAsync("owner","TestPassword123");
         var ledger=new DigitalServiceLedger(db.Context,work,auth,setup);var provider=new ServiceProviderAccount{Name="Test provider",AllowedTypes="CASHIN,CASHOUT,TRANSFER,LOAD,PACKAGE",OpeningFloat=2000};await ledger.SaveProviderAsync(provider);return(ledger,provider.Id);
     }
-    private static ServiceTransaction Entry(int provider,string type="CASHIN",string status="Confirmed")=>new(){ConfirmationId=Guid.NewGuid(),ProviderId=provider,Type=type,Status=status,Principal=1000,Reference="TEST-REFERENCE",OccurredAt=DateTime.Now,FloatChange=-1000};
+    private static ServiceTransaction Entry(int provider,string type="CASHIN",string status="Confirmed")=>new(){ConfirmationId=Guid.NewGuid(),ProviderId=provider,Type=type,Status=status,Principal=1000,CustomerPhone="03001234567",Reference="TEST-REFERENCE",OccurredAt=DateTime.Now,FloatChange=-1000};
     [Fact]public async Task TechRetailDefaultsSupportLoadAndConfiguredPackagesWithoutPhysicalStock()
     {
         using var db=new TestDb();var(ledger,provider)=await Fixture(db,techRetail:true);
@@ -59,7 +59,7 @@ public sealed partial class DigitalLedgerTests
     {
         using var db=new TestDb();var (ledger,provider)=await Fixture(db);
         var account=await db.Context.ServiceProviders.FindAsync(provider);account!.OpeningFloat=0;await db.Context.SaveChangesAsync();
-        var tx=DigitalServiceLedger.ProviderQuote(account,"CASHOUT",1000);tx.Status="Confirmed";tx.ConfirmationId=Guid.NewGuid();tx.OccurredAt=DateTime.Now;
+        var tx=DigitalServiceLedger.ProviderQuote(account,"CASHOUT",1000);tx.Status="Confirmed";tx.ConfirmationId=Guid.NewGuid();tx.OccurredAt=DateTime.Now;tx.CustomerPhone="03001234567";
         await ledger.SaveAsync(tx,false);Assert.Equal(-1000,db.Context.ServicePostings.Single().CashChange);Assert.Equal(0,db.Context.ServicePostings.Single().FloatChange);
     }
     [Fact]public async Task RechargeRecordsActualCostsAndNoPhysicalInventory()

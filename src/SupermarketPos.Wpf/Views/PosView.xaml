@@ -316,14 +316,6 @@
                     <DockPanel>
                         <WrapPanel DockPanel.Dock="Top" Margin="6,4,6,6">
                             <TextBlock Text="{loc:T Pos_Cart}" Style="{StaticResource FormLabel}" VerticalAlignment="Center" Margin="0,0,8,0"/><Button Content="{Binding CartCustomerCaption}" Command="{Binding SelectCustomerCommand}" Style="{StaticResource GhostButton}" Margin="6,0" ToolTip="{loc:T Customer_SelectExisting}"/>
-                            <Button Content="{loc:T Common_More}" Click="OpenCartActions" Style="{StaticResource GhostButton}" Margin="2">
-                              <Button.ContextMenu><ContextMenu DataContext="{Binding PlacementTarget.DataContext,RelativeSource={RelativeSource Self}}">
-                                <MenuItem Header="{loc:T Trade_SaveDraft}" Command="{Binding SaveDraftCommand}"/>
-                                <MenuItem Header="{loc:T Trade_ResumeDraft}" Command="{Binding ResumeDraftCommand}"/>
-                                <MenuItem Header="{loc:T Trade_ProductSales}" Command="{Binding ViewCartProductHistoryCommand}"/>
-                                <MenuItem Header="{loc:T Trade_ViewMargin}" Command="{Binding ViewMarginCommand}" Visibility="{Binding ShowMargin,Converter={StaticResource BoolToVis}}"/>
-                              </ContextMenu></Button.ContextMenu>
-                            </Button>
                         </WrapPanel>
                         <Grid Background="White" ClipToBounds="True">
                         <DataGrid layout:TableLayout.Key="register-cart-retail-kinds" x:Name="CartTable" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.VerticalScrollBarVisibility="Auto" RowDetailsVisibilityMode="Visible" ItemsSource="{Binding Lines}" SelectedItem="{Binding SelectedCartLine}" VerticalAlignment="Stretch" Margin="0">

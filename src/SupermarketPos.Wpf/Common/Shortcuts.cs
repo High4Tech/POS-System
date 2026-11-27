@@ -63,9 +63,10 @@ internal static class Shortcuts
                 entry.Requirement is { } requirement ? text[requirement] : null);
         }).ToArray();
         return (text[currentPage.Label], current.Select(entry => Row(entry, "",
-            entry.Invoke is null ? text[entry.Requirement ?? "Shortcut_Unavailable"] : null)).ToArray(), other);
+            entry.Modifiers==ModifierKeys.Windows&&window is MainWindow main&&main.WindowsKeyConflict(entry.Key)?text["Shortcut_WindowsConflict"]:entry.Invoke is null ? text[entry.Requirement ?? "Shortcut_Unavailable"] : null)).ToArray(), other);
 
         ReferenceRow Row(Entry entry, string page, string? availability) => new(
+            (entry.Modifiers.HasFlag(ModifierKeys.Windows) ? "Win + " : "") +
             (entry.Modifiers.HasFlag(ModifierKeys.Control) ? "Ctrl + " : "") +
             (entry.Modifiers.HasFlag(ModifierKeys.Alt) ? "Alt + " : "") +
             (entry.Modifiers.HasFlag(ModifierKeys.Shift) ? "Shift + " : "") + (entry.Key==Key.OemQuestion?"/":entry.Key.ToString()),
@@ -136,6 +137,15 @@ internal static class Shortcuts
         {
             yield return new(Key.F, ctrl, "Shortcut_FocusSearch", search is null ? null : () => { search.Focus(); search.SelectAll(); });
             yield return new(Key.OemQuestion, 0, "Shortcut_FocusSearch", search is null ? null : () => { search.Focus(); search.SelectAll(); });
+        }
+        foreach(var modifier in new[]{ModifierKeys.Windows,alt})
+        {
+            yield return new(Key.H,modifier,"Nav_Dashboard",Run(shell.ShowDashboardCommand));
+            yield return new(Key.S,modifier,"Nav_Pos",Run(shell.ShowPosCommand));
+            if(shell.DigitalServicesVisible)yield return new(Key.D,modifier,"Service_Title",Run(shell.ShowDigitalServicesCommand));
+            if(shell.CanManageStock){yield return new(Key.P,modifier,"Nav_Purchases",Run(shell.ShowPurchasesCommand));yield return new(Key.T,modifier,"Nav_Products",Run(shell.ShowProductsCommand));}
+            yield return new(Key.R,modifier,"Nav_Reports",Run(shell.ShowReportsCommand));yield return new(Key.C,modifier,"Nav_Customers",Run(shell.ShowCustomersCommand));yield return new(Key.Z,modifier,"Nav_Settings",Run(shell.ShowSettingsCommand));
+            yield return new(Key.X,modifier,"Scanner_PairTitle",shell.Scanner.OpenPanelCommand.CanExecute(null)?()=>shell.Scanner.OpenPanelCommand.Execute(null):null);
         }
         yield return new(Key.D1,alt,"Nav_Dashboard",Run(shell.ShowDashboardCommand));
         yield return new(Key.D2,alt,"Nav_Pos",Run(shell.ShowPosCommand));

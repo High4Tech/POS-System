@@ -39,6 +39,6 @@ public sealed partial class CustomerFieldsViewModel : ObservableObject
         Address = customer?.Address;
     }
 
-    public SaleCustomer? Build() => IncludeDetails ? SaleCustomer.Create(Name, Phone, Email, Address) : null;
+    public SaleCustomer? Build() => IncludeDetails ? SaleCustomer.Create(Name, Phone, Email, Address) : SelectedCustomer?.Customer;
 }
 public sealed record CustomerChoice(SaleCustomer Customer){public string Label=>$"{Customer.Name} · {Customer.Phone??Customer.Email}";}

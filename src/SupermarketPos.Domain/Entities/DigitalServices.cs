@@ -8,6 +8,10 @@ public sealed class ServiceProviderAccount
     public decimal OpeningFloat{get;set;} public string FeePolicy{get;set;}="";public string CommissionPolicy{get;set;}="";public bool IsActive{get;set;}=true;public int Revision{get;set;}
     public decimal DefaultCustomerFee{get;set;} public decimal DefaultProviderFee{get;set;} public decimal DefaultCommission{get;set;}
     public decimal LoadCostRate{get;set;}=1m;
+    public string CustomerFeeMode{get;set;}="FIXED";
+    public decimal CustomerFeePercent{get;set;}
+    public string AccountNumberLengths{get;set;}="";
+    public decimal CustomerCharge(decimal amount)=>CustomerFeeMode=="PERCENT"?Money.Round2(amount*(CustomerFeePercent/100m)):DefaultCustomerFee;
 }
 public sealed class MobileServicePackage
 {

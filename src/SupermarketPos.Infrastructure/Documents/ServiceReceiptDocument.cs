@@ -31,6 +31,7 @@ public sealed class ServiceReceiptDocument:IDocument
             {
                 c.Item().PaddingVertical(5).LineHorizontal(.5f);
                 c.Item().Text(transaction.ProviderName+" · "+T(transaction.Type=="TRANSFER"?"Digital_OnlineTransfer":"Service_"+transaction.Type)).Bold();
+                if(transaction.Type=="LOAD"&&transaction.AccountType.Length>0)c.Item().Text(T("Service_"+transaction.AccountType));
                 if(transaction.PackageName.Length>0)c.Item().Text(transaction.PackageName);
                 if(transaction.PackageIdentifier.Length>0)c.Item().Text(transaction.PackageIdentifier+" · "+T("Service_"+transaction.AccountType));
                 if(transaction.PackageValidity.Length>0)c.Item().Text(T("Service_Validity")+": "+transaction.PackageValidity);

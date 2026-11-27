@@ -20,7 +20,6 @@ public sealed partial class DigitalServicesView
         var providers=_providers.Where(p=>p.IsActive&&p.AllowedTypes.Split(',').Contains("PACKAGE")).ToArray();if(!providers.Any(p=>p.Name==_network))_network=providers.FirstOrDefault()?.Name??"";
         filters.Children.Add(BusinessForm.Label("Retail_SelectNetwork"));var network=new ComboBox{ItemsSource=providers,DisplayMemberPath="Name",SelectedValuePath="Name",SelectedValue=_network,Margin=new Thickness(4)};filters.Children.Add(network);
         network.SelectionChanged+=(_,_)=>{_network=(string?)network.SelectedValue??"";Record();};
-        var accounts=new StackPanel{Orientation=Orientation.Horizontal,Margin=new Thickness(4,8,4,8)};foreach(var type in new[]{"Prepaid","Postpaid"}){var radio=new RadioButton{Content=T("Service_"+type),GroupName=_accountGroup,IsChecked=_accountType==type,Margin=new Thickness(4,0,18,0)};radio.Checked+=(_,_)=>{_accountType=type;Record();};accounts.Children.Add(radio);}filters.Children.Add(accounts);
         var search=new TextBox{Name="PackageSearch",MaxLength=150,Margin=new Thickness(4,4,4,8),ToolTip=T("Service_SearchPackages")};System.Windows.Automation.AutomationProperties.SetName(search,T("Service_SearchPackages"));filters.Children.Add(search);_search=search;
         var list=new ListBox{Name="PackageChoices",HorizontalContentAlignment=HorizontalAlignment.Stretch,BorderThickness=new Thickness(0),Background=System.Windows.Media.Brushes.Transparent};list.SetResourceReference(TagProperty,"ProductCardWidth");ScrollViewer.SetHorizontalScrollBarVisibility(list,ScrollBarVisibility.Disabled);Grid.SetRow(list,1);panel.Children.Add(list);
         var items=new FrameworkElementFactory(typeof(WrapPanel));list.ItemsPanel=new ItemsPanelTemplate(items);
@@ -35,7 +34,7 @@ public sealed partial class DigitalServicesView
         list.PreviewKeyDown+=(_,e)=>{if(e.Key==Key.Enter){e.Handled=true;Choose();}};search.PreviewKeyDown+=(_,e)=>{if(e.Key==Key.Down){list.SelectedIndex=0;list.Focus();e.Handled=true;}else if(e.Key==Key.Enter){list.SelectedIndex=Math.Max(0,list.SelectedIndex);e.Handled=true;Choose();}};
         var empty=BusinessForm.Label("Service_NoPackages");Grid.SetRow(empty,1);panel.Children.Add(empty);
         var rows=new List<PackageChoice>();var provider=providers.FirstOrDefault(p=>p.Name==_network);
-        foreach(var pack in _packages.Where(p=>p.IsActive&&p.ProviderId==provider?.Id&&p.AccountType==_accountType))
+        foreach(var pack in _packages.Where(p=>p.IsActive&&p.ProviderId==provider?.Id))
         {
             var description=ReferenceText.Format(pack.Benefits);if(pack.Validity.Length>0&&!description.Contains(pack.Validity,StringComparison.CurrentCultureIgnoreCase))description+="\n"+T("Service_Validity")+": "+pack.Validity;
             rows.Add(new(provider!,pack,null,pack.Name,description,pack.Price+pack.CustomerFee));
@@ -44,13 +43,13 @@ public sealed partial class DigitalServicesView
         search.TextChanged+=(_,_)=>Filter();Filter();_ = LoadReferences();
         async Task LoadReferences()
         {
-            if(_references is null||provider is null||_accountType!="Prepaid")return;
+            if(_references is null||provider is null)return;
             try{var references=await _references.SearchAsync("","package",1000);rows.AddRange(references.Where(r=>(provider.CatalogKey=="network:"+r.Model||r.Brand.Equals(provider.Name,StringComparison.OrdinalIgnoreCase))&&r.Category is not ("directory" or "directory_only")&&r.State!="directory_not_sellable"&&!_packages.Any(p=>p.CatalogKey==r.Key)).Select(r=>new PackageChoice(provider,null,r,r.Name,ReferenceText.Format(r.Details),decimal.TryParse(r.SourcePrice,NumberStyles.Number,CultureInfo.InvariantCulture,out var amount)?amount:null)));Filter();}catch(Exception){_status.Text=T("Service_Error");}
         }
         return panel;
     }
     private void AddPackage(PackageChoice choice)
     {
-        AddRow(new DigitalCartLine{Type="PACKAGE",Provider=choice.Provider,Package=choice.Package,ReferencePackage=choice.Reference,Name=choice.Caption,AccountType=_accountType,AmountText=choice.Amount?.ToString("0.00",CultureInfo.InvariantCulture)??"",CostText=choice.Package?.ProviderCostKnown==true?choice.Package.ProviderCost.ToString("0.00",CultureInfo.InvariantCulture):""});
+        AddRow(new DigitalCartLine{Type="PACKAGE",Provider=choice.Provider,Package=choice.Package,ReferencePackage=choice.Reference,Name=choice.Caption,AccountType=choice.Package?.AccountType??"Prepaid",AmountText=choice.Amount?.ToString("0.00",CultureInfo.InvariantCulture)??"",CostText=choice.Package?.ProviderCostKnown==true?choice.Package.ProviderCost.ToString("0.00",CultureInfo.InvariantCulture):""});
     }
 }

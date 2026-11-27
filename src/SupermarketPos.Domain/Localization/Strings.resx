@@ -51,7 +51,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
-  <data name="App_Title"><value>Tech Store POS</value></data>
+  <data name="App_Title"><value>Wijgandu</value></data>
   <data name="Login_Title"><value>Sign In</value></data>
   <data name="Login_Username"><value>Username</value></data>
   <data name="Login_Password"><value>Password</value></data>
@@ -1202,7 +1202,7 @@
   <data name="Service_SERVICE" xml:space="preserve"><value>Service / fee</value></data>
   <data name="Service_TRANSFER" xml:space="preserve"><value>Bank / wallet transfer</value></data>
   <data name="Service_Catalog" xml:space="preserve"><value>Service catalog</value></data>
-  <data name="Trial_Title" xml:space="preserve"><value>Set up High4Tech POS Test</value></data>
+  <data name="Trial_Title" xml:space="preserve"><value>Set up Wijgandu Test</value></data>
   <data name="Trial_LocalOnly" xml:space="preserve"><value>A separate Tech Retail test store. Create a local username and password; no cloud signup or activation is needed.</value></data>
   <data name="Trial_Create" xml:space="preserve"><value>Create test store</value></data>
   <data name="Trial_Start" xml:space="preserve"><value>Open test store</value></data>
@@ -1241,4 +1241,26 @@
   <data name="Digital_ManualReceipt" xml:space="preserve"><value>Manual service receipt.</value></data>
   <data name="Digital_ServiceName"><value>Service</value></data>
   <data name="Digital_DraftResumed" xml:space="preserve"><value>Saved digital cart restored.</value></data>
+  <data name="Digital_InvalidMobile" xml:space="preserve"><value>Enter an 11-digit Pakistani mobile number beginning with 03 (or its +92 equivalent).</value></data>
+  <data name="Digital_InvalidIban" xml:space="preserve"><value>Enter a valid 24-character Pakistan IBAN, including its correct check digits.</value></data>
+  <data name="Digital_InvalidRecipient" xml:space="preserve"><value>Enter a valid Pakistani mobile number, IBAN, or an account number matching this provider’s configured lengths.</value></data>
+  <data name="Digital_PhoneHint" xml:space="preserve"><value>Pakistani mobile: 03XXXXXXXXX, exactly 11 digits. +92 equivalents are accepted.</value></data>
+  <data name="Digital_RecipientHint" xml:space="preserve"><value>Mobile / Raast ID, Pakistan IBAN (24 characters), or a bank account number. Domestic account lengths depend on the selected provider.</value></data>
+  <data name="Digital_DefaultCharges" xml:space="preserve"><value>Default service charges</value></data>
+  <data name="Digital_ChargeMode" xml:space="preserve"><value>Charge method</value></data>
+  <data name="Digital_FixedCharge" xml:space="preserve"><value>Fixed amount (PKR)</value></data>
+  <data name="Digital_PercentCharge" xml:space="preserve"><value>Percentage (%)</value></data>
+  <data name="Digital_ChargeValue" xml:space="preserve"><value>Default value</value></data>
+  <data name="Digital_ChargeHelp" xml:space="preserve"><value>Saved for this provider. Percentage charges follow the amount; editing a cart charge overrides only that transaction.</value></data>
+  <data name="Digital_AccountLengths" xml:space="preserve"><value>Domestic account lengths (comma-separated, optional)</value></data>
+  <data name="Digital_AccountLengthsHelp" xml:space="preserve"><value>Use lengths verified by the provider, e.g. 14,16. Published defaults apply when known; otherwise use a mobile/Raast ID or IBAN. This checks format, not whether an account exists.</value></data>
+  <data name="Shortcut_WindowsConflict" xml:space="preserve"><value>Reserved by Windows or another app; use the Alt alternative.</value></data>
+  <data name="Retail_ProductType" xml:space="preserve"><value>Product type</value></data>
+  <data name="Retail_Warranty" xml:space="preserve"><value>Includes a warranty</value></data>
+  <data name="Retail_StoreDetails" xml:space="preserve"><value>Store details</value></data>
+  <data name="Retail_Settings" xml:space="preserve"><value>Retail settings</value></data>
+  <data name="Retail_SettingsHelp" xml:space="preserve"><value>Store details, receipt preferences, digital services and local backups.</value></data>
+  <data name="Retail_SetupTitle" xml:space="preserve"><value>Set up your retail store</value></data>
+  <data name="Retail_SetupHelp" xml:space="preserve"><value>Enter your store details and create a local username and password. Your data stays on this PC.</value></data>
+  <data name="Setup_YourLogo" xml:space="preserve"><value>Your logo</value></data>
 </root>

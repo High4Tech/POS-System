@@ -96,7 +96,7 @@
                         <ComboBox SelectedValue="{Binding Editor.SupplierId}" ItemsSource="{Binding Editor.Suppliers}" SelectedValuePath="Id" DisplayMemberPath="Name" AutomationProperties.Name="{loc:T Supplier_Optional}" Margin="0,0,0,7"/>
                         <TextBlock Text="{loc:T Measure_MinimumStock}" Style="{StaticResource FormLabel}" TextWrapping="Wrap" Margin="0,3,0,4"/>
                         <TextBox Text="{Binding Editor.MinimumStock, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" AutomationProperties.Name="{loc:T Measure_MinimumStock}" Margin="0,0,0,7" />
-                        <CheckBox Content="{loc:T Batch_Track}" IsChecked="{Binding Editor.TrackExpiry}" IsEnabled="{Binding Editor.HasExistingBatches, Converter={StaticResource InverseBoolToVis}}"/>
+                        <CheckBox Visibility="{Binding Editor.AllowExpiry,Converter={StaticResource BoolToVis}}" Content="{loc:T Batch_Track}" IsChecked="{Binding Editor.TrackExpiry}" IsEnabled="{Binding Editor.HasExistingBatches, Converter={StaticResource InverseBoolToVis}}"/>
                         <StackPanel Visibility="{Binding ShowPharmacyOpeningBatch, Converter={StaticResource BoolToVis}}">
                             <TextBlock Text="{loc:T Batch_Lot}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
                             <TextBox Text="{Binding Editor.BatchLot, UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}" MaxLength="20"
@@ -122,14 +122,14 @@
                             </StackPanel>
                         </Grid>
                     </StackPanel>
-        <Grid Visibility="{Binding Editor.IsPharmacy, Converter={StaticResource InverseBoolToVis}}">
+        <StackPanel Visibility="{Binding Editor.IsPharmacy, Converter={StaticResource InverseBoolToVis}}"><TextBlock Text="{loc:T Retail_ProductType}" Style="{StaticResource FormLabel}"/><ComboBox x:Name="RetailProductType" ItemsSource="{Binding Editor.RetailTypes}" DisplayMemberPath="Name" SelectedValuePath="Code" SelectedValue="{Binding Editor.RetailType}" Margin="0,4,0,14"/><Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="24" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <StackPanel>
-                <TextBlock Text="{loc:T Products_Barcode}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                <StackPanel Visibility="{Binding Editor.ShowBarcode,Converter={StaticResource BoolToVis}}"><TextBlock Text="{loc:T Products_Barcode}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
                 <DockPanel Margin="0,0,0,8">
                     <Button Visibility="Collapsed" DockPanel.Dock="Right" Command="{Binding ToggleCaptureCommand}" Margin="6,0,0,0">
                         <Button.Style>
@@ -158,11 +158,11 @@
                         HorizontalAlignment="Left" Margin="0,0,0,8" Visibility="{Binding MatchingProduct.Name, Converter={StaticResource StrToVis}, FallbackValue=Collapsed}"
                         Style="{StaticResource GhostButton}" />
 
-                <TextBlock Text="{loc:T Products_Name}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
+                </StackPanel><TextBlock Text="{loc:T Products_Name}" Style="{StaticResource FormLabel}" Margin="0,0,0,4" />
                 <TextBox Text="{Binding Editor.Name, UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}" Margin="0,0,0,12"/>
                 <WrapPanel Margin="0,0,0,12">
                     <CheckBox Content="{loc:T Scanner_ProductActive}" IsChecked="{Binding Editor.IsActive}" Margin="0,0,12,0" />
-                    <CheckBox Content="{loc:T Batch_Track}" IsChecked="{Binding Editor.TrackExpiry}">
+                    <CheckBox Visibility="{Binding Editor.AllowExpiry,Converter={StaticResource BoolToVis}}" Content="{loc:T Batch_Track}" IsChecked="{Binding Editor.TrackExpiry}">
                         <CheckBox.Style>
                             <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
                                 <Style.Triggers>
@@ -189,8 +189,7 @@
                 <TextBlock Text="{loc:T Tech_Sku}" Style="{StaticResource FormLabel}"/>
                 <TextBox Text="{Binding Editor.Sku,UpdateSourceTrigger=PropertyChanged}" MaxLength="120" Margin="0,4,0,8"/>
                 <CheckBox Content="{loc:T Trade_SerialTrack}" IsChecked="{Binding Editor.TrackSerial}" Margin="0,0,0,8" />
-                <TextBlock Text="{loc:T Trade_WarrantyMonths}" Style="{StaticResource FormLabel}" />
-                <TextBox Text="{Binding Editor.WarrantyMonths, UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}" FlowDirection="LeftToRight" Margin="0,4,0,8" />
+                <CheckBox Content="{loc:T Retail_Warranty}" IsChecked="{Binding Editor.WarrantyEnabled}" Margin="0,0,0,8"/><StackPanel Visibility="{Binding Editor.WarrantyEnabled,Converter={StaticResource BoolToVis}}"><TextBlock Text="{loc:T Trade_WarrantyMonths}" Style="{StaticResource FormLabel}" /><TextBox Text="{Binding Editor.WarrantyMonths, UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}" FlowDirection="LeftToRight" Margin="0,4,0,8" /></StackPanel>
                 <Button Content="{loc:T Trade_Devices}" Command="{Binding ShowProductDevicesCommand}" Style="{StaticResource GhostButton}"
                         HorizontalAlignment="Left" Margin="0,0,0,12" Visibility="{Binding Editor.IsNew, Converter={StaticResource InverseBoolToVis}}" />
 
@@ -302,7 +301,7 @@
                         HorizontalAlignment="Left" Style="{StaticResource GhostButton}" />
 
             </StackPanel>
-        </Grid>
+        </Grid></StackPanel>
                 <!-- product image -->
                 <Grid Margin="0,0,0,14" Visibility="{Binding Editor.ShowProductImages,Converter={StaticResource BoolToVis}}">
                     <Grid.ColumnDefinitions>

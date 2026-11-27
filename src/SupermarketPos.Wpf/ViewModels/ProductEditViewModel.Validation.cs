@@ -8,7 +8,7 @@ public sealed partial class ProductEditViewModel:IDataErrorInfo
 {
     public string Error=>"";
     public string this[string field]=>FieldError(field);
-    public string FirstFieldError=>new[]{nameof(Name),nameof(Barcode),nameof(Price),nameof(VatPercent),nameof(Stock),nameof(PurchaseCost),nameof(CategoryId),nameof(MedicineUnit),nameof(UnitsPerStrip),nameof(MedicinePackStrips),nameof(StripPrice),nameof(UnitsPerPackage),nameof(PackagePrice),nameof(PackageCost),nameof(MinimumStock),nameof(BatchLot),nameof(BatchExpiry)}.Select(FieldError).FirstOrDefault(e=>e.Length>0)??"";
+    public string FirstFieldError=>new[]{nameof(Name),nameof(Barcode),nameof(Price),nameof(VatPercent),nameof(Stock),nameof(PurchaseCost),nameof(CategoryId),nameof(MedicineUnit),nameof(UnitsPerStrip),nameof(MedicinePackStrips),nameof(StripPrice),nameof(UnitsPerPackage),nameof(PackagePrice),nameof(PackageCost),nameof(WarrantyMonths),nameof(MinimumStock),nameof(BatchLot),nameof(BatchExpiry)}.Select(FieldError).FirstOrDefault(e=>e.Length>0)??"";
     private string FieldError(string field)
     {
         var text=LocalizationManager.Instance;
@@ -25,6 +25,7 @@ public sealed partial class ProductEditViewModel:IDataErrorInfo
             case nameof(VatPercent):return IsPharmacy&&string.IsNullOrWhiteSpace(VatPercent)?"":!decimal.TryParse(VatPercent,NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,out var vat)||vat is <0 or >100?text[string.IsNullOrWhiteSpace(VatPercent)?"Validation_Required":"Products_InvalidVat"]:"";
             case nameof(Stock):return IsPharmacy&&!IsNew||string.IsNullOrWhiteSpace(Stock)?"":!decimal.TryParse(Stock,NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,out var stock)||stock<0||IsPharmacy&&stock==0||stock!=decimal.Round(stock,SellingMethod is "weight" or "volume"?3:0)?text["Purchase_QuantityInvalid"]:"";
             case nameof(CategoryId):return CategoryId==0&&!IsPharmacy?text["Validation_Required"]:"";
+            case nameof(WarrantyMonths):return WarrantyEnabled?Number(WarrantyMonths,whole:true):"";
             case nameof(PurchaseCost):return Number(PurchaseCost,true);
             case nameof(MinimumStock):return Number(MinimumStock,true,precision:3);
             case nameof(MedicineUnit):return IsPharmacy&&MedicineUnit.Length==0&&(IsNew&&Stock.Length>0||!IsNew&&StockTracked)?text["Pharmacy_MissingUnit"]:"";

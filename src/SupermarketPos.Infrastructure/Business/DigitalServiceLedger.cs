@@ -23,6 +23,7 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
         if((await setup.LoadAsync()).Profile.DigitalServicesAvailable==false)throw new DomainException("Service_Disabled");
         if(new[]{entry.DefaultCustomerFee,entry.DefaultProviderFee,entry.DefaultCommission}.Any(v=>v<0||v!=Money.Round2(v))||entry.LoadCostRate is <0 or >10)throw new DomainException("Service_InvalidAmount");
         if(string.IsNullOrWhiteSpace(entry.Name)||entry.Name.Length>100||entry.OpeningFloat<0||entry.OpeningFloat!=Money.Round2(entry.OpeningFloat)||entry.FeePolicy.Length>300||entry.CommissionPolicy.Length>300||entry.AllowedTypes.Split(',').Any(c=>c is not ("CASHIN" or "CASHOUT" or "TRANSFER" or "LOAD" or "PACKAGE")))throw new DomainException("Service_Invalid");
+        if(entry.CustomerFeeMode is not ("FIXED" or "PERCENT")||entry.CustomerFeePercent is <0 or >100||entry.CustomerFeePercent!=decimal.Round(entry.CustomerFeePercent,4)||!PakistanPayment.ValidLengths(entry.AccountNumberLengths))throw new DomainException("Service_InvalidAmount");
         var saved=entry.Id==0?null:await db.ServiceProviders.SingleAsync(p=>p.Id==entry.Id);
         if(saved is null)db.ServiceProviders.Add(entry);
         else {if(saved.OpeningFloat!=entry.OpeningFloat&&await db.ServiceTransactions.AnyAsync(t=>t.ProviderId==saved.Id))throw new DomainException("Service_OpeningLocked");var revision=saved.Revision;db.Entry(saved).CurrentValues.SetValues(entry);saved.Revision=revision+1;}
@@ -49,7 +50,7 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
         if(entry.Type is "CASHIN" or "CASHOUT" or "TRANSFER"?!business.DigitalWalletAvailable:!business.MobileRechargeAvailable)throw new DomainException("Service_Disabled");
         if(await db.ServiceTransactions.AsNoTracking().SingleOrDefaultAsync(t=>t.ConfirmationId==entry.ConfirmationId,ct) is{} prior)
         {
-            if(prior.ProviderId!=entry.ProviderId||prior.PackageId!=entry.PackageId||prior.Principal!=entry.Principal||prior.Type!=entry.Type||prior.CustomerFee!=entry.CustomerFee||prior.ProviderFee!=entry.ProviderFee||prior.Commission!=entry.Commission||prior.ProviderCost!=entry.ProviderCost||prior.ProviderCostKnown!=entry.ProviderCostKnown||prior.Collected!=entry.Collected||prior.FloatChange!=entry.FloatChange||prior.CustomerPhone!=entry.CustomerPhone||prior.Reference!=entry.Reference||prior.PaymentMethod!=entry.PaymentMethod||prior.CheckoutId!=entry.CheckoutId)throw new DomainException("Service_ConfirmationConflict");
+            if(prior.ProviderId!=entry.ProviderId||prior.PackageId!=entry.PackageId||prior.Principal!=entry.Principal||prior.Type!=entry.Type||prior.CustomerFee!=entry.CustomerFee||prior.ProviderFee!=entry.ProviderFee||prior.Commission!=entry.Commission||prior.ProviderCost!=entry.ProviderCost||prior.ProviderCostKnown!=entry.ProviderCostKnown||prior.Collected!=entry.Collected||prior.FloatChange!=entry.FloatChange||prior.CustomerPhone!=entry.CustomerPhone||prior.Reference!=entry.Reference||prior.PaymentMethod!=entry.PaymentMethod||prior.CheckoutId!=entry.CheckoutId||prior.AccountType!=entry.AccountType)throw new DomainException("Service_ConfirmationConflict");
             return prior;
         }
         var provider=await db.ServiceProviders.SingleOrDefaultAsync(p=>p.Id==entry.ProviderId,ct)??throw new DomainException("Service_SelectProvider");
@@ -80,6 +81,7 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
     });
     private async Task PostAsync(ServiceTransaction entry,ServiceProviderAccount provider,CancellationToken ct)
     {
+        if(entry.Type is "LOAD" or "PACKAGE")PakistanPayment.Mobile(entry.CustomerPhone);else PakistanPayment.Recipient(entry.CustomerPhone,provider.Name,provider.AccountNumberLengths);
         if(await db.ServicePostings.AnyAsync(p=>p.TransactionId==entry.Id,ct))return;
         provider.Revision++;db.ServicePostings.Add(new(){TransactionId=entry.Id,CashChange=entry.CashChange,FloatChange=entry.FloatChange,Income=entry.Income});
     }
@@ -114,7 +116,8 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
     {
         if(type is not ("CASHIN" or "CASHOUT" or "TRANSFER" or "LOAD"))throw new DomainException("Service_Invalid");
         var cost=type=="LOAD"?Money.Round2(amount*p.LoadCostRate):0;
-        return new(){Type=type,ProviderId=p.Id,Principal=amount,CustomerFee=p.DefaultCustomerFee,ProviderFee=p.DefaultProviderFee,Commission=p.DefaultCommission,ProviderCost=cost,Collected=amount+p.DefaultCustomerFee,FloatChange=0};
+        var fee=p.CustomerCharge(amount);
+        return new(){Type=type,ProviderId=p.Id,Principal=amount,CustomerFee=fee,ProviderFee=p.DefaultProviderFee,Commission=p.DefaultCommission,ProviderCost=cost,Collected=amount+fee,FloatChange=0};
     }
 }
 public sealed record ServicePeriodReport(decimal Income,decimal CashChange,decimal FloatChange,decimal CashIn,decimal CashOut,decimal RechargeCollected,decimal Commissions,int Pending,int FailedReversed,decimal PhysicalRevenue,decimal LooseRevenue,decimal Transfers,int UnknownCosts=0);

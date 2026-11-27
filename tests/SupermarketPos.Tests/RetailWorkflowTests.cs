@@ -29,7 +29,7 @@ public sealed class RetailWorkflowTests
     }
     private static RetailServicePayment Service(int provider,string type,decimal amount,string reference="TEST-REF")
     {
-        var tx=DigitalServiceLedger.ProviderQuote(new ServiceProviderAccount{Id=provider},type,amount);tx.ConfirmationId=Guid.NewGuid();tx.Status="Confirmed";tx.Reference=reference;tx.OccurredAt=DateTime.Now;tx.CustomerPhone="PK00TESTACCOUNT";return new(tx,true);
+        var tx=DigitalServiceLedger.ProviderQuote(new ServiceProviderAccount{Id=provider},type,amount);tx.ConfirmationId=Guid.NewGuid();tx.Status="Confirmed";tx.Reference=reference;tx.OccurredAt=DateTime.Now;tx.CustomerPhone="03001234567";return new(tx,true);
     }
     [Fact]public async Task BundledTemplatesPreserveReferenceCoverageWithoutCreatingInventory()
     {

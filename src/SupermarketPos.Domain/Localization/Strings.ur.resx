@@ -51,7 +51,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
-  <data name="App_Title"><value>ٹیک اسٹور پی او ایس</value></data>
+  <data name="App_Title"><value>Wijgandu</value></data>
   <data name="Login_Title"><value>سائن ان</value></data>
   <data name="Login_Username"><value>صارف کا نام</value></data>
   <data name="Login_Password"><value>پاس ورڈ</value></data>
@@ -1202,7 +1202,7 @@
   <data name="Service_SERVICE" xml:space="preserve"><value>خدمت / فیس</value></data>
   <data name="Service_TRANSFER" xml:space="preserve"><value>بینک / والٹ منتقلی</value></data>
   <data name="Service_Catalog" xml:space="preserve"><value>خدمات کا کیٹلاگ</value></data>
-  <data name="Trial_Title" xml:space="preserve"><value>ہائی فور ٹیک پی او ایس ٹیسٹ کی ترتیب</value></data>
+  <data name="Trial_Title" xml:space="preserve"><value>Wijgandu ٹیسٹ کی ترتیب</value></data>
   <data name="Trial_LocalOnly" xml:space="preserve"><value>الگ ٹیک ریٹیل ٹیسٹ اسٹور۔ مقامی صارف نام اور پاس ورڈ بنائیں؛ کلاؤڈ اکاؤنٹ یا ایکٹیویشن درکار نہیں۔</value></data>
   <data name="Trial_Create" xml:space="preserve"><value>ٹیسٹ اسٹور بنائیں</value></data>
   <data name="Trial_Start" xml:space="preserve"><value>ٹیسٹ اسٹور کھولیں</value></data>
@@ -1241,4 +1241,26 @@
   <data name="Digital_ManualReceipt" xml:space="preserve"><value>دستی سروس کی رسید۔</value></data>
   <data name="Digital_ServiceName"><value>سروس</value></data>
   <data name="Digital_DraftResumed" xml:space="preserve"><value>محفوظ ڈیجیٹل کارٹ بحال کر دی گئی۔</value></data>
+  <data name="Digital_InvalidMobile" xml:space="preserve"><value>03 سے شروع ہونے والا 11 ہندسوں کا پاکستانی موبائل نمبر درج کریں۔</value></data>
+  <data name="Digital_InvalidIban" xml:space="preserve"><value>درست چیک ہندسوں کے ساتھ پاکستان کا 24 حروف والا آئی بین درج کریں۔</value></data>
+  <data name="Digital_InvalidRecipient" xml:space="preserve"><value>درست پاکستانی موبائل نمبر، آئی بین یا اس بینک کی مقررہ لمبائی کا اکاؤنٹ نمبر درج کریں۔</value></data>
+  <data name="Digital_PhoneHint" xml:space="preserve"><value>پاکستانی موبائل: 03XXXXXXXXX، کل 11 ہندسے۔ +92 والا نمبر بھی قابل قبول ہے۔</value></data>
+  <data name="Digital_RecipientHint" xml:space="preserve"><value>موبائل، راست آئی ڈی، 24 حروف کا پاکستانی آئی بین یا بینک اکاؤنٹ نمبر۔ اکاؤنٹ کی لمبائی منتخب بینک پر منحصر ہے۔</value></data>
+  <data name="Digital_DefaultCharges" xml:space="preserve"><value>مستقل سروس چارجز</value></data>
+  <data name="Digital_ChargeMode" xml:space="preserve"><value>چارجز کا طریقہ</value></data>
+  <data name="Digital_FixedCharge" xml:space="preserve"><value>مقررہ رقم (روپے)</value></data>
+  <data name="Digital_PercentCharge" xml:space="preserve"><value>فیصد (%)</value></data>
+  <data name="Digital_ChargeValue" xml:space="preserve"><value>مستقل شرح یا رقم</value></data>
+  <data name="Digital_ChargeHelp" xml:space="preserve"><value>اس فراہم کنندہ کے لیے محفوظ ہوگی۔ رقم کے مطابق فیصد چارجز حساب ہوں گے۔ کارٹ میں تبدیلی صرف اسی لین دین پر لاگو ہوگی۔</value></data>
+  <data name="Digital_AccountLengths" xml:space="preserve"><value>مقامی اکاؤنٹ کی لمبائیاں (کوما سے الگ، اختیاری)</value></data>
+  <data name="Digital_AccountLengthsHelp" xml:space="preserve"><value>فراہم کنندہ کی تصدیق شدہ لمبائیاں مثلاً 14,16 استعمال کریں۔ نامعلوم فارمیٹ کے لیے موبائل، راست آئی ڈی یا آئی بین استعمال کریں۔ یہ صرف فارمیٹ کی جانچ ہے۔</value></data>
+  <data name="Shortcut_WindowsConflict" xml:space="preserve"><value>یہ شارٹ کٹ ونڈوز یا دوسری ایپ کے زیر استعمال ہے؛ Alt والا شارٹ کٹ استعمال کریں۔</value></data>
+  <data name="Retail_ProductType" xml:space="preserve"><value>مصنوعات کی قسم</value></data>
+  <data name="Retail_Warranty" xml:space="preserve"><value>وارنٹی شامل ہے</value></data>
+  <data name="Retail_StoreDetails" xml:space="preserve"><value>دکان کی تفصیلات</value></data>
+  <data name="Retail_Settings" xml:space="preserve"><value>ریٹیل کی ترتیبات</value></data>
+  <data name="Retail_SettingsHelp" xml:space="preserve"><value>دکان، رسید، ڈیجیٹل سہولیات اور مقامی بیک اپ کی ترتیبات۔</value></data>
+  <data name="Retail_SetupTitle" xml:space="preserve"><value>اپنی ریٹیل دکان بنائیں</value></data>
+  <data name="Retail_SetupHelp" xml:space="preserve"><value>دکان کی تفصیلات درج کریں اور مقامی صارف نام و پاس ورڈ بنائیں۔ آپ کا ڈیٹا اسی کمپیوٹر پر محفوظ ہوگا۔</value></data>
+  <data name="Setup_YourLogo" xml:space="preserve"><value>آپ کا لوگو</value></data>
 </root>

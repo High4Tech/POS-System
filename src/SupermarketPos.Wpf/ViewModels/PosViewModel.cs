@@ -197,6 +197,7 @@ public sealed partial class PosViewModel : ObservableObject
     [RelayCommand]
     private async Task SubmitSearchAsync()
     {
+        if(CanQuickAddProduct){await QuickAddProductAsync();return;}
         var input = _barcode.Normalize(SearchText);
         if (input.Length == 0 || !CanReadBarcode()) return;
         _readingBarcode = true;
@@ -399,6 +400,7 @@ public sealed partial class PosViewModel : ObservableObject
         if (!CanStartPayment()) return;
         IsCash = true;
         IsCredit = false;
+        Customer.IncludeDetails = false;
         Tendered = Math.Max(0,CurrentGross).ToString("0.00", CultureInfo.InvariantCulture);
         UpdateChange();
         IsPaymentOpen = true;
@@ -411,6 +413,7 @@ public sealed partial class PosViewModel : ObservableObject
         if(Lines.Any(l=>l.IsFinancialService)){Status=Text["Retail_ServiceCashOnly"];return;}
         IsCash = false;
         IsCredit = false;
+        Customer.IncludeDetails = false;
         IsPaymentOpen = true;
     }
 
@@ -423,7 +426,7 @@ public sealed partial class PosViewModel : ObservableObject
         IsCredit = true;
         CreditPaidNow = "0";
         CreditDueDate=null;CreditNote="";
-        Customer.IncludeDetails = true;
+        Customer.IncludeDetails = false;
         IsPaymentOpen = true;
     }
 

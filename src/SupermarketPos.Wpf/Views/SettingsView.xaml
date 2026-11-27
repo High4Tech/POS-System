@@ -7,8 +7,8 @@
         <StackPanel Margin="24">
             <TextBlock Text="{loc:T Settings_Title}" Style="{StaticResource H1}" Margin="0,0,0,18" />
             <Border Style="{StaticResource Card}" Margin="0,0,0,16"><StackPanel>
-                <Button Content="{loc:T Business_Settings}" Command="{Binding OpenBusinessSettingsCommand}" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" />
-                <TextBlock Text="{loc:T Business_SettingsHelp}" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                <Button Content="{Binding BusinessSettingsTitle}" Command="{Binding OpenBusinessSettingsCommand}" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" />
+                <TextBlock Text="{Binding BusinessSettingsHelp}" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,8,0,0" />
             </StackPanel></Border>
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <WrapPanel>

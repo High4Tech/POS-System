@@ -38,7 +38,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
     public bool PackagesEnabled{get;set;}
     public BusinessFormChoice[] SellingMethods=>new[]{"piece","weight","volume","pack"}.Where(c=>c==SellingMethod||c=="piece"||(c=="pack"?PackagesEnabled:LooseEnabled)).Select(c=>new BusinessFormChoice(c,LocalizationManager.Instance["Measure_"+c])).ToArray();
     public BusinessFormChoice[] PurchaseUnits=>new[]{"box","carton","pack"}.Select(c=>new BusinessFormChoice(c,LocalizationManager.Instance["Measure_"+c])).ToArray();
-    partial void OnSellingMethodChanged(string value){IsKilogram=value=="weight";OnPropertyChanged(nameof(SellingMethods));NotifySaleUnits();}
+    partial void OnSellingMethodChanged(string value){IsKilogram=value=="weight";var kind=value=="pack"?"pack":value is "weight" or "volume"?"loose":_retailType=="pack"?"labeled":_retailType;if(SetProperty(ref _retailType,kind,nameof(RetailType)))OnPropertyChanged(nameof(ShowBarcode));OnPropertyChanged(nameof(SellingMethods));NotifySaleUnits();}
     [ObservableProperty] private bool _isActive = true;
     [ObservableProperty] private string _stock = string.Empty;
     [ObservableProperty] private int _categoryId;
@@ -59,6 +59,13 @@ public sealed partial class ProductEditViewModel : ObservableObject
     public ObservableCollection<Category> Categories { get; } = new();
     public ObservableCollection<SupplierOption> Suppliers { get; } = new();
 
+    public bool AllowExpiry=>!Common.RetailTestEdition.Standalone;
+    public BusinessFormChoice[] RetailTypes=>new[]{"labeled","loose","pack"}.Where(k=>k==RetailType||k=="labeled"||(k=="pack"?PackagesEnabled:LooseEnabled)).Select(k=>new BusinessFormChoice(k,LocalizationManager.Instance[k=="pack"?"Measure_pack":"Retail_"+k])).ToArray();
+    private string _retailType="labeled";
+    public string RetailType{get=>_retailType;set{if(SetProperty(ref _retailType,value)){SellingMethod=value=="pack"?"pack":value=="loose"?"weight":"piece";OnPropertyChanged(nameof(ShowBarcode));}}}
+    public bool ShowBarcode=>IsPharmacy||RetailType!="loose";
+    private bool _warrantyEnabled;
+    public bool WarrantyEnabled{get=>_warrantyEnabled;set{if(SetProperty(ref _warrantyEnabled,value))WarrantyMonths=value?"":"0";}}
     public bool IsNew => Id is null;
     public bool CanAssignBatch => TrackExpiry && !IsNew && UnassignedStock > 0m;
     public bool CanRestockNormally => !TrackExpiry && !IsNew && (!IsPharmacy || StockTracked);
@@ -73,7 +80,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
         _internalBarcode=null;Barcode = Name = Price = Stock = PurchaseCost = string.Empty;
         VatPercent = (defaultVat * 100m).ToString("0.####", CultureInfo.InvariantCulture);
         IsKilogram = false;
-        SellingMethod="piece";UnitsPerPackage="1";PurchaseUnit="box";PackageBarcode=PackageCost=PackagePrice=MinimumStock="";
+        _retailType="labeled";OnPropertyChanged(nameof(RetailType));OnPropertyChanged(nameof(ShowBarcode));SellingMethod="piece";UnitsPerPackage="1";PurchaseUnit="box";PackageBarcode=PackageCost=PackagePrice=MinimumStock="";
         IsActive = true;
         CategoryId = defaultCategoryId;
         SupplierId = 0;
@@ -81,7 +88,7 @@ public sealed partial class ProductEditViewModel : ObservableObject
         TrackExpiry = HasExistingBatches = false;
         TrackSerial = false;
         Brand=Model=Sku="";
-        WarrantyMonths = "0";
+        _warrantyEnabled=false;OnPropertyChanged(nameof(WarrantyEnabled));WarrantyMonths = "0";
         BatchLot = BatchQuantity = "";
         BatchExpiry = null;
         UnassignedStock = 0m;
@@ -110,7 +117,8 @@ public sealed partial class ProductEditViewModel : ObservableObject
         ImagePath = p.ImagePath;
         TrackExpiry = p.TrackExpiry;
         TrackSerial = p.TrackSerial;
-        WarrantyMonths = p.WarrantyMonths.ToString(CultureInfo.InvariantCulture);
+        _retailType=p.Kind=="loose"?"loose":p.UnitsPerPackage>1?"pack":"labeled";OnPropertyChanged(nameof(RetailType));OnPropertyChanged(nameof(ShowBarcode));
+        _warrantyEnabled=p.WarrantyMonths>0;OnPropertyChanged(nameof(WarrantyEnabled));WarrantyMonths = p.WarrantyMonths.ToString(CultureInfo.InvariantCulture);
         HasExistingBatches = p.Batches.Count > 0;
         BatchLot = BatchQuantity = "";
         BatchExpiry = null;

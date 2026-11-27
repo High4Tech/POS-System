@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.Input;
 using SupermarketPos.Domain.Common;
+using SupermarketPos.Domain.Entities;
 using SupermarketPos.Wpf.Common;
 
 namespace SupermarketPos.Wpf.Views;
@@ -49,11 +50,11 @@ public sealed partial class DigitalServicesView
         void KeepPackageResultsVisible(double minimum){catalogRow.MinHeight=minimum;left.MinHeight=minimum+cartRow.MinHeight+8;}
         var catalog=new Border{Child=_entry.Type=="PACKAGE"?PackageCatalog(KeepPackageResultsVisible):EntryForm(),Margin=new Thickness(0,0,0,4)};catalog.SetResourceReference(StyleProperty,"Card");Grid.SetRow(catalog,0);left.Children.Add(catalog);
         var split=new GridSplitter{Height=8,HorizontalAlignment=HorizontalAlignment.Stretch,ResizeDirection=GridResizeDirection.Rows,ResizeBehavior=GridResizeBehavior.PreviousAndNext,Background=Brushes.Transparent};Grid.SetRow(split,1);left.Children.Add(split);
-        var cartPanel=new DockPanel();var cartHeader=new WrapPanel();cartHeader.Children.Add(BusinessForm.Label("Pos_Cart"));var more=BusinessForm.Button("Common_More",(_,_)=>{},"GhostButton");var menu=new ContextMenu();menu.Items.Add(new MenuItem{Header=T("Trade_SaveDraft")+" (Ctrl+S)",Command=SaveDraftCommand});menu.Items.Add(new MenuItem{Header=T("Trade_ResumeDraft")+" (Ctrl+Shift+O)",Command=ResumeDraftCommand});more.Click+=(_,_)=>{menu.PlacementTarget=more;menu.IsOpen=true;};cartHeader.Children.Add(more);DockPanel.SetDock(cartHeader,Dock.Top);cartPanel.Children.Add(cartHeader);
+        var cartPanel=new DockPanel();var cartHeader=new WrapPanel();cartHeader.Children.Add(BusinessForm.Label("Pos_Cart"));DockPanel.SetDock(cartHeader,Dock.Top);cartPanel.Children.Add(cartHeader);
         _cartTable=new DataGrid{Name="DigitalCart",ItemsSource=_cart,AutoGenerateColumns=false,CanUserAddRows=false,IsReadOnly=true,SelectionMode=DataGridSelectionMode.Single,RowHeight=double.NaN};_cartTable.SetResourceReference(DataGrid.MinRowHeightProperty,"TableRowHeight");TableLayout.SetKey(_cartTable,"digital-cart");
         AddTextColumn("Digital_ServiceName",nameof(DigitalCartLine.Title),1.3);AddTextColumn("Service_Provider",nameof(DigitalCartLine.ProviderName),1);
         AddEditColumn("Digital_Recipient",nameof(DigitalCartLine.Recipient),1.1,60);AddEditColumn("Measure_Amount",nameof(DigitalCartLine.AmountText),.85,40);
-        AddEditColumn("Digital_Fee",nameof(DigitalCartLine.FeeText),.7,40,nameof(DigitalCartLine.HasFee));AddEditColumn("Digital_OptionalCost",nameof(DigitalCartLine.CostText),.8,40,nameof(DigitalCartLine.HasCost));AddEditColumn("Digital_ReferenceOptional",nameof(DigitalCartLine.Reference),.9,80);
+        AddEditColumn("Digital_Fee",nameof(DigitalCartLine.FeeText),.7,40,nameof(DigitalCartLine.HasFee));AddEditColumn("Digital_OptionalCost",nameof(DigitalCartLine.CostText),.8,40,nameof(DigitalCartLine.HasCost));
         AddTextColumn("Pos_Total",nameof(DigitalCartLine.TotalText),1);
         var remove=new FrameworkElementFactory(typeof(Button));remove.SetValue(Button.ContentProperty,"×");remove.SetValue(FrameworkElement.StyleProperty,FindResource("DangerButton"));remove.SetValue(FrameworkElement.WidthProperty,30d);remove.SetValue(Control.PaddingProperty,new Thickness(3));remove.AddHandler(Button.ClickEvent,new RoutedEventHandler((sender,_)=>{if(((FrameworkElement)sender).DataContext is DigitalCartLine row)RemoveRow(row);}));_cartTable.Columns.Add(new DataGridTemplateColumn{CellTemplate=new DataTemplate{VisualTree=remove},Width=44});
         _cartTable.SelectionChanged+=(_,_)=>RemoveSelectedCommand.NotifyCanExecuteChanged();_cartTable.PreviewKeyDown+=CartKeyDown;cartPanel.Children.Add(_cartTable);
@@ -68,26 +69,36 @@ public sealed partial class DigitalServicesView
     private FrameworkElement EntryForm()
     {
         var panel=new StackPanel();
-        if(_entry.Type is "TRANSFER" or "CASHOUT")
+        var choices=new WrapPanel{Margin=new Thickness(4,0,4,10)};
+        foreach(var choice in _entry.Type=="LOAD"?new[]{"Prepaid","Postpaid"}:new[]{"TRANSFER","CASHOUT"})
         {
-            var choices=new StackPanel{Orientation=Orientation.Horizontal,Margin=new Thickness(4,0,4,10)};
-            foreach(var type in new[]{"TRANSFER","CASHOUT"}){var radio=new RadioButton{Content=T(type=="TRANSFER"?"Digital_OnlineTransfer":"Service_CASHOUT"),GroupName="digital-transfer-"+_accountGroup,IsChecked=_entry.Type==type,Margin=new Thickness(0,0,18,0)};radio.Checked+=(_,_)=>{_entry.Type=type;Record();};choices.Children.Add(radio);}panel.Children.Add(choices);
+            var radio=new RadioButton{Content=T(choice=="TRANSFER"?"Digital_OnlineTransfer":"Service_"+choice),GroupName="digital-entry-"+_accountGroup,IsChecked=_entry.Type=="LOAD"?_entry.AccountType==choice:_entry.Type==choice,Margin=new Thickness(0,0,18,0)};
+            radio.Checked+=(_,_)=>{if(_entry.Type=="LOAD")_entry.AccountType=choice;else{_entry.Type=choice;Record();}};choices.Children.Add(radio);
         }
+        panel.Children.Add(choices);
         var form=new BusinessForm(3);var providers=_providers.Where(p=>p.IsActive&&p.AllowedTypes.Split(',').Contains(_entry.Type)).ToArray();if(!providers.Any(p=>p.Id==_entry.ProviderId))_entry.ProviderId=providers.FirstOrDefault()?.Id??0;
-        var provider=new ComboBox{ItemsSource=providers,DisplayMemberPath="Name",SelectedValuePath="Id",SelectedValue=_entry.ProviderId};provider.SelectionChanged+=(_,_)=>{_entry.ProviderId=(int?)provider.SelectedValue??0;};form.Field(_entry.Type=="LOAD"?"Retail_SelectNetwork":"Service_Provider","ProviderId",provider);
+        var provider=new ComboBox{ItemsSource=providers,DisplayMemberPath="Name",SelectedValuePath="Id",SelectedValue=_entry.ProviderId};form.Field(_entry.Type=="LOAD"?"Retail_SelectNetwork":"Service_Provider","ProviderId",provider);
         TextBox Field(string label,string field,string property,int limit=40){var input=new TextBox{MaxLength=limit,FlowDirection=FlowDirection.LeftToRight};input.SetBinding(TextBox.TextProperty,new Binding(property){Source=_entry,Mode=BindingMode.TwoWay,UpdateSourceTrigger=UpdateSourceTrigger.PropertyChanged});form.Field(label,field,input);return input;}
-        var amount=Field("Measure_Amount",nameof(DigitalCartLine.AmountText),nameof(ServiceEntry.Principal));var recipient=Field(_entry.Type=="LOAD"?"Customer_Phone":"Digital_Recipient",nameof(DigitalCartLine.Recipient),nameof(ServiceEntry.Phone),60);
-        var fee=Field("Digital_Fee",nameof(DigitalCartLine.FeeText),nameof(ServiceEntry.CustomerFee));var reference=Field("Digital_ReferenceOptional",nameof(DigitalCartLine.Reference),nameof(ServiceEntry.Reference),80);_search=amount;amount.Name="DigitalAmount";
+        var amount=Field("Measure_Amount",nameof(DigitalCartLine.AmountText),nameof(ServiceEntry.Principal));var recipient=Field(_entry.Type=="LOAD"?"Customer_Phone":"Digital_Recipient",nameof(DigitalCartLine.Recipient),nameof(ServiceEntry.Phone),40);
+        recipient.ToolTip=T(_entry.Type=="LOAD"?"Digital_PhoneHint":"Digital_RecipientHint");
+        var fee=Field("Digital_Fee",nameof(DigitalCartLine.FeeText),nameof(ServiceEntry.CustomerFee));_search=amount;amount.Name="DigitalAmount";
+        var overridden=false;var applying=false;
+        ServiceProviderAccount? Selected()=>providers.FirstOrDefault(p=>p.Id==_entry.ProviderId);
+        void DefaultFee(){if(overridden||Selected() is not{} account)return;applying=true;try{_entry.CustomerFee=account.CustomerCharge(DigitalCartLine.Number(_entry.Principal,out var value)?value:0).ToString("0.00",CultureInfo.InvariantCulture);fee.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();}finally{applying=false;}}
+        fee.TextChanged+=(_,_)=>{if(!applying)overridden=true;};amount.TextChanged+=(_,_)=>DefaultFee();provider.SelectionChanged+=(_,_)=>{_entry.ProviderId=(int?)provider.SelectedValue??0;overridden=false;DefaultFee();};DefaultFee();
+        if(_entry.Type is "TRANSFER" or "CASHOUT")form.Add("",BusinessForm.Button("Digital_DefaultCharges",async(_,_)=>{if(Selected() is{} account)await ConfigureChargesAsync(account);},"GhostButton"));
+        DigitalCartLine Row(ServiceProviderAccount account)=>new(){Type=_entry.Type,Provider=account,AccountType=_entry.Type=="LOAD"?_entry.AccountType:"",Name=T("Service_"+_entry.Type),AmountText=_entry.Principal,Recipient=_entry.Phone,FeeText=_entry.CustomerFee,FeeOverridden=overridden};
         void Add()
         {
-            var selected=providers.FirstOrDefault(p=>p.Id==_entry.ProviderId);if(selected is null){form.ShowErrors(new Dictionary<string,string>{{"ProviderId","Service_SelectProvider"}},true);return;}
-            var row=new DigitalCartLine{Type=_entry.Type,Provider=selected,Name=T("Service_"+_entry.Type),AmountText=_entry.Principal,Recipient=_entry.Phone,FeeText=_entry.CustomerFee,Reference=_entry.Reference};var errors=row.Errors();form.ShowErrors(errors,true);if(errors.Count>0)return;
-            AddRow(row);_entry.Reset();_entryDirty=false;foreach(var box in new[]{amount,recipient,reference})box.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();amount.Focus();
+            if(Selected() is not{} account){form.ShowErrors(new Dictionary<string,string>{{"ProviderId","Service_SelectProvider"}},true);return;}
+            var row=Row(account);var errors=row.Errors();form.ShowErrors(errors,true);if(errors.Count>0)return;
+            AddRow(row);_entry.Reset();_entryDirty=false;overridden=false;foreach(var box in new[]{amount,recipient})box.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();DefaultFee();_entryDirty=false;RefreshCartSummary();amount.Focus();
         }
-        var add=BusinessForm.Button("Digital_AddToCart",(_,_)=>Add());add.Name="AddDigitalLine";form.Add("",add);panel.Children.Add(form);
+        recipient.LostKeyboardFocus+=(_,_)=>{if(recipient.Text.Length>0&&Selected() is{} account)form.ShowErrors(Row(account).Errors().Where(e=>e.Key==nameof(DigitalCartLine.Recipient)).ToDictionary(e=>e.Key,e=>e.Value),false);};
+        panel.Children.Add(form);var actions=new WrapPanel{HorizontalAlignment=HorizontalAlignment.Left,Margin=new Thickness(4,10,4,0)};var add=BusinessForm.Button("Digital_AddToCart",(_,_)=>Add());add.IsDefault=true;add.Name="AddDigitalLine";actions.Children.Add(add);panel.Children.Add(actions);
         amount.PreviewKeyDown+=(_,e)=>{if(e.Key==Key.Enter){e.Handled=true;recipient.Focus();recipient.SelectAll();}};
-        foreach(var box in new[]{recipient,fee,reference})box.PreviewKeyDown+=(_,e)=>{if(e.Key==Key.Enter){e.Handled=true;Add();}};
-        form.FieldEdited+=_=>{_entryDirty=true;RefreshCartSummary();};return panel;
+        foreach(var box in new[]{recipient,fee})box.PreviewKeyDown+=(_,e)=>{if(e.Key==Key.Enter){e.Handled=true;Add();}};
+        form.FieldEdited+=_=>{_entryDirty=true;RefreshCartSummary();};return new ScrollViewer{Content=panel,VerticalScrollBarVisibility=ScrollBarVisibility.Auto};
     }
     private void AddTextColumn(string label,string property,double width)
     {
@@ -96,6 +107,7 @@ public sealed partial class DigitalServicesView
     private void AddEditColumn(string label,string property,double width,int limit,string? visible=null)
     {
         var box=new FrameworkElementFactory(typeof(TextBox));box.SetValue(FrameworkElement.UidProperty,property);box.SetValue(System.Windows.Automation.AutomationProperties.NameProperty,T(label));box.SetValue(TextBox.MaxLengthProperty,limit);box.SetValue(FrameworkElement.FlowDirectionProperty,FlowDirection.LeftToRight);box.SetBinding(TextBox.TextProperty,new Binding(property){Mode=BindingMode.TwoWay,UpdateSourceTrigger=UpdateSourceTrigger.PropertyChanged,ValidatesOnDataErrors=true});
+        box.AddHandler(UIElement.LostKeyboardFocusEvent,new KeyboardFocusChangedEventHandler((sender,_)=>{if(((TextBox)sender).DataContext is DigitalCartLine row)row.ValidateFields();}));
         if(visible is not null)box.SetBinding(VisibilityProperty,new Binding(visible){Converter=new BooleanToVisibilityConverter()});_cartTable!.Columns.Add(new DataGridTemplateColumn{Header=T(label),CellTemplate=new DataTemplate{VisualTree=box},MinWidth=Math.Max(130,width*150)*(Convert.ToDouble(TryFindResource("TableTextSize")??17d)/17),Width=new DataGridLength(width,DataGridLengthUnitType.Star)});
     }
     private void AddRow(DigitalCartLine row){if(_cart.Count>=500){_status.Text=T("Service_Invalid");return;}row.PropertyChanged+=RowChanged;_cart.Add(row);RefreshCartSummary();FocusRow(row,nameof(DigitalCartLine.Recipient));}
@@ -113,8 +125,8 @@ public sealed partial class DigitalServicesView
     private void CartKeyDown(object sender,KeyEventArgs e)
     {
         if(e.Key!=Key.Enter||e.OriginalSource is not TextBox box||box.DataContext is not DigitalCartLine row)return;e.Handled=true;
-        var fields=new[]{nameof(DigitalCartLine.Recipient),nameof(DigitalCartLine.AmountText),nameof(DigitalCartLine.FeeText),nameof(DigitalCartLine.CostText),nameof(DigitalCartLine.Reference)}.Where(p=>p!=nameof(DigitalCartLine.FeeText)||row.HasFee).Where(p=>p!=nameof(DigitalCartLine.CostText)||row.HasCost).ToArray();var index=Array.IndexOf(fields,box.Uid);
-        if(row.Errors().ContainsKey(box.Tag?.ToString()??"")){row.ValidateFields();box.Focus();box.SelectAll();return;}
+        var fields=new[]{nameof(DigitalCartLine.Recipient),nameof(DigitalCartLine.AmountText),nameof(DigitalCartLine.FeeText),nameof(DigitalCartLine.CostText)}.Where(p=>p!=nameof(DigitalCartLine.FeeText)||row.HasFee).Where(p=>p!=nameof(DigitalCartLine.CostText)||row.HasCost).ToArray();var index=Array.IndexOf(fields,box.Uid);
+        if(row.Errors().ContainsKey(box.Uid)){row.ValidateFields();box.Focus();box.SelectAll();return;}
         if(index>=0&&index+1<fields.Length)FocusRow(row,fields[index+1]);else FocusSearch();
     }
     private void FocusRow(DigitalCartLine row,string property)=>Dispatcher.BeginInvoke(()=>

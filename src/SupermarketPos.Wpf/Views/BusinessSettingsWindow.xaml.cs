@@ -29,17 +29,18 @@ public partial class BusinessSettingsWindow : Window
     public BusinessSettingsWindow(IServiceProvider provider, IBusinessSetup setup, IAuthService auth, LicenseClient license,
         SoftwareUpdates updates, PosStorage storage, Diagnostics diagnostics, ProtectedLocalStore protectedStore, ViewModels.MainViewModel shell)
     {
-        InitializeComponent(); _provider=provider;_setup=setup;_auth=auth;_license=license;_updates=updates;_storage=storage;_diagnostics=diagnostics;_protected=protectedStore;_shell=shell;
+        InitializeComponent();if(RetailTestEdition.Standalone){Title="Wijgandu";} _provider=provider;_setup=setup;_auth=auth;_license=license;_updates=updates;_storage=storage;_diagnostics=diagnostics;_protected=protectedStore;_shell=shell;
         SourceInitialized+=(_,_)=>{var growth=Math.Max(0,(double)FindResource("TextSize14")/14-1);Width=Math.Min(SystemParameters.WorkArea.Width,1220+400*growth);Height=Math.Min(SystemParameters.WorkArea.Height,900+280*growth);};
         Loaded+=async(_,_)=>await Run(LoadAsync);
         Closing+=(_,e)=>{if(_busy)e.Cancel=true;else _shell.RefreshLicense();};
     }
+    public string Heading=>T(RetailTestEdition.Standalone?"Retail_Settings":"Business_Settings");
     private static string T(string key)=>LocalizationManager.Instance[key];
     private void Tab(string key,FrameworkElement content)=>Tabs.Items.Add(new TabItem{Header=T(key),Content=content,Padding=new Thickness(8)});
     private async Task LoadAsync()
     {
         _auth.RequireAdmin();_profile=(await _setup.LoadAsync()).Profile; Tabs.Items.Clear();
-        ProfileTab();FeaturesTab(); if(_profile.Registered){FbrTab(); await TaxTab();} InvoiceTab(); if(!RetailTestEdition.Enabled){LicenseTab();UpdatesTab();} StorageTab(); SupportTab();
+        ProfileTab();FeaturesTab(); if(!RetailTestEdition.Standalone&&_profile.Registered){FbrTab(); await TaxTab();} InvoiceTab(); if(!RetailTestEdition.Enabled){LicenseTab();UpdatesTab();} StorageTab(); SupportTab();
         if(_profile.IsPharmacy)await CatalogTab();
         if(_profile.DigitalWalletAvailable||_profile.MobileRechargeAvailable)
             Tab("Service_Config",new DigitalServicesView(Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<DigitalServiceLedger>(_provider),_setup,Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ReceiptPreviewDialog>(_provider),configuration:true,inventory:Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<RetailInventory>(_provider),references:Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<RetailReferenceCatalog>(_provider)));
@@ -48,6 +49,7 @@ public partial class BusinessSettingsWindow : Window
     {
         var f=new BusinessForm(3);var p=_profile;
         f.Text("Settings_StoreName",p,nameof(p.StoreName),limit:150);f.Text("Settings_StoreAddress",p,nameof(p.Address),limit:300);
+        if(RetailTestEdition.Standalone){f.Text("Setup_Owner",p,nameof(p.Owner));f.Text("Customer_Phone",p,nameof(p.Phone),true);f.Text("Customer_Email",p,nameof(p.Email),true);f.Text("Setup_City",p,nameof(p.City));f.Add("",BusinessForm.Button("Profile_Save",async(_,_)=>await Run(SaveProfile)),true);Tab("Retail_StoreDetails",f);return;}
         f.Check("Setup_Registered",p,nameof(p.Registered)); f.Text("Setup_LegalName",p,nameof(p.LegalName));
         f.Select("Setup_Entity",p,nameof(p.EntityType),("sole","Setup_Sole"),("aop","Setup_Aop"),("private","Setup_Private"),("public","Setup_Public"),("other","Payment_Other"));
         f.Text("Setup_Owner",p,nameof(p.Owner));f.Text("Customer_Phone",p,nameof(p.Phone),true);f.Text("Customer_Email",p,nameof(p.Email),true);
@@ -90,7 +92,7 @@ public partial class BusinessSettingsWindow : Window
         Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<StoreProfile>(_provider).Apply(s);
         await LoadAsync();await _shell.RefreshFeaturesAsync();Status.Text=T("Settings_Saved");
     }
-    private void FeaturesTab(){var f=new BusinessForm();BusinessFeatureFields.Add(f,_profile);f.Add("",BusinessForm.Button("Profile_Save",async(_,_)=>await Run(SaveProfile)),true);Tab("Features_Title",f);}
+    private void FeaturesTab(){var f=new BusinessForm();if(RetailTestEdition.Standalone){f.Check("Features_Loose",_profile,nameof(_profile.EnableLooseGoods));f.Check("Features_Packaging",_profile,nameof(_profile.EnablePackagedUnits));f.Check("Features_Wallet",_profile,nameof(_profile.EnableDigitalWalletServices));f.Check("Features_Recharge",_profile,nameof(_profile.EnableMobileRecharge));f.Check("Features_CatalogImages",_profile,nameof(_profile.EnableCatalogImages));}else BusinessFeatureFields.Add(f,_profile);f.Add("",BusinessForm.Button("Profile_Save",async(_,_)=>await Run(SaveProfile)),true);Tab("Features_Title",f);}
     private async Task CatalogTab()
     {
         var catalog=Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<MedicineCatalogService>(_provider);
