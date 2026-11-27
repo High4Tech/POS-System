@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory)][string]$Output,
+    [string]$Output,
     [Parameter(Mandatory)][string]$Version,
     [string]$DataDirectory = 'D:\SupermarketPos',
     [string]$Dotnet = 'dotnet',
@@ -9,8 +9,19 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$env:MSBUILDDISABLENODEREUSE = '1'
 $repo = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
+if (-not $Output) {
+    if ([IO.Path]::GetFileName($Version) -ne $Version -or $Version -in @('.', '..')) { throw 'Use a version without directory separators.' }
+    $Output = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) "High4TechPosBuild/artifacts/windows/$Version/desktop"
+}
 $out = [IO.Path]::GetFullPath($Output)
+$syncRoots = @($env:OneDrive, $env:OneDriveConsumer, $env:OneDriveCommercial) | Where-Object { $_ }
+foreach ($syncRoot in $syncRoots) {
+    $syncRoot = [IO.Path]::GetFullPath($syncRoot).TrimEnd('\')
+    if ($out -eq $syncRoot -or $out.StartsWith($syncRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Stage builds outside OneDrive; omit Output to use the local build archive.' }
+}
+if ($out -eq $repo -or $out.StartsWith($repo + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Stage builds outside the source checkout.' }
 if (Test-Path -LiteralPath $out) { throw 'Use an empty, new staging directory for each build.' }
 $directory = [IO.Path]::GetFullPath($DataDirectory)
 if ($out.StartsWith($directory.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) {
@@ -33,13 +44,13 @@ $build = "$Version+g$($revision.Substring(0,7)).$($fingerprint.Substring(0,12).T
 $project = Join-Path $repo 'src\SupermarketPos.Wpf\SupermarketPos.Wpf.csproj'
 $restoreOptions = if($NoRestore) { ,@('--no-restore') } else { ,@() }
 $editionOptions = if($TestRetailEdition) { @('-p:RetailTestEdition=true','-p:CommercialBuild=false','-p:PosDataDirectory=') } else { @('-p:RetailTestEdition=false',"-p:PosDataDirectory=$directory") }
-& $Dotnet publish $project -c Release -r win-x64 --self-contained true -o $out @restoreOptions "-p:Version=$Version" `
+& $Dotnet publish $project -c Release -r win-x64 --self-contained true -o $out --disable-build-servers '-m:1' '-nodeReuse:false' '-p:UseSharedCompilation=false' @restoreOptions "-p:Version=$Version" `
     '-p:IncludeSourceRevisionInInformationalVersion=false' "-p:InformationalVersion=$build" `
     "-p:BuildTimestampUtc=$builtAt" "-p:BuildSourceFingerprint=$fingerprint" @editionOptions
 if ($LASTEXITCODE -ne 0) { throw 'POS publish failed.' }
 
 $assembly = Join-Path $out 'SupermarketPos.dll'
-& $Dotnet run --project (Join-Path $PSScriptRoot 'ModelTools\ModelTools.csproj') @restoreOptions -- verify-local-build $assembly
+& $Dotnet run --project (Join-Path $PSScriptRoot 'ModelTools\ModelTools.csproj') --disable-build-servers --property:UseSharedCompilation=false --property:BuildInParallel=false @restoreOptions -- verify-local-build $assembly
 if ($LASTEXITCODE -ne 0) { throw 'Release verification failed.' }
 if($TestRetailEdition) {
     $runtime = Get-Content -LiteralPath (Join-Path $out 'SupermarketPos.runtimeconfig.json') -Raw | ConvertFrom-Json

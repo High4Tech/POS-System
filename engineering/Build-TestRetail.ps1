@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory)][string]$Output,
+    [string]$Output,
     [Parameter(Mandatory)][string]$Version,
     [Parameter(Mandatory)][string]$Vpk,
     [string]$Dotnet='dotnet',
@@ -8,7 +8,17 @@ param(
 )
 $ErrorActionPreference='Stop'
 if(Test-Path -LiteralPath $Dotnet -PathType Leaf){$env:DOTNET_ROOT=Split-Path -Parent ([IO.Path]::GetFullPath($Dotnet))}
+if(-not $Output){
+    if([IO.Path]::GetFileName($Version) -ne $Version -or $Version -in @('.', '..')){throw 'Use a version without directory separators.'}
+    $Output=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) "High4TechPosBuild/artifacts/windows/$Version/test"
+}
 $out=[IO.Path]::GetFullPath($Output)
+foreach($syncRoot in @($env:OneDrive,$env:OneDriveConsumer,$env:OneDriveCommercial)|Where-Object{$_}){
+    $syncRoot=[IO.Path]::GetFullPath($syncRoot).TrimEnd('\')
+    if($out -eq $syncRoot-or$out.StartsWith($syncRoot+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Stage builds outside OneDrive; omit Output to use the local build archive.'}
+}
+$repo=(Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
+if($out -eq $repo-or$out.StartsWith($repo+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Stage builds outside the source checkout.'}
 if(Test-Path -LiteralPath $out){throw 'Choose a new, empty test release folder.'}
 New-Item -ItemType Directory -Path $out | Out-Null
 $payload=Join-Path $out 'app'
