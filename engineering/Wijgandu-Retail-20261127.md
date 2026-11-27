@@ -27,3 +27,5 @@ WPF behavior, standalone first-run setup, published payload, installed hashes an
 The full WPF retail workflow passed 372 assertions, including receipt actions, pharmacy/retail catalog preferences, new product types/warranty, digital default-charge overrides and invalid-recipient blocking, keyboard cart entry and English/Urdu layouts at 100% and 200%. WPF reported rendering tier 2 / Default. Six PNG-backed Windows icon frames were checked at 256/128/64/48/32/16 pixels.
 
 The focused follow-up passed 230 assertions, including actual Alt page routing and opening/closing the existing scanner dialog. Native registration probes reported H/S/D/P/T/R/C/X/Z unavailable on this PC; all have the tested Alt fallback. No Windows keypress was simulated and no OS shortcut setting was changed.
+
+The standalone installer uses the friendly shortcut name Wijgandu Retail so installing it on the same PC does not replace the existing Wijgandu desktop shortcut. Its executable product name and app caption remain Wijgandu.

@@ -31,7 +31,7 @@ try {
 $payload=Join-Path $out 'app'
 $mainExe=if($StandaloneRetail){'Wijgandu.exe'}else{'High4TechPosTest.exe'}
 $packId=if($StandaloneRetail){'WijganduRetailApp'}else{'High4TechPosTestApp'}
-$title=if($StandaloneRetail){'Wijgandu'}else{'Wijgandu Test'}
+$title=if($StandaloneRetail){'Wijgandu Retail'}else{'Wijgandu Test'}
 & (Join-Path $PSScriptRoot 'Build-LocalDesktop.ps1') -Output $payload -Version $Version -Dotnet $Dotnet -TestRetailEdition:(!$StandaloneRetail) -RetailStandaloneEdition:$StandaloneRetail -NoRestore:$NoRestore
 Move-Item -LiteralPath (Join-Path $payload 'SupermarketPos.exe') -Destination (Join-Path $payload $mainExe)
 $notes=@'
