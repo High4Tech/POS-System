@@ -30,7 +30,7 @@
     <AssemblyMetadata Include="CommercialBuild" Value="$(CommercialBuild)" />
     <AssemblyMetadata Include="RetailTestEdition" Value="$(RetailTestEdition)" />
     <AssemblyMetadata Include="RetailStandaloneEdition" Value="$(RetailStandaloneEdition)" />
-    <Content Include="Assets\app.ico" Link="Branding\Wijgandu.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\app.ico" CopyToOutputDirectory="PreserveNewest" />
     <Resource Include="Assets\wijgandu.png" />
     <AssemblyMetadata Include="BuildConfiguration" Value="$(Configuration)" />
     <AssemblyMetadata Include="BuildTimestampUtc" Value="$(BuildTimestampUtc)" />

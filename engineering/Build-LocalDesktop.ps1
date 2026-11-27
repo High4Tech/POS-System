@@ -55,6 +55,8 @@ try {
         '-p:IncludeSourceRevisionInInformationalVersion=false' "-p:InformationalVersion=$build" `
         "-p:BuildTimestampUtc=$builtAt" "-p:BuildSourceFingerprint=$fingerprint" @editionOptions
     if ($LASTEXITCODE -ne 0) { throw 'POS publish failed.' }
+    $publishedIcon=Join-Path $out 'Assets/app.ico'
+    if(-not (Test-Path -LiteralPath $publishedIcon)-or(Get-FileHash -LiteralPath $publishedIcon).Hash -ne (Get-FileHash -LiteralPath (Join-Path $repo 'src/SupermarketPos.Wpf/Assets/app.ico')).Hash){throw 'The startup icon must exist at its WPF content path.'}
 
     $assembly = Join-Path $out 'SupermarketPos.dll'
     & $Dotnet run --project (Join-Path $PSScriptRoot 'ModelTools\ModelTools.csproj') --disable-build-servers --property:UseSharedCompilation=false --property:BuildInParallel=false @restoreOptions -- verify-local-build $assembly
