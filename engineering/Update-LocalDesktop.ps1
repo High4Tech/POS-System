@@ -106,6 +106,7 @@ try {
         throw "Could not verify startup. Binary checkpoint: $binaryBackup. Database checkpoint: $dataBackup."
     }
 
+    $shortcut=if($incomingInfo.ProductName -eq 'ORMA'){& (Join-Path $PSScriptRoot 'Set-MainDesktopShortcut.ps1') -Target $target}else{$null}
     $old = Get-Item -LiteralPath $previous
     if ($old.FullName -eq $previous -and -not $old.Attributes.HasFlag([IO.FileAttributes]::ReparsePoint)) {
         Remove-Item -LiteralPath $previous -Recurse
@@ -115,6 +116,7 @@ try {
         InstalledVersion = $incoming
         ProcessPath = $process.Path
         ProcessId = $process.Id
+        DesktopShortcut = $shortcut
         ExecutableSha256 = $hashes[$exe]
         AssemblySha256 = $hashes[$assembly]
         DataBackup = $dataBackup

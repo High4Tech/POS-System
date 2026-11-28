@@ -1,6 +1,6 @@
 # Wijgandu Retail
 
-Standalone Tech Retail edition of the existing High4Tech Windows POS. This source is published in [High4Tech/pos_backup](https://github.com/High4Tech/pos_backup). The full application remains in [High4Tech/POS-System](https://github.com/High4Tech/POS-System).
+Standalone Tech Retail edition of the existing High4Tech Windows POS. This source is published in [High4Tech/pos_backup](https://github.com/High4Tech/pos_backup). The full ORMA application remains in [High4Tech/POS-System](https://github.com/High4Tech/POS-System).
 
 ## Included behavior
 
@@ -15,7 +15,7 @@ The shared projects stay intact. The standalone build flag selects the simple Re
 
 ## Download
 
-The [1.2.0-beta.7 testing release](https://github.com/High4Tech/pos_backup/releases/tag/retail-v1.2.0-beta.7) includes the shareable Windows installer. Its SHA256 is `78E00E57941F6AB7A86FB7A819DD54262EAE32BF32FB8084A06D0473DFE83455`, verified against GitHub's uploaded asset digest.
+The [1.2.0-beta.8 testing release](https://github.com/High4Tech/pos_backup/releases/tag/retail-v1.2.0-beta.8) includes the shareable Windows installer and signed update package. Windows may warn about the unsigned testing installer.
 
 ## Build the installer
 
@@ -23,7 +23,7 @@ On Windows x64 with .NET 8 SDK, the existing dependencies and Velopack CLI:
 
 ```powershell
 dotnet test tests/SupermarketPos.Tests/SupermarketPos.Tests.csproj
-./engineering/Build-TestRetail.ps1 -Version '1.2.0-beta.7' -Vpk '<path to vpk.exe>' -StandaloneRetail
+./engineering/Build-TestRetail.ps1 -Version '1.2.0-beta.8' -Vpk '<path to vpk.exe>' -StandaloneRetail
 ```
 
 Use `-StandaloneRetail`; running the shared WPF project without that edition selection opens the full development application.
@@ -33,3 +33,9 @@ The script creates an installer under `D:/Retail POS/Releases/1.2.0-beta.7/packa
 The verified local installer is unsigned. Digital services are manual records; actual activation/transfers require the authorized provider. Catalog prices are reference snapshots, not a live provider feed.
 
 See [release verification](https://github.com/High4Tech/POS-System/blob/main/engineering/Direct-Digital-20261128.md) and [versions/recovery](https://github.com/High4Tech/POS-System/blob/main/docs/VERSIONS_AND_RECOVERY.md). Preserve matching data backups when using older application versions. Source and third-party notices retain their existing licenses.
+
+## Retail updates
+
+Standalone Retail checks its public, signed testing feed without a commercial license. Only packages authenticated by the embedded Retail signing key, matching WijganduRetailApp and the declared version/schema, can install. Older beta.7 installations need the new installer once to gain this updater. Offline use stays available. The full ORMA edition retains its existing license-based update policy.
+
+The publisher signing key is held in Windows current-user protected storage outside the repository and store data. Preserve that publisher Windows profile and its protected key; losing it requires an explicit key-rotation installer. Private keys must never be included in a customer installer or Git.

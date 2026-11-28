@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
         xmlns:views="clr-namespace:SupermarketPos.Wpf.Views"
-        Title="{Binding StoreProfile.Name, StringFormat='Wijgandu · {0}'}" Height="820" Width="1320" Style="{StaticResource CaptionWindow}"
+        xmlns:common="clr-namespace:SupermarketPos.Wpf.Common"
+        Height="820" Width="1320" Style="{StaticResource CaptionWindow}"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BgBrush}"
         Icon="Assets/app.ico"
@@ -11,6 +12,9 @@
         Language="{Binding Language, Source={x:Static loc:LocalizationManager.Instance}}"
         FontFamily="{DynamicResource UiFont}">
 
+    <Window.Title>
+        <MultiBinding StringFormat="{}{0} · {1}"><Binding Source="{x:Static common:AppBrand.Name}"/><Binding Path="StoreProfile.Name"/></MultiBinding>
+    </Window.Title>
     <Window.Resources>
         <Style x:Key="TopButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
             <Setter Property="Background" Value="Transparent"/><Setter Property="Padding" Value="10,7"/>

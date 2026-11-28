@@ -134,6 +134,8 @@ public sealed partial class ReportsViewModel : ObservableObject
             ReturnSummary=posted.Count==0?null:LocalizationManager.Instance.Format("Trade_ReturnSummary",posted.Count,
                 MoneyText.Format(posted.Sum(r=>r.Gross)),MoneyText.Format(posted.Sum(r=>r.CashRefund)),
                 MoneyText.Format(posted.Sum(r=>r.CardRefund)),MoneyText.Format(posted.Sum(r=>r.ReceivableReduction)),MoneyText.Format(posted.Sum(r=>r.CustomerCredit)));
+            var creditRefunds=await _returns.CreditRefundsBetweenAsync(HistoryFrom.Date,HistoryTo.Date.AddDays(1));
+            if(creditRefunds.Count>0)ReturnSummary=(ReturnSummary is null?"":ReturnSummary+Environment.NewLine)+LocalizationManager.Instance.Format("Credit_RefundSummary",MoneyText.Format(creditRefunds.Where(r=>r.Method=="CASH").Sum(r=>r.Amount)),MoneyText.Format(creditRefunds.Where(r=>r.Method=="CARD").Sum(r=>r.Amount)));
             var returns = await _returns.PostedTotalsAsync(sales.Select(s=>s.Id).ToArray());
             History.Clear();
             foreach (var sale in sales)

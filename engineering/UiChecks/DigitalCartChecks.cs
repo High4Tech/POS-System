@@ -47,6 +47,9 @@ internal static partial class Program
         Descendants(overlay).OfType<Button>().Single(b=>Equals(b.Content,LocalizationManager.Instance["Common_Cancel"])).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         for(var wait=0;InAppDialog.IsOpen&&wait<100;wait++){await Task.Delay(25);Pump();}
         Pump();Assert(Field("Recipient").Text=="03001234567","Cancel keeps the original transaction fields");
+        ((ComboBox)Form().Fields["Outcome"]).SelectedValue="Pending";Pump();
+        Assert(Equals(Descendants(digital).OfType<Button>().Single(b=>b.Name=="DigitalCash").Content,LocalizationManager.Instance["Digital_RecordPending"]),"Changing result after cancelling payment updates the action immediately");
+        ((ComboBox)Form().Fields["Outcome"]).SelectedValue="Confirmed";Pump();
         var recipientInput=Field("Recipient");recipientInput.Focus();recipientInput.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice,PresentationSource.FromVisual(recipientInput)!,0,Key.Enter){RoutedEvent=Keyboard.PreviewKeyDownEvent});Pump();
         Assert(InAppDialog.IsOpen,"Enter in the recipient field opens direct payment without adding a cart step");
         overlay=((Grid)window.Content).Children.OfType<Grid>().Last();Descendants(overlay).OfType<TextBox>().Single(t=>t.Name=="DigitalTendered").Text="110";

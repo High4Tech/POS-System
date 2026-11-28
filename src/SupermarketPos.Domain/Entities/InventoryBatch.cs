@@ -15,6 +15,13 @@ public sealed class InventoryBatch
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
     public string HoldReason{get;private set;}="";
+    public decimal? PurchaseCost { get; private set; }
+    public void RecordReceivedCost(decimal receivedQuantity,decimal unitCost)
+    {
+        if(receivedQuantity<=0||receivedQuantity>Quantity||unitCost<0)throw new DomainException("Measure_InvalidPackage");
+        var previous=Quantity-receivedQuantity;
+        PurchaseCost=previous==0?unitCost:PurchaseCost is{} cost?(cost*previous+unitCost*receivedQuantity)/Quantity:null;
+    }
     public void SetHold(string reason){if(reason.Length>300)throw new DomainException("Pharmacy_InvalidReference");HoldReason=reason.Trim();UpdatedAt=DateTime.Now;}
 
     private InventoryBatch() { }

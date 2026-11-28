@@ -195,7 +195,7 @@ public sealed class Product
         StockRevision++;
     }
 
-    public InventoryBatch RecordBatch(string lot, DateOnly expiry, decimal quantity, int? supplier, DateTime now, bool fromExistingStock = false)
+    public InventoryBatch RecordBatch(string lot, DateOnly expiry, decimal quantity, int? supplier, DateTime now, bool fromExistingStock = false,decimal? purchaseCost=null)
     {
         if(!StockTracked)throw new DomainException("Pharmacy_VerifyStockFirst");
         if (!TrackExpiry) throw new DomainException("Enable expiry tracking before recording a batch.");
@@ -218,6 +218,7 @@ public sealed class Product
             batch.Add(quantity, now);
         }
         if (!fromExistingStock) BaseStockQuantity = checked(BaseStockQuantity+Domain.Pricing.MeasuredGoods.BaseQuantity(quantity,Unit));
+        if(purchaseCost is{} cost)batch.RecordReceivedCost(quantity,cost);
         StockRevision++;
         return batch;
     }

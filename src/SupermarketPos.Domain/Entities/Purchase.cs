@@ -13,6 +13,7 @@ public sealed class Purchase
     public DateTime ReceivedAt { get; private set; }
     public string ReceivedBy { get; private set; } = string.Empty;
     public Guid? ConfirmationId { get; private set; }
+    public string RequestFingerprint { get; private set; } = "";
     public DateTime? PurchasedOn { get; private set; }
     public string Notes { get; private set; } = "";
     public IReadOnlyList<PurchaseLine> Lines => _lines;
@@ -27,7 +28,7 @@ public sealed class Purchase
 
     public Purchase(string supplier, string? reference, DateTime receivedAt, string receivedBy,
                     IEnumerable<PurchaseLine> lines, int? supplierId = null, Guid? confirmationId = null,
-                    DateTime? purchasedOn = null, string? notes = null, decimal? initialAmountPaid = null, string paymentMethod = "CASH")
+                    DateTime? purchasedOn = null, string? notes = null, decimal? initialAmountPaid = null, string paymentMethod = "CASH",string requestFingerprint="")
     {
         Supplier = (supplier ?? string.Empty).Trim();
         Reference = (reference ?? string.Empty).Trim();
@@ -44,6 +45,8 @@ public sealed class Purchase
         ReceivedBy = receivedBy;
         SupplierId = supplierId;
         ConfirmationId = confirmationId;
+        if(requestFingerprint.Length!=0&&(requestFingerprint.Length!=64||!requestFingerprint.All(Uri.IsHexDigit)))throw new DomainException("Purchase_ConfirmationConflict");
+        RequestFingerprint=requestFingerprint;
         PurchasedOn = purchasedOn?.Date;
         Notes = (notes ?? "").Trim();
         if (Notes.Length > 500) throw new DomainException("Enter purchase notes of up to 500 characters.");

@@ -113,6 +113,9 @@ public sealed class ReportDocument : IDocument
                     r.RelativeItem().Text(Text("Pos_Total")).Bold();
                     r.ConstantItem(120).AlignRight().Text(Price(_report.PaymentSplit.TotalAmount)).Bold();
                 });
+                if (_report.CreditCashRefunds != 0 || _report.CreditCardRefunds != 0)
+                    col.Item().PaddingTop(10).Text(string.Format(_culture, Text("Credit_RefundSummary"),
+                        Price(_report.CreditCashRefunds), Price(_report.CreditCardRefunds)));
             });
 
             page.Footer().AlignRight().Text(t =>

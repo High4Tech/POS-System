@@ -62,8 +62,10 @@ public sealed class SaleLine
     public decimal NetAmount => Money.Round2(LineGross / (1 + VatRate));
     public decimal VatAmount => Money.Round2(LineGross - NetAmount);
 
+    public int SerialCycle { get; private set; }
     public void SetWarranty(int months, DateTime soldOn, SerializedUnit? unit)
     {
+        SerialCycle=unit?.SaleCycle??0;
         WarrantyMonths = months;
         WarrantyUntil = months > 0 ? soldOn.Date.AddMonths(months) : null;
         Imei1 = unit?.Imei1;

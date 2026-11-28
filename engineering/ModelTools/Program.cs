@@ -12,6 +12,32 @@ using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 using QuestPDF.Fluent;
 
+if(args.Length==3&&args[0]=="retail-signing-key")
+{
+    var store=new ProtectedLocalStore(Path.GetFullPath(args[1]));
+    var privateKey=store.Read("retail-release-signing");
+    using var key=System.Security.Cryptography.ECDsa.Create(System.Security.Cryptography.ECCurve.NamedCurves.nistP256);
+    if(privateKey is not null)key.ImportFromPem(privateKey);else store.Write("retail-release-signing",key.ExportPkcs8PrivateKeyPem());
+    var publicKey=key.ExportSubjectPublicKeyInfoPem();var target=Path.GetFullPath(args[2]);
+    if(File.Exists(target)&&File.ReadAllText(target).Trim()!=publicKey.Trim())throw new Exception("Existing trusted public key differs. Do not rotate it silently.");
+    Directory.CreateDirectory(Path.GetDirectoryName(target)!);File.WriteAllText(target,publicKey);
+    Console.WriteLine("Retail signing key retained in Windows current-user protected storage; only its public key was exported.");return;
+}
+if(args.Length==6&&args[0]=="sign-retail-release")
+{
+    var store=new ProtectedLocalStore(Path.GetFullPath(args[1]));var privateKey=store.Read("retail-release-signing")??throw new Exception("Retail publisher key is missing.");
+    var package=new FileInfo(Path.GetFullPath(args[2]));var version=args[4];
+    if(!System.Text.RegularExpressions.Regex.IsMatch(version,@"^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$")||!package.Name.StartsWith("WijganduRetailApp-",StringComparison.Ordinal)||!package.Name.EndsWith("-full.nupkg",StringComparison.Ordinal)||package.Length is <=0 or >2_000_000_000)throw new Exception("Use the verified standalone Retail full package and its package version.");
+    var notes=File.ReadAllText(args[5]);if(notes.Length>8000)throw new Exception("Release notes are too long.");
+    string hash;using(var stream=package.OpenRead())hash=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(stream));
+    var release=new ReleaseClaims(2,SignedDocuments.Product,"retail-standalone","testing",version,"1.2.0-beta.7",14,15,"bugfix",DateTimeOffset.UtcNow,package.Name,package.Length,hash,"",notes);
+    var payload=System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(release,SignedDocuments.Json);
+    using var key=System.Security.Cryptography.ECDsa.Create();key.ImportFromPem(privateKey);
+    var signature=key.SignData(payload,System.Security.Cryptography.HashAlgorithmName.SHA256,System.Security.Cryptography.DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
+    File.WriteAllText(args[3],System.Text.Json.JsonSerializer.Serialize(new SignedEnvelope(Convert.ToBase64String(payload),Convert.ToBase64String(signature)),SignedDocuments.Json));
+    Console.WriteLine($"Signed Retail release {version}; SHA256 {hash}. Private key was not exported.");return;
+}
+
 if(args.Length==2&&args[0]=="query-plans")
 {
     var database=Path.Combine(Path.GetFullPath(args[1]),"pos.db");

@@ -65,22 +65,22 @@ public sealed class TradeLedger(PosDbContext db, IUnitOfWork work) : ITradeLedge
             var registered = await db.SerializedUnits.CountAsync(u => u.ProductId == productId && u.SaleId == null, token);
             if (!product.TrackSerial || registered + units.Count > product.StockQuantity)
                 throw new DomainException("Enable serial tracking and register no more units than the unregistered stock on hand.");
-            await AddUnitsAsync(product.Id, units, null, DateTime.Now, token);
+            await AddUnitsAsync(product.Id, units, null, DateTime.Now, token,product.PurchaseCost);
             await work.SaveChangesAsync(token);
             return true;
         }, ct);
 
-    public async Task ReceiveUnitsAsync(Product product, IReadOnlyList<UnitIdentifiers> units, int purchaseId, DateTime receivedOn, CancellationToken ct) =>
-        await AddUnitsAsync(product.Id, units, purchaseId, receivedOn, ct);
+    public async Task ReceiveUnitsAsync(Product product, IReadOnlyList<UnitIdentifiers> units, int purchaseId, DateTime receivedOn, CancellationToken ct,decimal? purchaseCost=null) =>
+        await AddUnitsAsync(product.Id, units, purchaseId, receivedOn, ct,purchaseCost);
 
-    private async Task AddUnitsAsync(int productId, IReadOnlyList<UnitIdentifiers> units, int? purchaseId, DateTime receivedOn, CancellationToken ct)
+    private async Task AddUnitsAsync(int productId, IReadOnlyList<UnitIdentifiers> units, int? purchaseId, DateTime receivedOn, CancellationToken ct,decimal? purchaseCost)
     {
         await EnsureElectronicsAllowedAsync(ct);
         if (units.Count == 0) throw new DomainException("Enter at least one serial or IMEI.");
         var all = new HashSet<string>(StringComparer.Ordinal);
         foreach (var input in units)
         {
-            var unit = new SerializedUnit(productId, input, purchaseId, receivedOn);
+            var unit = new SerializedUnit(productId, input, purchaseId, receivedOn,purchaseCost);
             foreach (var identifier in UnitIdentifiers.Create(unit.Serial, unit.Imei1, unit.Imei2).All)
             {
                 if (!all.Add(identifier) || db.SerializedUnits.Local.Any(u => u.Serial == identifier || u.Imei1 == identifier || u.Imei2 == identifier) ||

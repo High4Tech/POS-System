@@ -1279,4 +1279,33 @@
   <data name="Digital_DraftError" xml:space="preserve"><value>The saved transaction draft could not be read or written.</value></data>
   <data name="Digital_SaveDraft" xml:space="preserve"><value>Save transaction draft</value></data>
   <data name="Digital_ResumeDraft" xml:space="preserve"><value>Resume saved transaction</value></data>
+  <data name="Credit_Manage" xml:space="preserve"><value>Customer credit</value></data>
+  <data name="Credit_Available" xml:space="preserve"><value>Available customer credit</value></data>
+  <data name="Credit_Apply" xml:space="preserve"><value>Apply to unpaid Udhar invoice</value></data>
+  <data name="Credit_Action" xml:space="preserve"><value>Credit action</value></data>
+  <data name="Credit_RefundCash" xml:space="preserve"><value>Refund cash</value></data>
+  <data name="Credit_RefundCard" xml:space="preserve"><value>Record card refund</value></data>
+  <data name="Credit_RecordRefund" xml:space="preserve"><value>Record completed refund</value></data>
+  <data name="Credit_RefundHelp" xml:space="preserve"><value>Apply credit to another unpaid Udhar invoice for this customer. Record a refund only after handing over the cash or confirming success on the card terminal.</value></data>
+  <data name="Credit_Invalid" xml:space="preserve"><value>Select a credit, a valid amount and an unpaid invoice or refund method.</value></data>
+  <data name="Credit_Conflict" xml:space="preserve"><value>This confirmation already belongs to a different credit action.</value></data>
+  <data name="Credit_Insufficient" xml:space="preserve"><value>The amount exceeds the remaining customer credit.</value></data>
+  <data name="Credit_CustomerMismatch" xml:space="preserve"><value>Select another unpaid Udhar invoice belonging to this customer.</value></data>
+  <data name="Credit_ConfirmRefund" xml:space="preserve"><value>Confirm that the cash or card refund has actually completed.</value></data>
+  <data name="Credit_RefundPaid" xml:space="preserve"><value>Customer credit refunded</value></data>
+  <data name="Credit_RefundSummary" xml:space="preserve"><value>Customer credit refunded — Cash: {0}; Card: {1}</value></data>
+  <data name="Device_ReturnInvalid" xml:space="preserve"><value>Release only a fully returned, inspected device. Check its serial/IMEI, stock settings and inspection note.</value></data>
+  <data name="Device_Inspection" xml:space="preserve"><value>Inspection and resale approval note</value></data>
+  <data name="Device_Release" xml:space="preserve"><value>Approve and release for resale</value></data>
+  <data name="Device_Released" xml:space="preserve"><value>Released for resale</value></data>
+  <data name="Purchase_ConfirmationConflict" xml:space="preserve"><value>This purchase confirmation was already recorded with different details. Review the original invoice; changed details cannot reuse its confirmation.</value></data>
+  <data name="Digital_Result" xml:space="preserve"><value>Provider result</value></data>
+  <data name="Digital_ResultHelp" xml:space="preserve"><value>Choose Pending if the provider has not finished, or Failed if it did not succeed. These records do not post payment or income. Complete a pending transaction from Reports after the provider succeeds.</value></data>
+  <data name="Digital_RecordPending" xml:space="preserve"><value>Record pending transaction</value></data>
+  <data name="Digital_RecordFailed" xml:space="preserve"><value>Record failed transaction</value></data>
+  <data name="Digital_ConfirmResultHelp" xml:space="preserve"><value>Confirm only after the authorized provider has completed this operation. The reference is optional.</value></data>
+  <data name="Digital_AttemptDate" xml:space="preserve"><value>Attempt date</value></data>
+  <data name="Digital_PostedDate" xml:space="preserve"><value>Payment recorded</value></data>
+  <data name="Credit_None" xml:space="preserve"><value>No remaining customer credit. Previous credit actions are shown below.</value></data>
+  <data name="Device_ReturnLocationHelp" xml:space="preserve"><value>After inspection, this device returns to unassigned stock. Assign its storage location in Products &amp; Stock if needed.</value></data>
 </root>

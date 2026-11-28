@@ -47,6 +47,9 @@ public sealed class ReportService : IReportService
             OtherCount: other.Count,
             OtherTotal: Money.Round2(other.Sum(s => s.AmountPaid)));
 
-        return new SalesReport(title, from, to, sales.Count, gross, net, vat, breakdown, split);
+        var refunds = await _sales.GetCreditRefundsAsync(from, to, ct);
+        return new SalesReport(title, from, to, sales.Count, gross, net, vat, breakdown, split,
+            Money.Round2(refunds.Where(m => m.Method == "CASH").Sum(m => m.Amount)),
+            Money.Round2(refunds.Where(m => m.Method == "CARD").Sum(m => m.Amount)));
     }
 }

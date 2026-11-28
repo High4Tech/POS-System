@@ -36,6 +36,7 @@ public interface ISaleRepository
     Task<bool> HasSourceReceiptAsync(string reference, CancellationToken ct = default);
     Task<IReadOnlyList<Sale>> GetCustomerSalesAsync(CancellationToken ct = default);
     Task<IReadOnlyList<Sale>> GetByDateRangeAsync(DateTime fromInclusive, DateTime toExclusive, CancellationToken ct = default);
+    Task<IReadOnlyList<CustomerCreditMovement>> GetCreditRefundsAsync(DateTime fromInclusive, DateTime toExclusive, CancellationToken ct = default);
 }
 
 public interface IPurchaseRepository

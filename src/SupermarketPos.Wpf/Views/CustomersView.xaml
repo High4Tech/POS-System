@@ -13,6 +13,7 @@
             <WrapPanel Margin="0,0,0,6">
                 <Button Content="{loc:T Trade_CustomerLedger}" Command="{Binding ViewLedgerCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,0"/>
                 <Button Content="{loc:T Trade_RepeatSale}" Command="{Binding RepeatSelectedSaleCommand}" Style="{StaticResource GhostButton}"/>
+                <Button Content="{loc:T Credit_Manage}" Command="{Binding ManageCreditCommand}" Style="{StaticResource GhostButton}" Margin="6,0,0,0"/>
             </WrapPanel>
             <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:T Customers_Search}" />
             <TextBlock Text="{Binding Error}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap"
@@ -32,6 +33,7 @@
                         <DataGridTextColumn Header="{loc:T Pos_Total}" Binding="{Binding Total}" Width="*" MinWidth="76" ElementStyle="{StaticResource TableMoney}" />
                         <DataGridTextColumn Header="{loc:T Trade_TotalPaid}" Binding="{Binding Paid}" Width="*" ElementStyle="{StaticResource TableMoney}" />
                         <DataGridTextColumn Header="{loc:T Trade_Balance}" Binding="{Binding Balance}" Width="*" ElementStyle="{StaticResource TableMoney}" />
+                        <DataGridTextColumn Header="{loc:T Credit_Available}" Binding="{Binding Credit}" Width="Auto" ElementStyle="{StaticResource TableMoney}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Border>
@@ -88,13 +90,14 @@
                         </WrapPanel>
                         <DataGrid layout:TableLayout.Key="digital-customer-history" ItemsSource="{Binding DigitalHistory}" SelectedItem="{Binding SelectedDigitalTransaction}" IsReadOnly="True">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="{loc:T Service_Receipt}" Binding="{Binding Number}" Width="*" ElementStyle="{StaticResource TableValue}"/>
-                                <DataGridTextColumn Header="{loc:T Reports_Date}" Binding="{Binding Date}" Width="1.5*" ElementStyle="{StaticResource TableValue}"/>
-                                <DataGridTextColumn Header="{loc:T Service_Provider}" Binding="{Binding Provider}" Width="*" ElementStyle="{StaticResource TableName}"/>
-                                <DataGridTextColumn Header="{loc:T Service_Type}" Binding="{Binding Type}" Width="*" ElementStyle="{StaticResource TableName}"/>
-                                <DataGridTextColumn Header="{loc:T Service_Principal}" Binding="{Binding Principal}" Width="*" ElementStyle="{StaticResource TableMoney}"/>
-                                <DataGridTextColumn Header="{loc:T Digital_Fee}" Binding="{Binding Fee}" Width="*" ElementStyle="{StaticResource TableMoney}"/>
-                                <DataGridTextColumn Header="{loc:T Service_Status}" Binding="{Binding Status}" Width="*" ElementStyle="{StaticResource TableName}"/>
+                                <DataGridTextColumn Header="{loc:T Service_Receipt}" Binding="{Binding Number}" Width="Auto" ElementStyle="{StaticResource TableValue}"/>
+                                <DataGridTextColumn Header="{loc:T Digital_AttemptDate}" Binding="{Binding Date}" Width="Auto" ElementStyle="{StaticResource TableValue}"/>
+                                <DataGridTextColumn Header="{loc:T Digital_PostedDate}" Binding="{Binding PostedDate}" Width="Auto" ElementStyle="{StaticResource TableValue}"/>
+                                <DataGridTextColumn Header="{loc:T Service_Provider}" Binding="{Binding Provider}" Width="Auto" ElementStyle="{StaticResource TableName}"/>
+                                <DataGridTextColumn Header="{loc:T Service_Type}" Binding="{Binding Type}" Width="Auto" ElementStyle="{StaticResource TableName}"/>
+                                <DataGridTextColumn Header="{loc:T Service_Principal}" Binding="{Binding Principal}" Width="Auto" ElementStyle="{StaticResource TableMoney}"/>
+                                <DataGridTextColumn Header="{loc:T Digital_Fee}" Binding="{Binding Fee}" Width="Auto" ElementStyle="{StaticResource TableMoney}"/>
+                                <DataGridTextColumn Header="{loc:T Service_Status}" Binding="{Binding Status}" Width="Auto" ElementStyle="{StaticResource TableName}"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </DockPanel>

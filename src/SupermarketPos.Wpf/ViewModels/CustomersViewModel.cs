@@ -25,8 +25,11 @@ public sealed partial class CustomersViewModel(ISaleRepository sales, BulkRecord
         try
         {
             Error = null;
-            _all = (await sales.GetCustomerSalesAsync()).GroupBy(Identity)
-                .Select(group => new CustomerRow(group.Key, group.ToArray())).ToArray();
+            var invoices=await sales.GetCustomerSalesAsync();
+            var credits=await returns.AvailableCreditsAsync(invoices.Select(s=>s.Id).ToArray());
+            var creditBySale=credits.GroupBy(c=>c.Return.SaleId).ToDictionary(g=>g.Key,g=>g.Sum(c=>c.Available));
+            _all = invoices.GroupBy(Identity)
+                .Select(group => new CustomerRow(group.Key, group.ToArray(),group.Sum(s=>creditBySale.GetValueOrDefault(s.Id)))).ToArray();
             Filter();
             await RefreshDigitalAsync();
         }
@@ -50,6 +53,14 @@ public sealed partial class CustomersViewModel(ISaleRepository sales, BulkRecord
         await RefreshAsync();
     }
 
+    [RelayCommand]
+    private async Task ManageCreditAsync()
+    {
+        if(Selected is not{} customer||InAppDialog.IsOpen)return;
+        try{await CustomerCreditPanel.ShowAsync(returns,auth,customer);await RefreshAsync();}
+        catch(Exception){Error=LocalizationManager.Instance["Credit_Invalid"];}
+    }
+
     private void Filter()
     {
         var key = Selected?.Key;
@@ -66,6 +77,7 @@ public sealed partial class CustomersViewModel(ISaleRepository sales, BulkRecord
         try
         {
             var events = new List<(int SaleId, DateTime Date, string Reference, string Kind, decimal Debit, decimal Credit)>();
+            var returnInvoices=new Dictionary<int,int>();
             foreach (var row in customer.Sales)
             {
                 var sale = row.Sale;
@@ -75,10 +87,17 @@ public sealed partial class CustomersViewModel(ISaleRepository sales, BulkRecord
                     events.Add((sale.Id, payment.PaidOn, sale.ReceiptNo, "Reports_Payment", 0, payment.Amount));
                 foreach (var refund in (await returns.HistoryAsync(sale.Id)).Where(r=>r.Status=="Posted"))
                 {
+                    returnInvoices[refund.Id]=sale.Id;
                     var refunded=refund.CashRefund+refund.CardRefund;
                     events.Add((sale.Id,refund.PostedAt??refund.CreatedAt,sale.ReceiptNo,"Trade_Returns",0,refund.Gross));
                     if(refunded>0)events.Add((sale.Id,refund.PostedAt??refund.CreatedAt,sale.ReceiptNo,"Trade_RefundPaid",refunded,0));
                 }
+            }
+            foreach(var movement in await returns.CreditMovementsAsync(customer.Sales.Select(s=>s.Sale.Id).ToArray()))
+            {
+                var source=customer.Sales.Single(s=>s.Sale.Id==returnInvoices[movement.SaleReturnId]);
+                if(movement.TargetSaleId is{} target)events.Add((target,movement.RecordedAt,source.ReceiptNo+" → "+customer.Sales.Single(s=>s.Sale.Id==target).ReceiptNo+" · "+MoneyText.Format(movement.Amount),"Credit_Apply",0,0));
+                else events.Add((source.Sale.Id,movement.RecordedAt,source.ReceiptNo,"Credit_RefundPaid",movement.Amount,0));
             }
             decimal balance = 0;
             var rows = events.OrderBy(e=>e.Date.Date).ThenBy(e=>e.Date).ThenByDescending(e=>e.Debit).Select(e =>
@@ -138,7 +157,7 @@ public sealed partial class CustomersViewModel(ISaleRepository sales, BulkRecord
 
 public sealed class CustomerRow
 {
-    public CustomerRow(string key, IReadOnlyList<Sale> sales)
+    public CustomerRow(string key, IReadOnlyList<Sale> sales,decimal availableCredit=0)
     {
         Key = key;
         Name = sales.Select(s => s.CustomerName).FirstOrDefault(s => !string.IsNullOrWhiteSpace(s));
@@ -147,7 +166,9 @@ public sealed class CustomerRow
         Address = sales.Select(s => s.CustomerAddress).FirstOrDefault(s => !string.IsNullOrWhiteSpace(s));
         Sales = sales.Select(sale => new SaleRowViewModel(sale)).ToArray();
         Total = MoneyText.Format(sales.Sum(sale => sale.GrossTotal));
-        Balance = MoneyText.Format(sales.Sum(sale => sale.Outstanding));
+        CreditAmount=availableCredit;
+        Credit=MoneyText.Format(availableCredit);
+        Balance = MoneyText.Format(sales.Sum(sale => sale.Outstanding)-availableCredit);
         Paid = MoneyText.Format(sales.Sum(sale => sale.AmountPaid + sale.BalancePaid));
     }
 
@@ -159,6 +180,8 @@ public sealed class CustomerRow
     public int SaleCount => Sales.Count;
     public string Total { get; }
     public string Balance { get; }
+    public decimal CreditAmount { get; }
+    public string Credit { get; }
     public string Paid { get; }
     public IReadOnlyList<SaleRowViewModel> Sales { get; }
 

@@ -31,8 +31,7 @@ public sealed partial class DigitalServicesView
             posting=true;cancel.IsEnabled=false;try
             {
                 finishEnabled(false);
-                foreach(var row in _cart.Where(r=>r.Package is null&&r.ReferencePackage is not null))row.Package=await (_retailInventory??throw new DomainException("Service_Invalid")).PrepareReferencePackageAsync(row.ReferencePackage!,decimal.Parse(row.AmountText,NumberStyles.Number,CultureInfo.InvariantCulture),row.AccountType);
-                var quotes=_cart.Select(r=>r.Quote()).ToArray();var paid=paymentMethod=="CARD"?total:total>0?decimal.Parse(tendered.Text,NumberStyles.Number,CultureInfo.InvariantCulture):0;
+                var quotes=await PrepareQuotesAsync();var paid=paymentMethod=="CARD"?total:total>0?decimal.Parse(tendered.Text,NumberStyles.Number,CultureInfo.InvariantCulture):0;
                 completed=await _ledger.CheckoutAsync(_checkoutKey,quotes,paymentMethod,paid);posting=false;close();
             }
             catch(Exception e){error.Text=T(e is DomainException?e.Message:"Service_Error");}
@@ -45,5 +44,18 @@ public sealed partial class DigitalServicesView
         if(completed is null)return;
         ClearCompletedDraft(completed.ConfirmationId);DropRows();_resumed=false;_checkoutKey=Guid.NewGuid();_entryDirty=false;_entry.Reset();_status.Text=T("Service_Saved")+" · "+completed.ReceiptNumber;Record();
         await _receipts.ShowCheckoutAsync(completed);_ = Dispatcher.BeginInvoke(()=>FocusSearch());
+    }
+    private async Task<ServiceTransaction[]> PrepareQuotesAsync()
+    {
+        foreach(var row in _cart.Where(r=>r.Package is null&&r.ReferencePackage is not null))row.Package=await (_retailInventory??throw new DomainException("Service_Invalid")).PrepareReferencePackageAsync(row.ReferencePackage!,decimal.Parse(row.AmountText,NumberStyles.Number,CultureInfo.InvariantCulture),row.AccountType);
+        return _cart.Select(r=>r.Quote()).ToArray();
+    }
+    private async Task RecordUnsettledAsync()
+    {
+        if(_cart.Count!=1)throw new DomainException("Service_Invalid");
+        var quote=(await PrepareQuotesAsync()).Single();
+        var saved=await _ledger.SaveUnsettledAsync(quote);
+        ClearCompletedDraft(_checkoutKey);DropRows();_resumed=false;_checkoutKey=Guid.NewGuid();_entryDirty=false;_entry.Reset();
+        _status.Text=T("Service_Saved")+" · "+saved.ReceiptNumber+" · "+T("Service_"+saved.Status);Record();
     }
 }

@@ -312,6 +312,95 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("SupermarketPos.Domain.Entities.CustomerCreditMovement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ConfirmationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Method")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Operator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("RecordedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SaleReturnId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("TargetSaleId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConfirmationId")
+                        .IsUnique();
+
+                    b.HasIndex("SaleReturnId");
+
+                    b.HasIndex("TargetSaleId");
+
+                    b.ToTable("CustomerCreditMovements");
+                });
+
+            modelBuilder.Entity("SupermarketPos.Domain.Entities.DeviceReturnRelease", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("ConfirmationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Inspection")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Operator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ReleasedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SaleLineId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SaleReturnId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SerializedUnitId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConfirmationId")
+                        .IsUnique();
+
+                    b.HasIndex("SaleLineId")
+                        .IsUnique();
+
+                    b.HasIndex("SaleReturnId");
+
+                    b.HasIndex("SerializedUnitId");
+
+                    b.ToTable("DeviceReturnReleases");
+                });
+
             modelBuilder.Entity("SupermarketPos.Domain.Entities.DigitalCustomer", b =>
                 {
                     b.Property<string>("RecipientKey")
@@ -363,6 +452,9 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("PurchaseCost")
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("SupplierId")
                         .HasColumnType("INTEGER");
@@ -768,6 +860,10 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RequestFingerprint")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Supplier")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -1016,6 +1112,9 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.Property<int>("SaleId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("SerialCycle")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("SerialNumber")
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
@@ -1052,6 +1151,9 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.HasIndex("ProductId", "SaleId");
 
                     b.HasIndex("ProductId", "SerialNumber")
+                        .HasFilter("SerialNumber IS NOT NULL");
+
+                    b.HasIndex("ProductId", "SerialNumber", "SerialCycle")
                         .IsUnique()
                         .HasFilter("SerialNumber IS NOT NULL");
 
@@ -1145,11 +1247,17 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<decimal?>("PurchaseCost")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("PurchaseId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("ReceivedOn")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("SaleCycle")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int?>("SaleId")
                         .IsConcurrencyToken()
@@ -1243,10 +1351,15 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("Income")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("PostedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("TransactionId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PostedAt");
 
                     b.HasIndex("TransactionId")
                         .IsUnique();
@@ -1709,6 +1822,41 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("SaleId")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SupermarketPos.Domain.Entities.CustomerCreditMovement", b =>
+                {
+                    b.HasOne("SupermarketPos.Domain.Entities.SaleReturn", null)
+                        .WithMany()
+                        .HasForeignKey("SaleReturnId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SupermarketPos.Domain.Entities.Sale", null)
+                        .WithMany()
+                        .HasForeignKey("TargetSaleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SupermarketPos.Domain.Entities.DeviceReturnRelease", b =>
+                {
+                    b.HasOne("SupermarketPos.Domain.Entities.SaleLine", null)
+                        .WithMany()
+                        .HasForeignKey("SaleLineId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SupermarketPos.Domain.Entities.SaleReturn", null)
+                        .WithMany()
+                        .HasForeignKey("SaleReturnId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SupermarketPos.Domain.Entities.SerializedUnit", null)
+                        .WithMany()
+                        .HasForeignKey("SerializedUnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SupermarketPos.Domain.Entities.InventoryBatch", b =>

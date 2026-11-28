@@ -23,4 +23,6 @@ public sealed record SalesReport(
     decimal NetTotal,
     decimal VatTotal,
     IReadOnlyList<VatGroup> VatBreakdown,
-    PaymentSplit PaymentSplit);
+    PaymentSplit PaymentSplit,
+    decimal CreditCashRefunds = 0m,
+    decimal CreditCardRefunds = 0m);

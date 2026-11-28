@@ -16,6 +16,8 @@ internal static class ReturnInvoicePanel
     {
         if(InAppDialog.IsOpen) return;
         var history=await service.HistoryAsync(sale.Id);
+        var released=await service.DeviceReleasesAsync(sale.Id);
+        var devicesAvailable=await service.DeviceReturnsAvailableAsync();
         var prior=history.Where(r=>r.Status=="Posted").SelectMany(ReturnsService.Items).ToArray();
         var pending=history.FirstOrDefault(r=>r.Status=="Pending");
         var panel=new DockPanel();
@@ -23,7 +25,7 @@ internal static class ReturnInvoicePanel
         header.Text=LocalizationManager.Instance["Trade_ReturnItems"]+" · "+sale.ReceiptNo;
         DockPanel.SetDock(header,Dock.Top);panel.Children.Add(header);
         var footer=new StackPanel();DockPanel.SetDock(footer,Dock.Bottom);panel.Children.Add(footer);
-        var actions=new WrapPanel { HorizontalAlignment=HorizontalAlignment.Right };
+        var actions=new WrapPanel { HorizontalAlignment=HorizontalAlignment.Left };
         var form=new BusinessForm();
         var body=new ScrollViewer {Content=form,VerticalScrollBarVisibility=ScrollBarVisibility.Auto,MaxHeight=465};
         panel.Children.Add(body);
@@ -55,6 +57,18 @@ internal static class ReturnInvoicePanel
                     Text = $"{item.Name} · {item.Quantity:0.###} · {item.Lot ?? item.VerifiedIdentity} · {item.Expiry:yyyy-MM-dd} · {LocalizationManager.Instance["Trade_Disposition"+disposition]}",
                     TextWrapping = TextWrapping.Wrap
                 }, true);
+                if(devicesAvailable&&record.Status=="Posted"&&item.Serial is not null&&item.BatchId is null&&sale.SourceReceiptNo is null)
+                {
+                    if(released.FirstOrDefault(r=>r.SaleLineId==item.SaleLineId) is{} release)
+                        form.Add("",new TextBlock{Text=LocalizationManager.Instance["Device_Released"]+" · "+release.ReleasedAt.ToString("g")+" · "+release.Operator+" · "+release.Inspection,TextWrapping=TextWrapping.Wrap},true);
+                    else if(prior.Where(p=>p.SaleLineId==item.SaleLineId).Sum(p=>p.Quantity)==sale.Lines.Single(l=>l.Id==item.SaleLineId).Quantity)
+                    {
+                        form.Add("",BusinessForm.Label("Device_ReturnLocationHelp"),true);
+                        var identity=new TextBox{MaxLength=64};var inspection=new TextBox{MaxLength=300};var key=Guid.NewGuid();
+                        form.Add("Trade_ReturnIdentityField",identity);form.Add("Device_Inspection",inspection);
+                        form.Add("",BusinessForm.Button("Device_Release",async(_,_)=>await Run(()=>service.ReleaseDeviceAsync(record.Id,item.SaleLineId,identity.Text,inspection.Text,key))),true);
+                    }
+                }
             }
         }
         if(pending is not null)

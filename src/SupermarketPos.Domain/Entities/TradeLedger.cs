@@ -73,10 +73,12 @@ public sealed class SerializedUnit
     public DateTime ReceivedOn { get; private set; }
     public DateTime? SoldOn { get; private set; }
     public DateTime? WarrantyUntil { get; private set; }
+    public decimal? PurchaseCost { get; private set; }
+    public int SaleCycle { get; private set; }
 
     private SerializedUnit() { }
 
-    public SerializedUnit(int productId, UnitIdentifiers identifiers, int? purchaseId, DateTime receivedOn)
+    public SerializedUnit(int productId, UnitIdentifiers identifiers, int? purchaseId, DateTime receivedOn, decimal? purchaseCost=null)
     {
         var checkedIds = UnitIdentifiers.Create(identifiers.Serial, identifiers.Imei1, identifiers.Imei2);
         ProductId = productId;
@@ -85,6 +87,8 @@ public sealed class SerializedUnit
         Imei2 = checkedIds.Imei2;
         PurchaseId = purchaseId;
         ReceivedOn = receivedOn;
+        if(purchaseCost<0)throw new DomainException("Enter a nonnegative purchase cost.");
+        PurchaseCost=purchaseCost;
     }
 
     public void Sell(int saleId, DateTime soldOn, int warrantyMonths)
@@ -93,5 +97,11 @@ public sealed class SerializedUnit
         SaleId = saleId;
         SoldOn = soldOn;
         WarrantyUntil = warrantyMonths > 0 ? soldOn.Date.AddMonths(warrantyMonths) : null;
+    }
+
+    public void ReleaseReturned(int originalSaleId)
+    {
+        if(SaleId!=originalSaleId)throw new DomainException("Device_ReturnInvalid");
+        SaleId=null;SoldOn=null;WarrantyUntil=null;SaleCycle=checked(SaleCycle+1);
     }
 }

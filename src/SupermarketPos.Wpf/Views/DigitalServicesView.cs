@@ -47,7 +47,7 @@ public sealed partial class DigitalServicesView : UserControl
         var panel=new StackPanel();_history=await _ledger.HistoryAsync();var posts=(await _ledger.PostingsAsync()).ToDictionary(p=>p.TransactionId);
         var rows=_history.Select(t=>new ServiceHistoryRow(t,posts.GetValueOrDefault(t.Id))).ToArray();
         var filters=new BusinessForm(3);var search=new TextBox{Name="DigitalHistorySearch"};var from=new DatePicker();var to=new DatePicker();filters.Field("Digital_CustomerSearch","Search",search);filters.Add("Reports_From",from);filters.Add("Reports_To",to);panel.Children.Add(filters);
-        var table=Table(rows,"digital-service-history",("Service_Receipt","Number"),("Reports_Date","Date"),("Service_Provider","Provider"),("Service_Type","Type"),("Service_Status","Status"),("Digital_Recipient","Recipient"),("Customer_Name","CustomerName"),("Service_Principal","Principal"),("Digital_Fee","Fee"),("Service_Income","Income"));panel.Children.Add(table);
+        var table=Table(rows,"digital-service-history",("Service_Receipt","Number"),("Digital_AttemptDate","Date"),("Digital_PostedDate","PostedDate"),("Service_Provider","Provider"),("Service_Type","Type"),("Service_Status","Status"),("Digital_Recipient","Recipient"),("Customer_Name","CustomerName"),("Service_Principal","Principal"),("Digital_Fee","Fee"),("Service_Income","Income"));foreach(var column in table.Columns)column.Width=DataGridLength.Auto;panel.Children.Add(table);
         var customers=await _ledger.CustomersAsync();
         void Filter(){var term=search.Text.Trim();var matched=customers.Where(c=>c.Matches(term)).Select(c=>c.Key).ToHashSet();table.ItemsSource=rows.Where(r=>(from.SelectedDate is not{} start||r.Transaction.OccurredAt.Date>=start.Date)&&(to.SelectedDate is not{} end||r.Transaction.OccurredAt.Date<=end.Date)&&(r.Matches(term)||matched.Contains(r.Transaction.RecipientKey))).ToArray();}
         search.TextChanged+=(_,_)=>Filter();from.SelectedDateChanged+=(_,_)=>Filter();to.SelectedDateChanged+=(_,_)=>Filter();
@@ -58,8 +58,8 @@ public sealed partial class DigitalServicesView : UserControl
             if(state=="Failed")await _ledger.SetStatusAsync(row.Transaction.Id,state,false);
             else
             {
-                var confirmation=new ServiceConfirmWindow(row.Transaction.Reference){Owner=Window.GetWindow(this)};if(confirmation.ShowDialog()!=true)return;
-                if(state=="Reversed")await _ledger.ReverseAsync(row.Transaction.Id,confirmation.Reference,true);else await _ledger.SetStatusAsync(row.Transaction.Id,state,true,confirmation.Reference);
+                var reference=await ServiceConfirmPanel.ShowAsync(row.Transaction.Reference);if(reference is null)return;
+                if(state=="Reversed")await _ledger.ReverseAsync(row.Transaction.Id,reference,true);else await _ledger.SetStatusAsync(row.Transaction.Id,state,true,reference);
             }
             await LoadAsync();await HistoryAsync();
         }),"GhostButton"));
@@ -145,25 +145,26 @@ public sealed partial class DigitalServicesView : UserControl
     {
         public string AccountType{get;set;}="Prepaid";public int ProviderId{get;set;}public string Type{get;set;}="LOAD";
         public string Principal{get;set;}="";public string CustomerFee{get;set;}="0";public string Phone{get;set;}="";public string Reference{get;set;}="";public string ProviderCost{get;set;}="";public string CustomerName{get;set;}="";
-        public void Reset(){Principal=Phone=Reference=ProviderCost=CustomerName="";}
+        public string Outcome{get;set;}="Confirmed";
+        public void Reset(){Principal=Phone=Reference=ProviderCost=CustomerName="";Outcome="Confirmed";}
     }
     private sealed class ProviderEntry{public string CustomerFeeMode{get;set;}="FIXED";public string CustomerFeePercent{get;set;}="0";public string AccountNumberLengths{get;set;}="";public string CatalogKey="";public string CustomerFee{get;set;}="0";public string ProviderFee{get;set;}="0";public string Commission{get;set;}="0";public string LoadCostRate{get;set;}="1";public int Id;public string Name{get;set;}="";public string Opening{get;set;}="0";public string FeePolicy{get;set;}="";public string CommissionPolicy{get;set;}="";public bool Active{get;set;}=true;public bool Transfer{get;set;}=true;public bool CashIn{get;set;}=true;public bool CashOut{get;set;}=true;public bool Load{get;set;}=true;public bool Package{get;set;}=true;}
     private sealed class PackageEntry{public string CatalogKey="";public string AccountType{get;set;}="Prepaid";public string Identifier{get;set;}="";public string Benefits{get;set;}="";public string CustomerFee{get;set;}="0";public string ProviderFee{get;set;}="0";public int Id;public int ProviderId{get;set;}public string Name{get;set;}="";public string Kind{get;set;}="";public string Price{get;set;}="0";public string Cost{get;set;}="";public string Commission{get;set;}="0";public string Validity{get;set;}="";public bool Active{get;set;}=true;}
 }
 public sealed record ServiceHistoryRow(ServiceTransaction Transaction,ServicePosting? Posting)
 {
+    public string PostedDate=>Posting is null?"":(Posting.PostedAt==default?Transaction.OccurredAt:Posting.PostedAt).ToString("yyyy-MM-dd HH:mm");
     public string Recipient=>Transaction.CustomerPhone;public string CustomerName=>Transaction.CustomerName;public string Fee=>Money.Format(Transaction.CustomerFee);
     public bool Matches(string term)=>new[]{Number,Recipient,CustomerName,Provider,Type,Transaction.PackageName}.Any(v=>v.Contains(term,StringComparison.CurrentCultureIgnoreCase));
     public string Number=>Transaction.ReceiptNumber;public string Date=>Transaction.OccurredAt.ToString("yyyy-MM-dd HH:mm");public string Provider=>Transaction.ProviderName;public string Type=>LocalizationManager.Instance["Service_"+Transaction.Type];public string Status=>LocalizationManager.Instance["Service_"+Transaction.Status];public string Principal=>Money.Format(Transaction.Principal);public string Income=>Transaction.Type is "LOAD" or "PACKAGE"&&!Transaction.ProviderCostKnown?LocalizationManager.Instance["Digital_NotRecorded"]:Money.Format(Posting?.Income??0);public string Reference=>Transaction.Reference;
 }
-public sealed class ServiceConfirmWindow:Window
+internal static class ServiceConfirmPanel
 {
-    private readonly TextBox _reference;public string Reference=>_reference.Text.Trim();
-    public ServiceConfirmWindow(string reference)
+    public static async Task<string?> ShowAsync(string reference)
     {
-        Title=LocalizationManager.Instance["Common_Confirm"];SetResourceReference(StyleProperty,"FormDialogWindow");WindowStartupLocation=WindowStartupLocation.CenterOwner;
-        var f=new BusinessForm();_reference=new(){Text=reference,MaxLength=80};f.Add("Digital_ReferenceOptional",_reference,true);
-        f.Add("",BusinessForm.Button("Common_Cancel",(_,_)=>DialogResult=false,"GhostButton"));f.Add("",BusinessForm.Button("Common_Confirm",(_,_)=>DialogResult=true));
-        var card=new Border{Width=650,Child=f};card.SetResourceReference(StyleProperty,"Card");var fit=new Viewbox{Child=card};fit.SetResourceReference(StyleProperty,"DialogFit");Content=fit;
+        var f=new BusinessForm();var input=new TextBox{Text=reference,MaxLength=80};f.Add("Digital_ReferenceOptional",input,true);
+        f.Add("",BusinessForm.Label("Digital_ConfirmResultHelp"),true);Action close=()=>{};string? result=null;
+        f.Add("",BusinessForm.Button("Common_Cancel",(_,_)=>close(),"GhostButton"));var confirm=BusinessForm.Button("Common_Confirm",(_,_)=>{result=input.Text.Trim();close();});confirm.IsDefault=true;f.Add("",confirm);
+        await InAppDialog.ShowAsync(f,c=>close=c,contentWidth:650,sizeToContent:true);return result;
     }
 }

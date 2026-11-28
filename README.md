@@ -1,4 +1,4 @@
-# Wijgandu POS — High4Tech
+# ORMA POS — High4Tech
 
 ## Current Windows application
 
@@ -6,9 +6,9 @@ The current Windows source is in `src/`. The Android scanner is in `mobile-scann
 
 The full edition retains business onboarding, profiles, pharmacy/retail modules, optional FBR configuration, licensing and update modules. The separate [Wijgandu Retail edition](docs/RETAIL_EDITION.md) uses simple local onboarding, Tech Retail features and an independent data folder.
 
-Current release: **1.2.0-beta.7**. Digital services now use one transaction form followed directly by payment and receipt, with separate phone/account-based digital customer history and reports. Physical sales keep their existing cart. Actual bank/telecom operations use the authorized provider; the POS records them.
+Current release: **1.2.0-beta.8**. ORMA is the full edition; standalone Wijgandu Retail retains its own branding and local setup. Both include auditable customer-credit use/refunds, receiving-cost snapshots for tracked devices/batches, inspected device resale, Pending/Failed digital records, and complete purchase retry checks. Actual bank/telecom operations use the authorized provider; the POS records them.
 
-Published releases: [full-edition source](https://github.com/High4Tech/POS-System/releases/tag/v1.2.0-beta.7), [standalone Retail installer](https://github.com/High4Tech/pos_backup/releases/tag/retail-v1.2.0-beta.7).
+Published releases: [full-edition source](https://github.com/High4Tech/POS-System/releases/tag/v1.2.0-beta.8), [standalone Retail installer](https://github.com/High4Tech/pos_backup/releases/tag/retail-v1.2.0-beta.8).
 
 See the [release verification](engineering/Direct-Digital-20261128.md), [version/recovery guide](docs/VERSIONS_AND_RECOVERY.md) and [retail feature and shortcut report](docs/RETAIL_FEATURES_AND_SHORTCUTS.md). The locally verified builds are development/testing builds; commercial enforcement and integrations need publisher configuration.
 

@@ -9,7 +9,7 @@ using SupermarketPos.Infrastructure.Persistence;
 
 namespace SupermarketPos.Infrastructure.Business;
 
-public sealed class ReturnsService(PosDbContext db, IUnitOfWork work, IAuthService auth)
+public sealed partial class ReturnsService(PosDbContext db, IUnitOfWork work, IAuthService auth)
 {
     public async Task<IReadOnlyList<SaleReturn>> HistoryAsync(int saleId, CancellationToken ct = default) =>
         await db.SaleReturns.AsNoTracking().Where(r => r.SaleId == saleId).OrderByDescending(r => r.Id).ToListAsync(ct);

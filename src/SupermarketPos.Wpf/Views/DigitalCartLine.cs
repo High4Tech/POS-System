@@ -34,6 +34,8 @@ public sealed class DigitalCartLine:ObservableObject,IDataErrorInfo
     public string Reference{get=>_reference;set=>SetProperty(ref _reference,value);}
     private string _customerName="";
     public string CustomerName{get=>_customerName;set=>SetProperty(ref _customerName,value);}
+    private string _outcome="Confirmed";
+    public string Outcome{get=>_outcome;set=>SetProperty(ref _outcome,value);}
     public bool ShowValidation{get;set;}
     public decimal Total{get{try{return Number(AmountText,out var amount)&&amount>0?(Type=="CASHOUT"?-amount:amount)+(HasFee&&Number(FeeText,out var fee)?fee:0):0;}catch(OverflowException){return 0;}}}
     public void RefreshTotal()=>OnPropertyChanged(nameof(TotalText));
@@ -44,6 +46,7 @@ public sealed class DigitalCartLine:ObservableObject,IDataErrorInfo
     public Dictionary<string,string> Errors()
     {
         var errors=new Dictionary<string,string>();
+        if(Outcome is not ("Confirmed" or "Pending" or "Failed"))errors[nameof(Outcome)]="Service_Invalid";
         try{DigitalRecipient.Name(CustomerName);}catch(DomainException){errors[nameof(CustomerName)]="Validation_Text";}
         if(!Number(AmountText,out var amount)||amount<=0||Type=="PACKAGE"&&amount<Package?.CustomerFee)errors[nameof(AmountText)]="Service_InvalidAmount";
         if(HasFee&&(!Number(FeeText,out var fee)||fee<0))errors[nameof(FeeText)]="Service_InvalidAmount";
@@ -65,7 +68,7 @@ public sealed class DigitalCartLine:ObservableObject,IDataErrorInfo
         if(Type!="PACKAGE"){quote.CustomerFee=fee;quote.Collected=Type=="CASHOUT"?0:amount+fee;}
         if(Type=="LOAD"){quote.ProviderCost=cost??0;quote.ProviderCostKnown=cost.HasValue;}
         if(Type=="LOAD")quote.AccountType=AccountType;
-        quote.ConfirmationId=ConfirmationId;quote.Status="Confirmed";quote.OccurredAt=DateTime.Now;quote.Reference=Reference.Trim();quote.CustomerPhone=Type is "LOAD" or "PACKAGE"?InvoicePhone.Normalize(Recipient):PakistanPayment.Recipient(Recipient,Provider.Name,Provider.AccountNumberLengths);quote.CustomerName=CustomerName;
+        quote.ConfirmationId=ConfirmationId;quote.Status=Outcome;quote.OccurredAt=DateTime.Now;quote.Reference=Reference.Trim();quote.CustomerPhone=Type is "LOAD" or "PACKAGE"?InvoicePhone.Normalize(Recipient):PakistanPayment.Recipient(Recipient,Provider.Name,Provider.AccountNumberLengths);quote.CustomerName=CustomerName;
         return quote;
     }
 }

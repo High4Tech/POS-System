@@ -31,6 +31,8 @@ public sealed class PosDbContext : DbContext
     public DbSet<PurchaseLine> PurchaseLines => Set<PurchaseLine>();
     public DbSet<Supplier> Suppliers => Set<Supplier>();
     public DbSet<SaleReturn> SaleReturns => Set<SaleReturn>();
+    public DbSet<CustomerCreditMovement> CustomerCreditMovements => Set<CustomerCreditMovement>();
+    public DbSet<DeviceReturnRelease> DeviceReturnReleases => Set<DeviceReturnRelease>();
     public DbSet<StockMovement> StockMovements => Set<StockMovement>();
     public DbSet<AppSettings> Settings => Set<AppSettings>();
     public DbSet<AccountPayment> AccountPayments => Set<AccountPayment>();
@@ -53,6 +55,11 @@ public sealed class PosDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder b)
     {
+        b.Entity<CustomerCreditMovement>(e=>{e.HasIndex(m=>m.ConfirmationId).IsUnique();e.HasIndex(m=>m.SaleReturnId);e.Property(m=>m.Amount).HasColumnType("TEXT");e.HasOne<SaleReturn>().WithMany().HasForeignKey(m=>m.SaleReturnId).OnDelete(DeleteBehavior.Restrict);e.HasOne<Sale>().WithMany().HasForeignKey(m=>m.TargetSaleId).OnDelete(DeleteBehavior.Restrict);});
+        b.Entity<DeviceReturnRelease>(e=>{e.HasIndex(r=>r.ConfirmationId).IsUnique();e.HasIndex(r=>r.SaleLineId).IsUnique();e.HasOne<SaleReturn>().WithMany().HasForeignKey(r=>r.SaleReturnId).OnDelete(DeleteBehavior.Restrict);e.HasOne<SaleLine>().WithMany().HasForeignKey(r=>r.SaleLineId).OnDelete(DeleteBehavior.Restrict);e.HasOne<SerializedUnit>().WithMany().HasForeignKey(r=>r.SerializedUnitId).OnDelete(DeleteBehavior.Restrict);});
+        b.Entity<SerializedUnit>().Property(u=>u.PurchaseCost).HasColumnType("TEXT");
+        b.Entity<InventoryBatch>().Property(u=>u.PurchaseCost).HasColumnType("TEXT");
+        b.Entity<ServicePosting>().HasIndex(p=>p.PostedAt);
         b.Entity<MedicineReference>(e=>{e.HasIndex(m=>m.SourceKey).IsUnique();e.HasIndex(m=>m.RegistrationNumber);e.HasIndex(m=>m.SearchText);});
         b.Entity<CatalogImport>().HasKey(i=>i.TemplateId);
         b.Entity<StockLocation>(e=>{e.HasIndex(l=>l.Barcode).IsUnique();e.HasOne<StockLocation>().WithMany().HasForeignKey(l=>l.ParentId).OnDelete(DeleteBehavior.Restrict);});
@@ -202,7 +209,8 @@ public sealed class PosDbContext : DbContext
             e.Property(l => l.SerialNumber).HasMaxLength(64);
             e.Property(l => l.Imei1).HasMaxLength(15);
             e.Property(l => l.Imei2).HasMaxLength(15);
-            e.HasIndex(l => new { l.ProductId, l.SerialNumber }).IsUnique().HasFilter("SerialNumber IS NOT NULL");
+            e.HasIndex(l => new { l.ProductId, l.SerialNumber }).HasFilter("SerialNumber IS NOT NULL");
+            e.HasIndex(l => new { l.ProductId, l.SerialNumber,l.SerialCycle }).IsUnique().HasFilter("SerialNumber IS NOT NULL");
             e.HasKey(l => l.Id);
             e.Property(l => l.Barcode).HasMaxLength(64);
             e.Property(l => l.Name).IsRequired().HasMaxLength(200);

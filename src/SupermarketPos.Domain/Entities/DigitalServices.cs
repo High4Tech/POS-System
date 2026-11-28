@@ -59,6 +59,7 @@ public sealed class DigitalCustomer
 }
 public sealed class ServicePosting
 {
+    public DateTime PostedAt{get;set;}
     public int Id{get;set;}public int TransactionId{get;set;}public decimal CashChange{get;set;}public decimal FloatChange{get;set;}public decimal Income{get;set;}
 }
 

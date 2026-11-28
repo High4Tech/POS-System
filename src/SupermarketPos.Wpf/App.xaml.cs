@@ -25,10 +25,12 @@ public partial class App : System.Windows.Application
     private Diagnostics? _diagnostics;
     private readonly DispatcherTimer _backupTimer=new(){Interval=TimeSpan.FromMinutes(30)};
     private BackupSchedule? _backupSchedule;
+    private DateTimeOffset? _lastUpdateAttempt;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        _=AppBrand.Name;
 
         DispatcherUnhandledException += OnUnhandledException;
 
@@ -96,7 +98,7 @@ public partial class App : System.Windows.Application
             window.Show();
             _provider.GetRequiredService<SoftwareUpdates>().RecordSuccessfulStartup();
             _provider.GetRequiredService<ScannerController>().Start();
-            _backupSchedule=new BackupSchedule(Path.GetDirectoryName(_provider.GetRequiredService<PosStorage>().DatabasePath)!);_backupTimer.Tick+=async(_,_)=>await CheckScheduledBackupAsync();_backupTimer.Start();_ =CheckScheduledBackupAsync();
+            _backupSchedule=new BackupSchedule(Path.GetDirectoryName(_provider.GetRequiredService<PosStorage>().DatabasePath)!);_backupTimer.Tick+=async(_,_)=>{await CheckScheduledBackupAsync();await CheckUpdatesInBackgroundAsync();};_backupTimer.Start();_ =CheckScheduledBackupAsync();
             if (_provider.GetRequiredService<IAuthService>().IsLoggedIn) await shell.EnterConfiguredStoreAsync();
             _ = CheckUpdatesInBackgroundAsync();
         }
@@ -179,8 +181,12 @@ public partial class App : System.Windows.Application
     {
         try
         {
-            if (_provider?.GetRequiredService<LicenseClient>().Current is not null)
-                await _provider.GetRequiredService<SoftwareUpdates>().CheckAsync();
+            if(_provider is null)return;
+            var updates=_provider.GetRequiredService<SoftwareUpdates>();var now=DateTimeOffset.UtcNow;
+            if(_lastUpdateAttempt is{} attempt&&now-attempt<TimeSpan.FromHours(1)||updates.LastCheck is{} last&&now-last<TimeSpan.FromDays(1))return;
+            _lastUpdateAttempt=now;
+            if (RetailTestEdition.Standalone||_provider.GetRequiredService<LicenseClient>().Current is not null)
+                await updates.CheckAsync();
         }
         catch { /* Offline use and a valid certificate are independent of update service availability. */ }
     }

@@ -37,6 +37,11 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
         if(entry.Id==0)db.MobileServicePackages.Add(entry);else{var saved=await db.MobileServicePackages.SingleAsync(p=>p.Id==entry.Id);db.Entry(saved).CurrentValues.SetValues(entry);}await db.SaveChangesAsync();
     }
     public Task<ServiceTransaction> SaveAsync(ServiceTransaction entry,bool confirmedExternally)=>SaveCoreAsync(entry,confirmedExternally,false);
+    public Task<ServiceTransaction> SaveUnsettledAsync(ServiceTransaction entry)
+    {
+        if(entry.Status is not ("Pending" or "Failed")||entry.CheckoutId.HasValue||entry.ReversesId.HasValue)throw new DomainException("Service_Invalid");
+        return SaveCoreAsync(entry,false,true);
+    }
     public async Task<ServiceTransaction> SellPackageAsync(int packageId,decimal price,decimal? cost,string phone,string reference,string status,bool confirmedExternally,Guid confirmationId)
     {
         var package=await db.MobileServicePackages.AsNoTracking().SingleAsync(p=>p.Id==packageId);
@@ -52,6 +57,7 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
         entry.CustomerName=DigitalRecipient.Name(entry.CustomerName);
         if(await db.ServiceTransactions.AsNoTracking().SingleOrDefaultAsync(t=>t.ConfirmationId==entry.ConfirmationId,ct) is{} prior)
         {
+            if(prior.Status!=entry.Status)throw new DomainException("Service_ConfirmationConflict");
             if(entry.CustomerName.Length==0)entry.CustomerName=prior.CustomerName;
             if(prior.RecipientKey!=entry.RecipientKey||prior.CustomerName!=entry.CustomerName)throw new DomainException("Service_ConfirmationConflict");
             if(prior.ProviderId!=entry.ProviderId||prior.PackageId!=entry.PackageId||prior.Principal!=entry.Principal||prior.Type!=entry.Type||prior.CustomerFee!=entry.CustomerFee||prior.ProviderFee!=entry.ProviderFee||prior.Commission!=entry.Commission||prior.ProviderCost!=entry.ProviderCost||prior.ProviderCostKnown!=entry.ProviderCostKnown||prior.Collected!=entry.Collected||prior.FloatChange!=entry.FloatChange||prior.CustomerPhone!=entry.CustomerPhone||prior.Reference!=entry.Reference||prior.PaymentMethod!=entry.PaymentMethod||prior.CheckoutId!=entry.CheckoutId||prior.AccountType!=entry.AccountType)throw new DomainException("Service_ConfirmationConflict");
@@ -59,6 +65,10 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
         }
         var provider=await db.ServiceProviders.SingleOrDefaultAsync(p=>p.Id==entry.ProviderId,ct)??throw new DomainException("Service_SelectProvider");
         if(!provider.IsActive||!provider.AllowedTypes.Split(',').Contains(entry.Type))throw new DomainException("Service_Invalid");
+        if(packageOverrides&&entry.Status is "Pending" or "Failed")
+        {
+            if(entry.Type is "LOAD" or "PACKAGE")PakistanPayment.Mobile(entry.CustomerPhone);else PakistanPayment.Recipient(entry.CustomerPhone,provider.Name,provider.AccountNumberLengths);
+        }
         var customer=await db.DigitalCustomers.SingleOrDefaultAsync(c=>c.RecipientKey==entry.RecipientKey,ct);
         if(entry.CustomerName.Length>0){if(customer is null)db.DigitalCustomers.Add(new(){RecipientKey=entry.RecipientKey,Name=entry.CustomerName});else customer.Name=entry.CustomerName;}
         else entry.CustomerName=customer?.Name??"";
@@ -83,14 +93,14 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
         if(entry.Status is not ("Draft" or "Pending")||status is not ("Pending" or "Confirmed" or "Failed"))throw new DomainException("Service_Immutable");
         if(reference is not null)entry.Reference=reference.Trim();entry.Status=status;entry.Validate();entry.Revision++;
         if(status=="Confirmed"&&entry.Reference.Length>0&&await db.ServiceTransactions.AnyAsync(t=>t.Id!=id&&t.ProviderId==entry.ProviderId&&t.Reference==entry.Reference&&t.ReversesId==null&&(t.Status=="Confirmed"||t.Status=="Reversed"),ct))throw new DomainException("Service_DuplicateReference");
-        if(status=="Confirmed")await PostAsync(entry,await db.ServiceProviders.SingleAsync(p=>p.Id==entry.ProviderId,ct),ct);
+        if(status=="Confirmed")await PostAsync(entry,await db.ServiceProviders.SingleAsync(p=>p.Id==entry.ProviderId,ct),ct,DateTime.Now);
         await db.SaveChangesAsync(ct);return entry;
     });
-    private async Task PostAsync(ServiceTransaction entry,ServiceProviderAccount provider,CancellationToken ct)
+    private async Task PostAsync(ServiceTransaction entry,ServiceProviderAccount provider,CancellationToken ct,DateTime? postedAt=null)
     {
         if(entry.Type is "LOAD" or "PACKAGE")PakistanPayment.Mobile(entry.CustomerPhone);else PakistanPayment.Recipient(entry.CustomerPhone,provider.Name,provider.AccountNumberLengths);
         if(await db.ServicePostings.AnyAsync(p=>p.TransactionId==entry.Id,ct))return;
-        provider.Revision++;db.ServicePostings.Add(new(){TransactionId=entry.Id,CashChange=entry.CashChange,FloatChange=entry.FloatChange,Income=entry.Income});
+        provider.Revision++;db.ServicePostings.Add(new(){TransactionId=entry.Id,CashChange=entry.CashChange,FloatChange=entry.FloatChange,Income=entry.Income,PostedAt=postedAt??entry.OccurredAt});
     }
     public Task<ServiceTransaction> ReverseAsync(int id,string reference,bool confirmedExternally)=>work.ExecuteInTransactionAsync(async ct=>
     {
@@ -102,20 +112,21 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
         var reversal=new ServiceTransaction{ConfirmationId=Guid.NewGuid(),ProviderId=original.ProviderId,Type="REVERSAL",Status="Confirmed",ReversesId=id,Reference=reference,Operator=auth.CurrentUser!.DisplayName,OccurredAt=DateTime.Now,StoreName=original.StoreName,ProviderName=original.ProviderName,Principal=original.Principal};
         reversal.InvoiceProfileJson=original.InvoiceProfileJson;reversal.RecipientKey=original.RecipientKey;reversal.CustomerName=original.CustomerName;reversal.CustomerPhone=original.CustomerPhone;
         db.ServiceTransactions.Add(reversal);original.Status="Reversed";original.Revision++;await db.SaveChangesAsync(ct);
-        db.ServicePostings.Add(new(){TransactionId=reversal.Id,CashChange=-posting.CashChange,FloatChange=-posting.FloatChange,Income=-posting.Income});
+        db.ServicePostings.Add(new(){TransactionId=reversal.Id,CashChange=-posting.CashChange,FloatChange=-posting.FloatChange,Income=-posting.Income,PostedAt=reversal.OccurredAt});
         (await db.ServiceProviders.SingleAsync(p=>p.Id==original.ProviderId,ct)).Revision++;await db.SaveChangesAsync(ct);return reversal;
     });
     public async Task<ServicePeriodReport> ReportAsync(DateTime from,DateTime to)
     {
-        var rows=await db.ServiceTransactions.AsNoTracking().Where(t=>t.OccurredAt>=from&&t.OccurredAt<to).ToListAsync();var ids=rows.Select(t=>t.Id).ToArray();
-        var posts=await db.ServicePostings.AsNoTracking().Where(p=>ids.Contains(p.TransactionId)).ToListAsync();
+        var attempts=await db.ServiceTransactions.AsNoTracking().Where(t=>t.OccurredAt>=from&&t.OccurredAt<to).ToListAsync();
+        var posts=await db.ServicePostings.AsNoTracking().Where(p=>p.PostedAt>=from&&p.PostedAt<to).ToListAsync();var ids=posts.Select(p=>p.TransactionId).ToArray();
+        var rows=await db.ServiceTransactions.AsNoTracking().Where(t=>ids.Contains(t.Id)).ToListAsync();
         var reversedIds=rows.Where(t=>t.ReversesId.HasValue).Select(t=>t.ReversesId!.Value).ToArray();
         var originals=await db.ServiceTransactions.AsNoTracking().Where(t=>reversedIds.Contains(t.Id)).ToDictionaryAsync(t=>t.Id);
         var posted=posts.Select(p=>p.TransactionId).ToHashSet();
         decimal Net(Func<ServiceTransaction,decimal> amount,params string[] types)=>rows.Where(t=>posted.Contains(t.Id)).Sum(t=>t.ReversesId is{} id?(types.Length==0||types.Contains(originals[id].Type)?-amount(originals[id]):0):(types.Length==0||types.Contains(t.Type)?amount(t):0));
         var retail=await db.Sales.AsNoTracking().Include(s=>s.Lines).Where(s=>s.CreatedAt>=from&&s.CreatedAt<to).ToListAsync();
         var loose=retail.SelectMany(s=>s.Lines).Where(l=>l.UnitCode is "kg" or "litre").Sum(l=>l.LineGross);
-        return new(posts.Sum(p=>p.Income),posts.Sum(p=>p.CashChange),posts.Sum(p=>p.FloatChange),Net(t=>t.Principal,"CASHIN"),Net(t=>t.Principal,"CASHOUT"),Net(t=>t.Collected,"LOAD","PACKAGE"),Net(t=>t.Commission),rows.Count(t=>t.Status is "Draft" or "Pending"),rows.Count(t=>t.Status is "Failed" or "Reversed"),retail.Sum(s=>s.GrossTotal)-loose,loose,Net(t=>t.Principal,"TRANSFER"),rows.Count(t=>posted.Contains(t.Id)&&(t.Type=="PACKAGE"||t.Type=="LOAD")&&!t.ProviderCostKnown));
+        return new(posts.Sum(p=>p.Income),posts.Sum(p=>p.CashChange),posts.Sum(p=>p.FloatChange),Net(t=>t.Principal,"CASHIN"),Net(t=>t.Principal,"CASHOUT"),Net(t=>t.Collected,"LOAD","PACKAGE"),Net(t=>t.Commission),attempts.Count(t=>t.Status is "Draft" or "Pending"),attempts.Count(t=>t.Status is "Failed" or "Reversed"),retail.Sum(s=>s.GrossTotal)-loose,loose,Net(t=>t.Principal,"TRANSFER"),rows.Count(t=>posted.Contains(t.Id)&&(t.Type=="PACKAGE"||t.Type=="LOAD")&&!t.ProviderCostKnown));
     }
     public Task<List<ServicePosting>> PostingsAsync(string? recipientKey=null)
     {

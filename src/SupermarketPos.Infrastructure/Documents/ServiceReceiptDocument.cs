@@ -26,7 +26,7 @@ public sealed class ServiceReceiptDocument:IDocument
             c.Item().Text(_checkout?.StoreName??first.StoreName).AlignCenter().Bold().FontSize(12);c.Item().Text(T("Service_Receipt")).AlignCenter();
             if(!string.IsNullOrWhiteSpace(business?.Address))c.Item().Text(business.Address).AlignCenter().FontSize(8);
             var phones=string.Join(" || ",new[]{business?.Phone,business?.Phone2}.Where(p=>!string.IsNullOrWhiteSpace(p)));if(phones.Length>0)c.Item().ContentFromLeftToRight().Text(phones).AlignCenter().FontFamily("Segoe UI").FontSize(7);
-            c.Item().Text(_checkout?.ReceiptNumber??first.ReceiptNumber);c.Item().Text((_checkout?.CreatedAt??first.OccurredAt).ToString("yyyy-MM-dd HH:mm"));
+            c.Item().Text(_checkout?.ReceiptNumber??first.ReceiptNumber);c.Item().Text((_checkout?.CreatedAt??(_postings.FirstOrDefault()?.PostedAt is{} posted&&posted!=default?posted:first.OccurredAt)).ToString("yyyy-MM-dd HH:mm"));
             foreach(var transaction in _lines)
             {
                 c.Item().PaddingVertical(5).LineHorizontal(.5f);

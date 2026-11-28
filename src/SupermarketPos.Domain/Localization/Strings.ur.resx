@@ -1279,4 +1279,33 @@
   <data name="Digital_DraftError" xml:space="preserve"><value>لین دین کا محفوظ مسودہ پڑھا یا لکھا نہیں جا سکا۔</value></data>
   <data name="Digital_SaveDraft" xml:space="preserve"><value>لین دین کا مسودہ محفوظ کریں</value></data>
   <data name="Digital_ResumeDraft" xml:space="preserve"><value>محفوظ لین دین بحال کریں</value></data>
+  <data name="Credit_Manage" xml:space="preserve"><value>گاہک کا کریڈٹ</value></data>
+  <data name="Credit_Available" xml:space="preserve"><value>گاہک کا دستیاب کریڈٹ</value></data>
+  <data name="Credit_Apply" xml:space="preserve"><value>بقایا ادھار رسید میں استعمال کریں</value></data>
+  <data name="Credit_Action" xml:space="preserve"><value>کریڈٹ کا استعمال</value></data>
+  <data name="Credit_RefundCash" xml:space="preserve"><value>نقد واپس کریں</value></data>
+  <data name="Credit_RefundCard" xml:space="preserve"><value>کارڈ کی واپسی درج کریں</value></data>
+  <data name="Credit_RecordRefund" xml:space="preserve"><value>مکمل شدہ رقم واپسی درج کریں</value></data>
+  <data name="Credit_RefundHelp" xml:space="preserve"><value>اس گاہک کی دوسری بقایا ادھار رسید میں کریڈٹ استعمال کریں۔ نقد دینے یا کارڈ مشین پر رقم کی واپسی کامیاب ہونے کے بعد ہی واپسی درج کریں۔</value></data>
+  <data name="Credit_Invalid" xml:space="preserve"><value>کریڈٹ، درست رقم اور بقایا رسید یا رقم واپسی کا طریقہ منتخب کریں۔</value></data>
+  <data name="Credit_Conflict" xml:space="preserve"><value>یہ تصدیق پہلے ہی کریڈٹ کے کسی دوسرے استعمال کے لیے درج ہے۔</value></data>
+  <data name="Credit_Insufficient" xml:space="preserve"><value>رقم گاہک کے باقی کریڈٹ سے زیادہ ہے۔</value></data>
+  <data name="Credit_CustomerMismatch" xml:space="preserve"><value>اسی گاہک کی دوسری بقایا ادھار رسید منتخب کریں۔</value></data>
+  <data name="Credit_ConfirmRefund" xml:space="preserve"><value>تصدیق کریں کہ نقد یا کارڈ کی رقم واقعی واپس ہو چکی ہے۔</value></data>
+  <data name="Credit_RefundPaid" xml:space="preserve"><value>گاہک کا کریڈٹ واپس کیا گیا</value></data>
+  <data name="Credit_RefundSummary" xml:space="preserve"><value>گاہک کا واپس کیا گیا کریڈٹ — نقد: {0}؛ کارڈ: {1}</value></data>
+  <data name="Device_ReturnInvalid" xml:space="preserve"><value>صرف مکمل واپس آئے اور جانچ شدہ آلے کو فروخت کے لیے جاری کریں۔ سیریل یا آئی ایم ای آئی، اسٹاک کی ترتیب اور جانچ کا نوٹ دیکھیں۔</value></data>
+  <data name="Device_Inspection" xml:space="preserve"><value>جانچ اور دوبارہ فروخت کی منظوری کا نوٹ</value></data>
+  <data name="Device_Release" xml:space="preserve"><value>منظوری دے کر دوبارہ فروخت کے لیے جاری کریں</value></data>
+  <data name="Device_Released" xml:space="preserve"><value>دوبارہ فروخت کے لیے جاری کیا گیا</value></data>
+  <data name="Purchase_ConfirmationConflict" xml:space="preserve"><value>اس خریداری کی تصدیق مختلف تفصیلات کے ساتھ پہلے درج ہو چکی ہے۔ اصل رسید دیکھیں؛ بدلی ہوئی تفصیلات کے لیے وہی تصدیق استعمال نہیں ہو سکتی۔</value></data>
+  <data name="Digital_Result" xml:space="preserve"><value>سروس فراہم کرنے والے کا نتیجہ</value></data>
+  <data name="Digital_ResultHelp" xml:space="preserve"><value>اگر سروس ابھی مکمل نہیں ہوئی تو زیرِ التوا، اور ناکام ہوئی تو ناکام منتخب کریں۔ ان اندراجات سے ادائیگی یا آمدن درج نہیں ہوتی۔ سروس کامیاب ہونے پر رپورٹس سے زیرِ التوا لین دین مکمل کریں۔</value></data>
+  <data name="Digital_RecordPending" xml:space="preserve"><value>زیرِ التوا لین دین درج کریں</value></data>
+  <data name="Digital_RecordFailed" xml:space="preserve"><value>ناکام لین دین درج کریں</value></data>
+  <data name="Digital_ConfirmResultHelp" xml:space="preserve"><value>صرف مجاز سروس فراہم کرنے والے سے کام مکمل ہونے کے بعد تصدیق کریں۔ حوالہ اختیاری ہے۔</value></data>
+  <data name="Digital_AttemptDate" xml:space="preserve"><value>کوشش کی تاریخ</value></data>
+  <data name="Digital_PostedDate" xml:space="preserve"><value>ادائیگی درج ہونے کا وقت</value></data>
+  <data name="Credit_None" xml:space="preserve"><value>گاہک کا کوئی کریڈٹ باقی نہیں ہے۔ کریڈٹ کے پچھلے استعمال نیچے درج ہیں۔</value></data>
+  <data name="Device_ReturnLocationHelp" xml:space="preserve"><value>معائنے کے بعد یہ آلہ غیر مختص اسٹاک میں واپس آئے گا۔ ضرورت ہو تو مصنوعات اور اسٹاک میں اس کی جگہ مقرر کریں۔</value></data>
 </root>

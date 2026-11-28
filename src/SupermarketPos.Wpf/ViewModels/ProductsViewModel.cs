@@ -441,7 +441,7 @@ public sealed partial class ProductsViewModel : ObservableObject
                     product.SetPurchaseCost(purchaseCost);
                     product.SetSupplier(Editor.SupplierId == 0 ? null : Editor.SupplierId);
                     if (Editor.TrackExpiry && stock != 0m)
-                        assigned = product.RecordBatch(Editor.BatchLot, RequireBatchExpiry(), stock, product.SupplierId, now);
+                        assigned = product.RecordBatch(Editor.BatchLot, RequireBatchExpiry(), stock, product.SupplierId, now,purchaseCost:product.PurchaseCost);
                     await _products.AddAsync(product, token);
                     await _uow.SaveChangesAsync(token);
                     if (stock != 0m)
@@ -474,7 +474,7 @@ public sealed partial class ProductsViewModel : ObservableObject
                     product.SetSupplier(Editor.SupplierId == 0 ? null : Editor.SupplierId);
                     if (assignment > 0m)
                     {
-                        assigned = product.RecordBatch(Editor.BatchLot, RequireBatchExpiry(), assignment, product.SupplierId, now, fromExistingStock: true);
+                        assigned = product.RecordBatch(Editor.BatchLot, RequireBatchExpiry(), assignment, product.SupplierId, now, fromExistingStock: true,purchaseCost:product.PurchaseCost);
                         await _uow.SaveChangesAsync(token);
                         _uow.RecordMovement(new StockMovement(product.Id, product.Name, 0m, StockMovementKind.BatchAssignment,
                             now, assignment.ToString("0.###", CultureInfo.InvariantCulture), assigned));

@@ -98,7 +98,7 @@ public sealed class SaleService : ISaleService
                     devices.Add((device, product.WarrantyMonths));
                 }
                 if (serial is not null && (saleLines.Any(line => line.ProductId == product.Id && line.SerialNumber == serial) ||
-                    await _sales.HasSoldSerialAsync(product.Id, serial, token)))
+                    !product.TrackSerial && await _sales.HasSoldSerialAsync(product.Id, serial, token)))
                     throw new DomainException($"Serial {serial} has already been sold.");
                 InventoryBatch? batch = null;
                 if (charge.Line.BatchId is { } id)
@@ -117,7 +117,7 @@ public sealed class SaleService : ISaleService
                     quantity: charge.Line.DisplayQuantity,
                     discountDescription: charge.Line.LineDiscount?.Describe(),
                     lineGross: charge.FinalGross,
-                    unitCost: product.StockTracked?product.PurchaseCost*(charge.Line.IsPackage?charge.Line.PackageSize:1):null, batch: batch, serialNumber: serial));
+                    unitCost: product.StockTracked?(product.TrackSerial?device?.PurchaseCost:batch is not null?batch.PurchaseCost:product.PurchaseCost)*(charge.Line.IsPackage?charge.Line.PackageSize:1):null, batch: batch, serialNumber: serial));
                 saleLines[^1].SetDispensing(!product.StockTracked,charge.Line.PrescriptionChecked,charge.Line.DispensingReference);
                 if(product.StockTracked&&_locations is not null)saleLines[^1].SetLocation(await _locations.AllocateSaleAsync(product,batch?.Id,MeasuredGoods.BaseQuantity(charge.Line.Quantity,product.Unit),charge.Line.LocationId,token));
                 saleLines[^1].SetMeasurement(charge.Line.UnitCode,MeasuredGoods.BaseQuantity(charge.Line.Quantity,product.Unit));

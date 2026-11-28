@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using SupermarketPos.Domain.Common;
 using SupermarketPos.Domain.Entities;
 using SupermarketPos.Wpf.Common;
+using SupermarketPos.Wpf.ViewModels;
 
 namespace SupermarketPos.Wpf.Views;
 public sealed partial class DigitalServicesView
@@ -24,16 +25,17 @@ public sealed partial class DigitalServicesView
     private Func<decimal>? _previewTotal;
     private TextBlock? _cartTotal,_settlementLabel;
     private TextBox? _search;
+    private Button? _recordButton;
     public IAsyncRelayCommand OpenCashCommand{get;private set;}=null!;
     public IAsyncRelayCommand OpenCardCommand{get;private set;}=null!;
     public IRelayCommand ClearCartCommand{get;private set;}=null!;
     public IRelayCommand RemoveSelectedCommand{get;private set;}=null!;
     public IReadOnlyList<DigitalCartLine> Cart=>_cart;
     private bool CanCheckout=>!_busy&&_prepareTransaction is not null;
-    private bool CanPayCard=>CanCheckout&&_entry.Type!="CASHOUT"&&!_cart.Any(l=>l.Type=="CASHOUT");
+    private bool CanPayCard=>CanCheckout&&_entry.Type!="CASHOUT"&&_entry.Outcome=="Confirmed"&&!_cart.Any(l=>l.Type=="CASHOUT"||l.Outcome!="Confirmed");
     private void InitializeCartCommands()
     {
-        async Task Pay(string method){if(_prepareTransaction?.Invoke(true)==true)await Run(()=>CheckoutCartAsync(method));}
+        async Task Pay(string method){if(_prepareTransaction?.Invoke(true)==true)await Run(()=>_cart.Any(r=>r.Outcome!="Confirmed")?RecordUnsettledAsync():CheckoutCartAsync(method));}
         OpenCashCommand=new AsyncRelayCommand(()=>Pay("CASH"),()=>CanCheckout);
         OpenCardCommand=new AsyncRelayCommand(()=>Pay("CARD"),()=>CanPayCard);
         ClearCartCommand=new RelayCommand(ClearCart,()=>!_busy&&HasDraft);
@@ -60,6 +62,9 @@ public sealed partial class DigitalServicesView
         heading.Children.Add(modes);DockPanel.SetDock(heading,Dock.Top);left.Children.Add(heading);
         var actions=new WrapPanel{HorizontalAlignment=HorizontalAlignment.Left,Margin=new Thickness(4,10,0,0)};
         var cash=BusinessForm.Button("Pos_Cash",(_,_)=>{},"SuccessButton");cash.Command=OpenCashCommand;cash.Name="DigitalCash";cash.IsDefault=true;actions.Children.Add(cash);
+        _recordButton=cash;
+        var outcome=_cart.FirstOrDefault()?.Outcome??_entry.Outcome;
+        if(outcome!="Confirmed")cash.Content=T(outcome=="Pending"?"Digital_RecordPending":"Digital_RecordFailed");
         var card=BusinessForm.Button("Pos_Card",(_,_)=>{});card.Command=OpenCardCommand;card.ToolTip=T("Digital_CashOutCashOnly");actions.Children.Add(card);
         var clear=BusinessForm.Button("Digital_ClearTransaction",(_,_)=>{},"DangerButton");clear.Command=ClearCartCommand;actions.Children.Add(clear);
         DockPanel.SetDock(actions,Dock.Bottom);left.Children.Add(actions);
@@ -116,7 +121,8 @@ public sealed partial class DigitalServicesView
         void DefaultFee(){if(overridden||Selected() is not{} account)return;applying=true;try{_entry.CustomerFee=account.CustomerCharge(DigitalCartLine.Number(_entry.Principal,out var value)?value:0).ToString("0.00",CultureInfo.InvariantCulture);fee.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();}finally{applying=false;}}
         fee.TextChanged+=(_,_)=>{if(!applying)overridden=true;};amount.TextChanged+=(_,_)=>{DefaultFee();RefreshCartSummary();};provider.SelectionChanged+=(_,_)=>{_entry.ProviderId=(int?)provider.SelectedValue??0;overridden=false;DefaultFee();};DefaultFee();
         if(_entry.Type is "TRANSFER" or "CASHOUT")form.Add("",BusinessForm.Button("Digital_DefaultCharges",async(_,_)=>{if(Selected() is{} account)await ConfigureChargesAsync(account);},"GhostButton"));
-        DigitalCartLine Row(ServiceProviderAccount account)=>new(){ConfirmationId=_cart.FirstOrDefault()?.ConfirmationId??Guid.NewGuid(),Type=_entry.Type,Provider=account,AccountType=_entry.Type=="LOAD"?_entry.AccountType:"",Name=T("Service_"+_entry.Type),AmountText=_entry.Principal,Recipient=_entry.Phone,FeeText=_entry.CustomerFee,FeeOverridden=overridden,CostText=_entry.ProviderCost,CustomerName=_entry.CustomerName};
+        AddOutcome(form,_entry.Outcome,value=>{_entry.Outcome=value;if(_cart.Count==1)_cart[0].Outcome=value;_entryDirty=true;RefreshCartSummary();RefreshOutcomeButton();});
+        DigitalCartLine Row(ServiceProviderAccount account)=>new(){ConfirmationId=_cart.FirstOrDefault()?.ConfirmationId??Guid.NewGuid(),Type=_entry.Type,Provider=account,AccountType=_entry.Type=="LOAD"?_entry.AccountType:"",Name=T("Service_"+_entry.Type),AmountText=_entry.Principal,Recipient=_entry.Phone,FeeText=_entry.CustomerFee,FeeOverridden=overridden,CostText=_entry.ProviderCost,CustomerName=_entry.CustomerName,Outcome=_entry.Outcome};
         _prepareTransaction=validate=>
         {
             if(Selected() is not{} account){form.ShowErrors(new Dictionary<string,string>{{"ProviderId","Service_SelectProvider"}},validate);return false;}
@@ -143,8 +149,22 @@ public sealed partial class DigitalServicesView
         var recipient=Field(row.Type is "LOAD" or "PACKAGE"?"Customer_Phone":"Digital_Recipient",nameof(row.Recipient),60);recipient.Name="DigitalRecipient";
         Field("Digital_Price",nameof(row.AmountText));if(row.HasFee)Field("Digital_Fee",nameof(row.FeeText));if(row.HasCost)Field("Digital_OptionalCost",nameof(row.CostText));
         Field("Digital_CustomerNameOptional",nameof(row.CustomerName),150);panel.Children.Add(form);_search=recipient;
+        if(_cart.Count==1)AddOutcome(form,row.Outcome,value=>{row.Outcome=value;_entry.Outcome=value;RefreshCartSummary();RefreshOutcomeButton();});
         _prepareTransaction=validate=>{var errors=validate?row.Errors():new Dictionary<string,string>();form.ShowErrors(errors,validate);return errors.Count==0;};
         if(row.ShowValidation)form.ShowErrors(row.Errors());form.FieldEdited+=_=>{_entryDirty=true;RefreshCartSummary();};return new ScrollViewer{Content=panel,VerticalScrollBarVisibility=ScrollBarVisibility.Auto};
+    }
+    private void AddOutcome(BusinessForm form,string selected,Action<string> changed)
+    {
+        var choices=new[]{"Confirmed","Pending","Failed"}.Select(s=>new BusinessFormChoice(s,T("Service_"+s))).ToArray();
+        var pick=new ComboBox{ItemsSource=choices,DisplayMemberPath="Name",SelectedValuePath="Code",SelectedValue=selected,Name="DigitalProviderOutcome"};
+        pick.SelectionChanged+=(_,_)=>{if(pick.SelectedValue is string status)changed(status);};
+        form.Field("Digital_Result",nameof(DigitalCartLine.Outcome),pick,true);form.Add("",BusinessForm.Label("Digital_ResultHelp"),true);
+    }
+    private void RefreshOutcomeButton()
+    {
+        if(_recordButton is null)return;
+        var status=_cart.FirstOrDefault()?.Outcome??_entry.Outcome;
+        _recordButton.Content=T(status=="Pending"?"Digital_RecordPending":status=="Failed"?"Digital_RecordFailed":"Pos_Cash");
     }
     private void DropRows(){foreach(var row in _cart)row.PropertyChanged-=RowChanged;_cart.Clear();_editingLine=null;}
     private void AddRow(DigitalCartLine row){if(_cart.Count>0){row.Recipient=_cart[0].Recipient;row.CustomerName=_cart[0].CustomerName;}DropRows();row.PropertyChanged+=RowChanged;_cart.Add(row);_resumed=false;_entryDirty=true;Record();FocusRow(row,nameof(row.Recipient));}

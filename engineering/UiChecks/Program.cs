@@ -34,6 +34,7 @@ internal static partial class Program
             var root=Path.GetFullPath(args.Length>0?args[0]:"engineering/qa-data/"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(root);
             AppContext.SetData("SupermarketPos.DataDirectory",root);AppContext.SetData("SupermarketPos.IsolatedDataDirectory",true);
             var app=new System.Windows.Application{ShutdownMode=ShutdownMode.OnExplicitShutdown};
+            _=AppBrand.Name;
             Console.WriteLine($"WPF rendering tier: {System.Windows.Media.RenderCapability.Tier >> 16}; process rendering: {System.Windows.Media.RenderOptions.ProcessRenderMode}");
             app.Resources.MergedDictionaries.Add(new ResourceDictionary{Source=new Uri("/SupermarketPos;component/Resources/Theme.xaml",UriKind.Relative)});
             app.Resources.MergedDictionaries.Add(new ResourceDictionary{Source=new Uri("/SupermarketPos;component/Resources/DataEntry.xaml",UriKind.Relative)});
@@ -57,6 +58,13 @@ internal static partial class Program
             // Check actual WPF two-way bindings, including init-only profile properties.
             var profile=new SupermarketPos.Domain.Business.BusinessProfile();var form=new BusinessForm();var input=form.Text("Settings_StoreName",profile,nameof(profile.StoreName));input.Text="Bound shop";input.GetBindingExpression(TextBox.TextProperty)!.UpdateSource();Assert(profile.StoreName=="Bound shop","Business fields bind to the saved profile");
             var screenshots=Directory.CreateDirectory(Path.Combine(root,"screens")).FullName;
+            if(args.Contains("--completion-checks"))
+            {
+                Wait(CompletionUpdateChecks(root,sp.GetRequiredService<SoftwareUpdates>()));
+                Wait(CompletionBusinessChecks(sp,screenshots),TimeSpan.FromMinutes(3));
+                Wait(scope.DisposeAsync().AsTask());Wait(provider.DisposeAsync().AsTask());
+                Console.WriteLine($"PASS: {_checks} completion/update assertions.");app.Shutdown();return 0;
+            }
             if(args.Contains("--trial-setup"))
             {
                 if(args.Contains("--standalone"))Assert(RetailTestEdition.Standalone&&RetailTestEdition.Enabled&&RetailTestEdition.DefaultDataDirectory.EndsWith(Path.Combine("WijganduRetail","Data"),StringComparison.OrdinalIgnoreCase),"Published standalone edition has its own local data folder");

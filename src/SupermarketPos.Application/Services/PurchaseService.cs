@@ -53,16 +53,18 @@ public sealed class PurchaseService(IProductRepository products, IPurchaseReposi
     {
         auth?.RequireAdmin();
         if (confirmationId == Guid.Empty) throw new DomainException("A purchase confirmation ID is required.");
+        var payload=System.Text.Json.JsonSerializer.Serialize(new{supplierId,Reference=reference?.Trim()??"",Date=purchaseDate.Date,Notes=notes?.Trim()??"",Items=items,Operator=receivedBy.Id,initialAmountPaid,paymentMethod});
+        var fingerprint=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(payload)));
         return unitOfWork.ExecuteInTransactionAsync(async token =>
         {
             if (await purchases.GetByConfirmationAsync(confirmationId, token) is { } saved)
             {
-                if (saved.SupplierId != supplierId) throw new DomainException("The confirmation belongs to another purchase.");
+                if (saved.SupplierId != supplierId||saved.RequestFingerprint!=fingerprint) throw new DomainException("Purchase_ConfirmationConflict");
                 return saved;
             }
             var supplier = await purchases.FindSupplierAsync(supplierId, token)
                 ?? throw new DomainException("Select an existing supplier.");
-            return await ReceiveCoreAsync(supplier, reference, purchaseDate, notes, items, receivedBy, confirmationId, token, initialAmountPaid, paymentMethod);
+            return await ReceiveCoreAsync(supplier, reference, purchaseDate, notes, items, receivedBy, confirmationId, token, initialAmountPaid, paymentMethod,fingerprint);
         }, ct);
     }
 
@@ -78,7 +80,7 @@ public sealed class PurchaseService(IProductRepository products, IPurchaseReposi
 
     private async Task<Purchase> ReceiveCoreAsync(Supplier supplier, string? reference, DateTime purchaseDate,
         string? notes, IReadOnlyList<PurchaseItem> items, User receivedBy, Guid? confirmationId, CancellationToken ct,
-        decimal? initialAmountPaid = null, string paymentMethod = "CASH")
+        decimal? initialAmountPaid = null, string paymentMethod = "CASH",string requestFingerprint="")
     {
         var now = DateTime.Now;
         var entries = new List<(Product Product, PurchaseLine Line, InventoryBatch? Batch)>();
@@ -98,7 +100,7 @@ public sealed class PurchaseService(IProductRepository products, IPurchaseReposi
             {
                 if (string.IsNullOrWhiteSpace(item.BatchLot) || item.BatchExpiry is not { } expiry)
                     throw new DomainException($"Enter the batch and expiry for {product.Name}.");
-                batch = product.RecordBatch(item.BatchLot, expiry, line.Quantity, supplier.Id, now);
+                batch = product.RecordBatch(item.BatchLot, expiry, line.Quantity, supplier.Id, now,purchaseCost:line.UnitCost);
             }
             else
             {
@@ -111,13 +113,13 @@ public sealed class PurchaseService(IProductRepository products, IPurchaseReposi
         }
 
         var purchase = new Purchase(supplier.Name, reference, now, receivedBy.DisplayName,
-            entries.Select(entry => entry.Line), supplier.Id, confirmationId, purchaseDate, notes, initialAmountPaid, paymentMethod);
+            entries.Select(entry => entry.Line), supplier.Id, confirmationId, purchaseDate, notes, initialAmountPaid, paymentMethod,requestFingerprint);
         await purchases.AddAsync(purchase, ct);
         await unitOfWork.SaveChangesAsync(ct);
 
         for (var index = 0; index < entries.Count; index++)
             if (entries[index].Product.TrackSerial)
-                await ledger!.ReceiveUnitsAsync(entries[index].Product, items[index].Units!, purchase.Id, purchaseDate, ct);
+                await ledger!.ReceiveUnitsAsync(entries[index].Product, items[index].Units!, purchase.Id, purchaseDate, ct,entries[index].Line.UnitCost);
 
         for(var i=0;i<entries.Count;i++)
         {

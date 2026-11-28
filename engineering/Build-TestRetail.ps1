@@ -44,7 +44,7 @@ This local testing installer is unsigned. It is not the final production distrib
 '@
 if($StandaloneRetail){$notes="Wijgandu Retail POS`nCreate your store details, logo and local username/password on first start. Store data is separate in %LOCALAPPDATA%\WijganduRetail\Data.`nDigital services record your manual transactions; complete the actual operation through your authorized provider.`nThis installer is unsigned."}
 Set-Content -LiteralPath (Join-Path $payload 'EDITION.txt') -Value $notes -Encoding utf8
-& $Vpk pack --packId $packId --packTitle $title --packVersion $Version --packDir $payload --mainExe $mainExe --channel testing --runtime win-x64 --icon (Join-Path $repo 'src/SupermarketPos.Wpf/Assets/app.ico') --outputDir (Join-Path $out 'packages')
+& $Vpk pack --packId $packId --packTitle $title --packVersion $Version --packDir $payload --mainExe $mainExe --channel testing --runtime win-x64 --icon (Join-Path $repo 'src/SupermarketPos.Wpf/Assets/retail.ico') --outputDir (Join-Path $out 'packages')
 if($LASTEXITCODE -ne 0){throw 'Test edition packaging failed.'}
 $full=@(Get-ChildItem -LiteralPath (Join-Path $out 'packages') -Filter '*-full.nupkg')
 if($full.Count -ne 1){throw 'Expected exactly one test release package.'}

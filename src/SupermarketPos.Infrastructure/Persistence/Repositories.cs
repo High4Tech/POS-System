@@ -79,6 +79,9 @@ public sealed class SaleRepository : ISaleRepository
     private readonly PosDbContext _db;
     public SaleRepository(PosDbContext db) => _db = db;
 
+    public async Task<IReadOnlyList<CustomerCreditMovement>> GetCreditRefundsAsync(DateTime fromInclusive, DateTime toExclusive, CancellationToken ct = default) =>
+        await _db.CustomerCreditMovements.AsNoTracking().Where(m => m.TargetSaleId == null && m.RecordedAt >= fromInclusive && m.RecordedAt < toExclusive).ToArrayAsync(ct);
+
     public Task<bool> HasSoldSerialAsync(int productId, string serial, CancellationToken ct = default) =>
         _db.SaleLines.AnyAsync(line => line.ProductId == productId && line.SerialNumber == serial, ct);
 

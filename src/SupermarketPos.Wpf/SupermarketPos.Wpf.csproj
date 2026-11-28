@@ -10,8 +10,8 @@
     <RootNamespace>SupermarketPos.Wpf</RootNamespace>
     <AssemblyName>SupermarketPos</AssemblyName>
     <Version>1.0.0</Version>
-    <Product>Wijgandu</Product>
-    <AssemblyTitle>Wijgandu</AssemblyTitle>
+    <Product>ORMA</Product>
+    <AssemblyTitle>ORMA</AssemblyTitle>
     <SatelliteResourceLanguages>ur</SatelliteResourceLanguages>
     <StartupObject>SupermarketPos.Wpf.Program</StartupObject>
     <CommercialBuild Condition="'$(CommercialBuild)' == ''">false</CommercialBuild>
@@ -23,6 +23,13 @@
     <Product>Wijgandu Test</Product>
     <AssemblyTitle>Wijgandu Test</AssemblyTitle>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(RetailStandaloneEdition)' == 'true'">
+    <Product>Wijgandu Retail</Product>
+    <AssemblyTitle>Wijgandu Retail</AssemblyTitle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(RetailStandaloneEdition)' == 'true' Or '$(RetailTestEdition)' == 'true'">
+    <ApplicationIcon>Assets\retail.ico</ApplicationIcon>
+  </PropertyGroup>
 
   <ItemGroup>
     <ApplicationDefinition Remove="App.xaml" />
@@ -30,8 +37,11 @@
     <AssemblyMetadata Include="CommercialBuild" Value="$(CommercialBuild)" />
     <AssemblyMetadata Include="RetailTestEdition" Value="$(RetailTestEdition)" />
     <AssemblyMetadata Include="RetailStandaloneEdition" Value="$(RetailStandaloneEdition)" />
-    <Content Include="Assets\app.ico" CopyToOutputDirectory="PreserveNewest" />
-    <Resource Include="Assets\wijgandu.png" />
+    <Content Include="Assets\app.ico" CopyToOutputDirectory="PreserveNewest" Condition="'$(RetailStandaloneEdition)' != 'true' And '$(RetailTestEdition)' != 'true'" />
+    <Content Include="Assets\retail.ico" Link="Assets\app.ico" TargetPath="Assets\app.ico" CopyToOutputDirectory="PreserveNewest" Condition="'$(RetailStandaloneEdition)' == 'true' Or '$(RetailTestEdition)' == 'true'" />
+    <Resource Include="Assets\wijgandu.png" Condition="'$(RetailStandaloneEdition)' == 'true' Or '$(RetailTestEdition)' == 'true'" />
+    <Resource Include="Assets\orma.png" Condition="'$(RetailStandaloneEdition)' != 'true' And '$(RetailTestEdition)' != 'true'" />
+    <EmbeddedResource Include="Assets\retail-update-public.pem" LogicalName="SupermarketPos.RetailUpdatePublicKey" Condition="'$(RetailStandaloneEdition)' == 'true'" />
     <AssemblyMetadata Include="BuildConfiguration" Value="$(Configuration)" />
     <AssemblyMetadata Include="BuildTimestampUtc" Value="$(BuildTimestampUtc)" />
     <AssemblyMetadata Include="BuildSourceFingerprint" Value="$(BuildSourceFingerprint)" />
@@ -43,7 +53,8 @@
     <PackageReference Include="Velopack" Version="1.2.161" />
     <Using Remove="System.Drawing" />
     <Using Remove="System.Windows.Forms" />
-    <Resource Include="Assets\app.ico" />
+    <Resource Include="Assets\app.ico" Condition="'$(RetailStandaloneEdition)' != 'true' And '$(RetailTestEdition)' != 'true'" />
+    <Resource Include="Assets\retail.ico" Link="Assets\app.ico" LogicalName="assets/app.ico" Condition="'$(RetailStandaloneEdition)' == 'true' Or '$(RetailTestEdition)' == 'true'" />
     <Resource Include="..\..\assets\fonts\*.ttf" Link="Assets\Fonts\%(Filename)%(Extension)" />
     <Content Include="..\..\assets\fonts\OFL.txt" Link="Licenses\Noto-Nastaliq-Urdu-OFL.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

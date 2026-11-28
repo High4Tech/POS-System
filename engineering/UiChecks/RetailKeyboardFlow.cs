@@ -26,7 +26,7 @@ internal static partial class Program
         window.Resources.Add(customersTemplate.DataTemplateKey,customersTemplate);
         System.Windows.Application.Current.MainWindow=window;
         window.Show();
-        Assert(window.Title.StartsWith("Wijgandu",StringComparison.Ordinal)&&window.Icon is not null,"Main app caption and icon use Wijgandu branding");
+        Assert(window.Title.StartsWith(AppBrand.Name,StringComparison.Ordinal)&&window.Icon is not null,"Main app caption and icon use edition branding");
         await shell.ShowPosCommand.ExecuteAsync(null);
         Pump();
         if(digitalOnly){await DigitalCartChecks(sp,shell,window,screenshots);window.Close();return;}

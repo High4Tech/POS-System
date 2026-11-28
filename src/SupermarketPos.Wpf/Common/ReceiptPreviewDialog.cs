@@ -36,7 +36,7 @@ public sealed class ReceiptPreviewDialog(IReceiptService receipts, PosStorage st
             var document=new SupermarketPos.Infrastructure.Documents.ServiceReceiptDocument(transaction,posting,business.InvoiceLanguage,business.Paper);
             return new ReceiptPreview(QuestPDF.Fluent.GenerateExtensions.GeneratePdf(document),QuestPDF.Fluent.GenerateExtensions.GenerateImages(document,new QuestPDF.Infrastructure.ImageGenerationSettings{RasterDpi=144}).ToArray());
         });
-        var info=new InvoiceActionInfo(transaction.ReceiptNumber,transaction.OccurredAt,transaction.Type is "LOAD" or "PACKAGE"?transaction.Collected:transaction.Principal,transaction.StoreName,null,transaction.CustomerPhone,business.InvoiceLanguage,business.Paper,business.Printer,business.InvoiceExportFolder,business.WhatsAppTemplate,JsonSerializer.Serialize(new{transaction,posting,business}));
+        var info=new InvoiceActionInfo(transaction.ReceiptNumber,posting.PostedAt==default?transaction.OccurredAt:posting.PostedAt,transaction.Type is "LOAD" or "PACKAGE"?transaction.Collected:transaction.Principal,transaction.StoreName,null,transaction.CustomerPhone,business.InvoiceLanguage,business.Paper,business.Printer,business.InvoiceExportFolder,business.WhatsAppTemplate,JsonSerializer.Serialize(new{transaction,posting,business}));
         info=info with{SavePrinter=SavePrinterAsync};var panel=new ReceiptPreviewWindow(preview,transaction.ReceiptNumber,storage,info);await InAppDialog.ShowAsync(panel,close=>panel.RequestClose=close);
         }finally{_open=false;}
     }

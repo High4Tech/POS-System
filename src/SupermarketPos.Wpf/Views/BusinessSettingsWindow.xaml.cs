@@ -40,7 +40,7 @@ public partial class BusinessSettingsWindow : Window
     private async Task LoadAsync()
     {
         _auth.RequireAdmin();_profile=(await _setup.LoadAsync()).Profile; Tabs.Items.Clear();
-        ProfileTab();FeaturesTab(); if(!RetailTestEdition.Standalone&&_profile.Registered){FbrTab(); await TaxTab();} InvoiceTab(); if(!RetailTestEdition.Enabled){LicenseTab();UpdatesTab();} StorageTab(); SupportTab();
+        ProfileTab();FeaturesTab(); if(!RetailTestEdition.Standalone&&_profile.Registered){FbrTab(); await TaxTab();} InvoiceTab(); if(!RetailTestEdition.Enabled)LicenseTab();if(!RetailTestEdition.Enabled||RetailTestEdition.Standalone)UpdatesTab(); StorageTab(); SupportTab();
         if(_profile.IsPharmacy)await CatalogTab();
         if(_profile.DigitalWalletAvailable||_profile.MobileRechargeAvailable)
             Tab("Service_Config",new DigitalServicesView(Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<DigitalServiceLedger>(_provider),_setup,Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ReceiptPreviewDialog>(_provider),configuration:true,inventory:Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<RetailInventory>(_provider),references:Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<RetailReferenceCatalog>(_provider)));
@@ -186,10 +186,10 @@ public partial class BusinessSettingsWindow : Window
     {
         _updates.ResumeDownloaded();
         var f=new BusinessForm();
-        f.Add("Updates_Current",new TextBlock{Text=_updates.CurrentVersion.ToString(3)+" · "+_license.Options.Channel});
-        f.Add("Updates_LastCheck",new TextBlock{Text=_updates.LastCheck?.ToLocalTime().ToString("g")??T("Updates_NotChecked")});
+        f.Add("Updates_Current",new TextBlock{Text=_updates.DisplayVersion+" · "+_updates.Channel});
+        var lastCheck=new TextBlock{Text=_updates.LastCheck?.ToLocalTime().ToString("g")??T("Updates_NotChecked")};f.Add("Updates_LastCheck",lastCheck);
         f.Add("",BusinessForm.Button("Updates_Notes",(_,_)=>NoticeDialog.Show(_updates.Available?.Notes??T("Updates_None"),T("Updates_Notes")),"GhostButton"),true);
-        f.Add("",BusinessForm.Button("Updates_Check",async(_,_)=>await Run(async()=>{await _updates.CheckAsync();Status.Text=_updates.Available is{} r?T("Updates_Available")+" "+r.Version:T("Updates_None");})),true);
+        f.Add("",BusinessForm.Button("Updates_Check",async(_,_)=>await Run(async()=>{await _updates.CheckAsync();lastCheck.Text=_updates.LastCheck?.ToLocalTime().ToString("g")??T("Updates_NotChecked");Status.Text=_updates.Available is{} r?T("Updates_Available")+" "+r.Version:T("Updates_None");})),true);
         f.Add("",BusinessForm.Button("Updates_Download",async(_,_)=>await Run(async()=>{await _updates.DownloadAsync();Status.Text=T("Updates_Downloaded");})),true);
         f.Add("",BusinessForm.Button("Updates_Offline",async(_,_)=>await Run(async()=>{var file=new OpenFileDialog{Filter="Signed release|*.json"};if(file.ShowDialog()==true){await _updates.ImportAsync(file.FileName);Status.Text=T("Updates_Downloaded");}}),"GhostButton"),true);
         f.Add("",BusinessForm.Button("Updates_Install",async(_,_)=>await Run(async()=>await _updates.InstallAsync(()=>_shell.HasPendingWork,async()=>
