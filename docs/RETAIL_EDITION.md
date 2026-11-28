@@ -17,6 +17,8 @@ The shared projects stay intact. The standalone build flag selects the simple Re
 
 The [1.2.0-beta.8 testing release](https://github.com/High4Tech/pos_backup/releases/tag/retail-v1.2.0-beta.8) includes the shareable Windows installer and signed update package. Windows may warn about the unsigned testing installer.
 
+Installer SHA256: `A407015EF9B87CE0792873ADED4FA832D1A6A5D3B1FB03048AECC1134FAC1B0C`. The signed full package SHA256 is `5E9FBDA37398A9FFDB8BC147EF95E51B688A8904B73DFD726EA32230C8EA7BDC`.
+
 ## Build the installer
 
 On Windows x64 with .NET 8 SDK, the existing dependencies and Velopack CLI:

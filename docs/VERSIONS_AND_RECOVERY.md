@@ -9,6 +9,7 @@ Main source: [High4Tech/POS-System](https://github.com/High4Tech/POS-System). St
 - `v1.1.0-beta.5`, `v1.1.0-beta.6`: earlier Windows source milestones.
 - `v1.2.0-beta.1`, `.2`, `.3`, `.6`: maintained retail/digital-service and Wijgandu milestones.
 - `v1.2.0-beta.7`: source used for the verified direct-digital checkout and recipient history release; build source commit `d378eb8ee5be51fb25cd452c8f0b80b477f1cb6c`.
+- `v1.2.0-beta.8` / `retail-v1.2.0-beta.8`: ORMA main branding and shared financial completion. Main payload source `bdb9d53e374d6f5dd54a2d89da1fa62fd3c8f4aa`; clean standalone Retail payload source `0064d12f27fdd63983b892a59d1dc4dde5acfa9d`. Both have application-source fingerprint `24E9DF233092539BE76F445A1B84383467EA4407570541A086B73B16A9E72F5E`; edition flags and icons differ deliberately. Schema 15 requires a matching pre-update backup when returning to older code.
 
 Use Git commits/tags for source versions, rather than copying whole app/runtime folders into the repository. Keep the working tree clean before switching versions.
 
