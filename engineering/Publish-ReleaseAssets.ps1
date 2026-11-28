@@ -4,7 +4,7 @@ param(
     [Parameter(Mandatory)][string]$Tag,
     [Parameter(Mandatory)][string]$Title,
     [Parameter(Mandatory)][string]$NotesFile,
-    [Parameter(Mandatory)][string[]]$Files,
+    [string[]]$Files=@(),
     [Parameter(Mandatory)][string]$ProofFile
 )
 $ErrorActionPreference='Stop'
@@ -39,14 +39,15 @@ try {
         $asset=@($release.assets|Where-Object {$_.name -ceq $file.Name})
         if($asset.Count -eq 0) {
             Write-Output ('Uploading version asset: '+$file.Name+' ('+$file.Length+' bytes)')
-            $stream=[IO.File]::OpenRead($file.FullName);$content=[Net.Http.StreamContent]::new($stream)
-            $content.Headers.ContentType=[Net.Http.Headers.MediaTypeHeaderValue]::new('application/octet-stream')
-            $content.Headers.ContentLength=$file.Length
-            try {
-                $url=($release.upload_url -replace '\{.*$','')+'?name='+[Uri]::EscapeDataString($file.Name)
-                $reply=$client.PostAsync($url,$content).GetAwaiter().GetResult()
-                try{$item=Json-Response $reply}finally{$reply.Dispose()}
-            } finally {$content.Dispose();$stream.Dispose()}
+            $url=($release.upload_url -replace '\{.*$','')+'?name='+[Uri]::EscapeDataString($file.Name)
+            # Pass authentication over stdin, never in a command line or a saved config.
+            $config=@(('url = "'+$url+'"'),'request = "POST"',('header = "Authorization: Bearer '+$credential.password+'"'),
+                'header = "User-Agent: High4Tech-POS-Releases"','header = "X-GitHub-Api-Version: 2026-03-10"',
+                'header = "Content-Type: application/octet-stream"',('data-binary = "@'+$file.FullName.Replace('\','/')+'"')) -join "`n"
+            $answer=$config | & curl.exe --ipv4 --http1.1 --silent --show-error --fail-with-body --connect-timeout 30 --max-time 1800 --config -
+            $config=$null
+            if($LASTEXITCODE -ne 0){throw 'Release upload did not complete; no local copy may be removed.'}
+            $item=($answer -join "`n")|ConvertFrom-Json
         } elseif($asset.Count -eq 1){$item=$asset[0]}else{throw 'Ambiguous release asset name.'}
         if($item.state -ne 'uploaded' -or $item.size -ne $file.Length -or $item.digest -ine ('sha256:'+$hash)){throw 'Remote asset digest or length differs from the local file. No local version may be removed.'}
         $proof.Add([pscustomobject]@{Name=$file.Name;Bytes=$file.Length;Sha256=$hash;RemoteDigest=$item.digest;Download=$item.browser_download_url;AssetId=$item.id})

@@ -28,4 +28,4 @@ The script creates an installer under `D:/Retail POS/Releases/1.2.0-beta.7/packa
 
 The verified local installer is unsigned. Digital services are manual records; actual activation/transfers require the authorized provider. Catalog prices are reference snapshots, not a live provider feed.
 
-See [release verification](engineering/Direct-Digital-20261128.md) and [versions/recovery](docs/VERSIONS_AND_RECOVERY.md). Preserve matching data backups when using older application versions. Source and third-party notices retain their existing licenses.
+See [release verification](https://github.com/High4Tech/POS-System/blob/main/engineering/Direct-Digital-20261128.md) and [versions/recovery](https://github.com/High4Tech/POS-System/blob/main/docs/VERSIONS_AND_RECOVERY.md). Preserve matching data backups when using older application versions. Source and third-party notices retain their existing licenses.
