@@ -69,7 +69,7 @@ public static class DataBackup
             await check.OpenAsync(ct);
             using var cmd=check.CreateCommand();cmd.CommandText="SELECT MAX(MigrationId) FROM __EFMigrationsHistory";
             var last=await cmd.ExecuteScalarAsync(ct) as string;
-            if (last is null || string.CompareOrdinal(last, Persistence.Migrations.ProviderChargeDefaults.MigrationId)>0) throw new CommercialException("Storage_IncompatibleBackup");
+            if (last is null || string.CompareOrdinal(last, Persistence.Migrations.DigitalCustomerHistory.MigrationId)>0) throw new CommercialException("Storage_IncompatibleBackup");
         }
         store.Write("pending-restore", stage);
     }

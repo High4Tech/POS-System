@@ -1240,7 +1240,7 @@
   <data name="Digital_CashOutCashOnly" xml:space="preserve"><value>کیش آؤٹ کی ادائیگی نقد ہوتی ہے۔</value></data>
   <data name="Digital_ManualReceipt" xml:space="preserve"><value>دستی سروس کی رسید۔</value></data>
   <data name="Digital_ServiceName"><value>سروس</value></data>
-  <data name="Digital_DraftResumed" xml:space="preserve"><value>محفوظ ڈیجیٹل کارٹ بحال کر دی گئی۔</value></data>
+  <data name="Digital_DraftResumed" xml:space="preserve"><value>محفوظ ڈیجیٹل لین دین بحال ہو گیا۔</value></data>
   <data name="Digital_InvalidMobile" xml:space="preserve"><value>03 سے شروع ہونے والا 11 ہندسوں کا پاکستانی موبائل نمبر درج کریں۔</value></data>
   <data name="Digital_InvalidIban" xml:space="preserve"><value>درست چیک ہندسوں کے ساتھ پاکستان کا 24 حروف والا آئی بین درج کریں۔</value></data>
   <data name="Digital_InvalidRecipient" xml:space="preserve"><value>درست پاکستانی موبائل نمبر، آئی بین یا اس بینک کی مقررہ لمبائی کا اکاؤنٹ نمبر درج کریں۔</value></data>
@@ -1263,4 +1263,20 @@
   <data name="Retail_SetupTitle" xml:space="preserve"><value>اپنی ریٹیل دکان بنائیں</value></data>
   <data name="Retail_SetupHelp" xml:space="preserve"><value>دکان کی تفصیلات درج کریں اور مقامی صارف نام و پاس ورڈ بنائیں۔ آپ کا ڈیٹا اسی کمپیوٹر پر محفوظ ہوگا۔</value></data>
   <data name="Setup_YourLogo" xml:space="preserve"><value>آپ کا لوگو</value></data>
+  <data name="Digital_ClearTransaction" xml:space="preserve"><value>لین دین صاف کریں</value></data>
+  <data name="Digital_SelectPackage" xml:space="preserve"><value>اوپر پیکیج منتخب کریں، پھر وصول کنندہ کا نمبر درج کر کے ادائیگی کریں۔</value></data>
+  <data name="Digital_SavedBatchHelp" xml:space="preserve"><value>پچھلے ورژن کا محفوظ مسودہ بحال ہوا ہے۔ ادائیگی سے پہلے ہر اندراج دیکھ لیں۔</value></data>
+  <data name="Digital_CustomerNameOptional" xml:space="preserve"><value>گاہک کا نام (اختیاری)</value></data>
+  <data name="Digital_TransactionRequired" xml:space="preserve"><value>پہلے لین دین کی تفصیل درج کریں۔</value></data>
+  <data name="Digital_ClearBeforeResume" xml:space="preserve"><value>مسودہ بحال کرنے سے پہلے موجودہ لین دین محفوظ یا صاف کریں۔</value></data>
+  <data name="Customers_Physical" xml:space="preserve"><value>سامان کے گاہک</value></data>
+  <data name="Customers_Digital" xml:space="preserve"><value>ڈیجیٹل گاہک</value></data>
+  <data name="Digital_CustomerHelp" xml:space="preserve"><value>لین دین فون، اکاؤنٹ نمبر یا آئی بین کے مطابق محفوظ ہوتے ہیں۔ نام اختیاری ہے۔ سامان کی خریداری اور بقایا الگ رہتے ہیں۔</value></data>
+  <data name="Digital_CustomerSearch" xml:space="preserve"><value>فون، اکاؤنٹ، آئی بین یا گاہک کا نام تلاش کریں</value></data>
+  <data name="Digital_Transactions" xml:space="preserve"><value>لین دین</value></data>
+  <data name="Digital_EditCustomerName" xml:space="preserve"><value>گاہک کا نام محفوظ / تبدیل کریں</value></data>
+  <data name="Digital_DraftSaved" xml:space="preserve"><value>اس آپریٹر کا لین دین کا مسودہ محفوظ ہو گیا۔</value></data>
+  <data name="Digital_DraftError" xml:space="preserve"><value>لین دین کا محفوظ مسودہ پڑھا یا لکھا نہیں جا سکا۔</value></data>
+  <data name="Digital_SaveDraft" xml:space="preserve"><value>لین دین کا مسودہ محفوظ کریں</value></data>
+  <data name="Digital_ResumeDraft" xml:space="preserve"><value>محفوظ لین دین بحال کریں</value></data>
 </root>

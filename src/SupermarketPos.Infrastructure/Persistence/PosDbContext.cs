@@ -44,6 +44,7 @@ public sealed class PosDbContext : DbContext
     public DbSet<ServiceCheckout> ServiceCheckouts=>Set<ServiceCheckout>();
     public DbSet<ServiceTransaction> ServiceTransactions=>Set<ServiceTransaction>();
     public DbSet<ServicePosting> ServicePostings=>Set<ServicePosting>();
+    public DbSet<DigitalCustomer> DigitalCustomers=>Set<DigitalCustomer>();
     public DbSet<MedicineReference> MedicineReferences=>Set<MedicineReference>();
     public DbSet<CatalogImport> CatalogImports=>Set<CatalogImport>();
     public DbSet<StockReconciliation> StockReconciliations=>Set<StockReconciliation>();
@@ -62,6 +63,8 @@ public sealed class PosDbContext : DbContext
         b.Entity<ServiceCheckout>(e=>{e.Ignore(c=>c.ReceiptNumber);e.Ignore(c=>c.Change);e.HasIndex(c=>c.ConfirmationId).IsUnique();e.Property(c=>c.Total).HasColumnType("TEXT");e.Property(c=>c.Tendered).HasColumnType("TEXT");e.HasMany(c=>c.Lines).WithOne().HasForeignKey(t=>t.CheckoutId).OnDelete(DeleteBehavior.Restrict);});
         b.Entity<ServiceTransaction>(e=>{e.Property(p=>p.ProviderCostKnown).HasDefaultValue(true);e.Ignore(t=>t.ReceiptNumber);e.Ignore(t=>t.SettlementAmount);e.Ignore(t=>t.CashChange);e.Ignore(t=>t.Income);e.Property(t=>t.Revision).IsConcurrencyToken();e.HasIndex(t=>t.ConfirmationId).IsUnique();e.HasIndex(t=>t.ReversesId).IsUnique();foreach(var name in new[]{"Principal","CustomerFee","ProviderFee","Commission","ProviderCost","Collected","FloatChange"})e.Property<decimal>(name).HasColumnType("TEXT");e.HasOne<ServiceProviderAccount>().WithMany().HasForeignKey(t=>t.ProviderId).OnDelete(DeleteBehavior.Restrict);e.HasOne<ServiceTransaction>().WithMany().HasForeignKey(t=>t.ReversesId).OnDelete(DeleteBehavior.Restrict);});
         b.Entity<ServicePosting>(e=>{e.HasIndex(p=>p.TransactionId).IsUnique();foreach(var name in new[]{"CashChange","FloatChange","Income"})e.Property<decimal>(name).HasColumnType("TEXT");e.HasOne<ServiceTransaction>().WithMany().HasForeignKey(p=>p.TransactionId).OnDelete(DeleteBehavior.Restrict);});
+        b.Entity<DigitalCustomer>(e=>{e.HasKey(c=>c.RecipientKey);e.Property(c=>c.RecipientKey).HasMaxLength(160);e.Property(c=>c.Name).HasMaxLength(150);});
+        b.Entity<ServiceTransaction>().HasIndex(t=>new{t.RecipientKey,t.OccurredAt});
         b.Entity<BusinessConfiguration>().Property(c => c.Revision).IsConcurrencyToken();
         b.Entity<ProductTaxRule>(e =>
         {

@@ -1240,7 +1240,7 @@
   <data name="Digital_CashOutCashOnly" xml:space="preserve"><value>Cash-out transactions are settled in cash.</value></data>
   <data name="Digital_ManualReceipt" xml:space="preserve"><value>Manual service receipt.</value></data>
   <data name="Digital_ServiceName"><value>Service</value></data>
-  <data name="Digital_DraftResumed" xml:space="preserve"><value>Saved digital cart restored.</value></data>
+  <data name="Digital_DraftResumed" xml:space="preserve"><value>Saved digital transaction restored.</value></data>
   <data name="Digital_InvalidMobile" xml:space="preserve"><value>Enter an 11-digit Pakistani mobile number beginning with 03 (or its +92 equivalent).</value></data>
   <data name="Digital_InvalidIban" xml:space="preserve"><value>Enter a valid 24-character Pakistan IBAN, including its correct check digits.</value></data>
   <data name="Digital_InvalidRecipient" xml:space="preserve"><value>Enter a valid Pakistani mobile number, IBAN, or an account number matching this provider’s configured lengths.</value></data>
@@ -1263,4 +1263,20 @@
   <data name="Retail_SetupTitle" xml:space="preserve"><value>Set up your retail store</value></data>
   <data name="Retail_SetupHelp" xml:space="preserve"><value>Enter your store details and create a local username and password. Your data stays on this PC.</value></data>
   <data name="Setup_YourLogo" xml:space="preserve"><value>Your logo</value></data>
+  <data name="Digital_ClearTransaction" xml:space="preserve"><value>Clear transaction</value></data>
+  <data name="Digital_SelectPackage" xml:space="preserve"><value>Select a package above to enter the recipient and proceed to payment.</value></data>
+  <data name="Digital_SavedBatchHelp" xml:space="preserve"><value>Recovered draft from the previous version. Review each entry before paying the saved batch.</value></data>
+  <data name="Digital_CustomerNameOptional" xml:space="preserve"><value>Customer name (optional)</value></data>
+  <data name="Digital_TransactionRequired" xml:space="preserve"><value>Enter the transaction details first.</value></data>
+  <data name="Digital_ClearBeforeResume" xml:space="preserve"><value>Save or clear the current transaction before resuming a draft.</value></data>
+  <data name="Customers_Physical" xml:space="preserve"><value>Goods customers</value></data>
+  <data name="Customers_Digital" xml:space="preserve"><value>Digital customers</value></data>
+  <data name="Digital_CustomerHelp" xml:space="preserve"><value>Transactions are grouped by phone, account number or IBAN. A customer name is optional. Goods purchases and balances remain separate.</value></data>
+  <data name="Digital_CustomerSearch" xml:space="preserve"><value>Search phone, account, IBAN or customer name</value></data>
+  <data name="Digital_Transactions" xml:space="preserve"><value>Transactions</value></data>
+  <data name="Digital_EditCustomerName" xml:space="preserve"><value>Save / edit customer name</value></data>
+  <data name="Digital_DraftSaved" xml:space="preserve"><value>Transaction draft saved for this operator.</value></data>
+  <data name="Digital_DraftError" xml:space="preserve"><value>The saved transaction draft could not be read or written.</value></data>
+  <data name="Digital_SaveDraft" xml:space="preserve"><value>Save transaction draft</value></data>
+  <data name="Digital_ResumeDraft" xml:space="preserve"><value>Resume saved transaction</value></data>
 </root>

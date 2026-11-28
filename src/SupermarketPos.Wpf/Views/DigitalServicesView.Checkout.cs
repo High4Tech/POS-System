@@ -13,7 +13,6 @@ public sealed partial class DigitalServicesView
     private async Task CheckoutCartAsync(string paymentMethod)
     {
         if(_cart.Count==0)return;
-        _cartTable?.CommitEdit(DataGridEditingUnit.Cell,true);
         foreach(var row in _cart)row.ValidateFields();
         if(_cart.FirstOrDefault(r=>r.Errors().Count>0) is{} invalid){_status.Text=invalid.Error;FocusRow(invalid,invalid.Errors().First().Key);return;}
         var total=_cart.Sum(r=>r.Total);if(paymentMethod=="CARD"&&_cart.Any(r=>r.Type=="CASHOUT"))throw new DomainException("Digital_InvalidPayment");
@@ -44,7 +43,7 @@ public sealed partial class DigitalServicesView
         panel.PreviewKeyDown+=(_,e)=>{if(e.Key==Key.Enter&&!posting){e.Handled=true;finish.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));}};
         await InAppDialog.ShowAsync(panel,c=>close=c,contentWidth:640,initialFocus:paymentMethod=="CASH"&&total>0?tendered:finish,canClose:()=>!posting);
         if(completed is null)return;
-        ClearCompletedDraft(completed.ConfirmationId);foreach(var row in _cart)row.PropertyChanged-=RowChanged;_cart.Clear();_checkoutKey=Guid.NewGuid();_entryDirty=false;_entry.Reset();_status.Text=T("Service_Saved")+" · "+completed.ReceiptNumber;Record();
+        ClearCompletedDraft(completed.ConfirmationId);DropRows();_resumed=false;_checkoutKey=Guid.NewGuid();_entryDirty=false;_entry.Reset();_status.Text=T("Service_Saved")+" · "+completed.ReceiptNumber;Record();
         await _receipts.ShowCheckoutAsync(completed);_ = Dispatcher.BeginInvoke(()=>FocusSearch());
     }
 }

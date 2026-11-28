@@ -22,6 +22,8 @@ internal static partial class Program
         window.Resources.Add(productsTemplate.DataTemplateKey,productsTemplate);
         var reportsTemplate=new DataTemplate(typeof(ReportsViewModel)){VisualTree=new FrameworkElementFactory(typeof(ReportsView))};
         window.Resources.Add(reportsTemplate.DataTemplateKey,reportsTemplate);
+        var customersTemplate=new DataTemplate(typeof(CustomersViewModel)){VisualTree=new FrameworkElementFactory(typeof(CustomersView))};
+        window.Resources.Add(customersTemplate.DataTemplateKey,customersTemplate);
         System.Windows.Application.Current.MainWindow=window;
         window.Show();
         Assert(window.Title.StartsWith("Wijgandu",StringComparison.Ordinal)&&window.Icon is not null,"Main app caption and icon use Wijgandu branding");

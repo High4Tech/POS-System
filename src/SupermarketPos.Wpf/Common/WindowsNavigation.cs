@@ -25,8 +25,11 @@ internal sealed class WindowsNavigation:IDisposable
     }
     private IntPtr Message(IntPtr hwnd,int message,IntPtr wParam,IntPtr lParam,ref bool handled)
     {
-        var index=wParam.ToInt32()-0x5400;
-        if(message==0x0312&&_registered.Contains(index)&&_window.IsActive&&!InAppDialog.IsOpen&&_window.DataContext is MainViewModel{IsLoggedIn:true} model){handled=Shortcuts.TryRun(_window,model,Keys[index],ModifierKeys.Windows);}
+        if(message!=0x0312)return IntPtr.Zero;
+        var id=wParam.ToInt64();
+        if(id<0x5400||id>=0x5400+Keys.Length)return IntPtr.Zero;
+        var index=(int)(id-0x5400);
+        if(_registered.Contains(index)&&_window.IsActive&&!InAppDialog.IsOpen&&_window.DataContext is MainViewModel{IsLoggedIn:true} model){handled=Shortcuts.TryRun(_window,model,Keys[index],ModifierKeys.Windows);}
         return IntPtr.Zero;
     }
     private void Release(){var handle=new WindowInteropHelper(_window).Handle;foreach(var i in _registered)UnregisterHotKey(handle,0x5400+i);_registered.Clear();}

@@ -125,11 +125,11 @@ internal static class Shortcuts
         var digital=page as DigitalServicesView;
         if(digital is not null||reference&&screen=="digital")
         {
-            if(!shell.IsReadOnly){yield return new(Key.F1,0,"Pos_Cash",Run(digital?.OpenCashCommand),"Shortcut_CartRequired");yield return new(Key.F2,0,"Pos_Card",Run(digital?.OpenCardCommand),digital?.Cart.Any(r=>r.Type=="CASHOUT")==true?"Digital_CashOutCashOnly":"Shortcut_CartRequired");
-                yield return new(Key.S,ctrl,"Trade_SaveDraft",Run(digital?.SaveDraftCommand),"Shortcut_CartRequired");
-                yield return new(Key.O,ctrl|shift,"Trade_ResumeDraft",Run(digital?.ResumeDraftCommand),"Trade_DraftEmptyCart");}
-            yield return new(Key.F4,0,"Pos_Clear",Run(digital?.ClearCartCommand),"Shortcut_CartRequired");
-            yield return new(Key.Delete,ctrl|shift,"Trade_RemoveCartLine",Run(digital?.RemoveSelectedCommand),"Shortcut_ProductRequired");
+            if(!shell.IsReadOnly){yield return new(Key.F1,0,"Pos_Cash",Run(digital?.OpenCashCommand),"Digital_TransactionRequired");yield return new(Key.F2,0,"Pos_Card",Run(digital?.OpenCardCommand),digital?.Cart.Any(r=>r.Type=="CASHOUT")==true?"Digital_CashOutCashOnly":"Digital_TransactionRequired");
+                yield return new(Key.S,ctrl,"Digital_SaveDraft",Run(digital?.SaveDraftCommand),"Digital_TransactionRequired");
+                yield return new(Key.O,ctrl|shift,"Digital_ResumeDraft",Run(digital?.ResumeDraftCommand),"Digital_ClearBeforeResume");}
+            yield return new(Key.F4,0,"Digital_ClearTransaction",Run(digital?.ClearCartCommand),"Digital_TransactionRequired");
+            yield return new(Key.Delete,ctrl|shift,"Digital_ClearTransaction",Run(digital?.RemoveSelectedCommand),"Shortcut_ProductRequired");
         }
         var search = otherPage is null && (reference || routedKey is Key.F or Key.OemQuestion) ? FindSearch(window) : null;
         if (search is not null || reference && (screen is "pos" or "products" or "customers" or "reports" or "digital" ||
@@ -181,7 +181,7 @@ internal static class Shortcuts
         var customers = page as CustomersViewModel;
         if (customers is not null || reference && screen == "customers")
         {
-            var ledger = customers?.Selected is null ? null : Run(customers.ViewLedgerCommand);
+            var ledger = customers is not null && (customers.CustomerTab==1?customers.SelectedDigitalCustomer is not null:customers.Selected is not null) ? Run(customers.ViewLedgerCommand) : null;
             yield return new(Key.B, ctrl, "Trade_CustomerLedger", ledger, "Shortcut_CustomerRequired");
             yield return new(Key.F1, alt, "Trade_CustomerLedger", ledger, "Shortcut_CustomerRequired");
             yield return new(Key.F12, alt, "Trade_CustomerLedger", ledger, "Shortcut_CustomerRequired");
@@ -214,7 +214,7 @@ internal static class Shortcuts
         var controls = Descendants(root).ToArray();
         if (controls.OfType<MedicineSearchBox>().FirstOrDefault(s => s.IsVisible && s.IsEnabled)?.Input is { } medicine) return medicine;
         return controls.OfType<TextBox>().FirstOrDefault(t => t.IsVisible && t.IsEnabled && !t.IsReadOnly &&
-            (t.Name == "SearchBox" || t.Name == "InvoiceSearchBox" || t.Name == "PackageSearch" || t.Name == "DigitalAmount" ||
+            (t.Name == "SearchBox" || t.Name == "InvoiceSearchBox" || t.Name == "PackageSearch" || t.Name == "DigitalAmount" || t.Name == "DigitalRecipient" || t.Name == "DigitalCustomerSearch" || t.Name == "DigitalHistorySearch" ||
              t.GetBindingExpression(TextBox.TextProperty)?.ParentBinding.Path?.Path is "Search" or "Filter" or "ProductSearch"));
     }
 

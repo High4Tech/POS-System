@@ -48,13 +48,20 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
         var user=auth.CurrentUser??throw new DomainException("Service_SignIn");entry.Validate();
         var business=(await setup.LoadAsync(ct)).Profile;
         if(entry.Type is "CASHIN" or "CASHOUT" or "TRANSFER"?!business.DigitalWalletAvailable:!business.MobileRechargeAvailable)throw new DomainException("Service_Disabled");
+        entry.RecipientKey=DigitalRecipient.Key(entry.Type,entry.CustomerPhone,entry.ProviderId);
+        entry.CustomerName=DigitalRecipient.Name(entry.CustomerName);
         if(await db.ServiceTransactions.AsNoTracking().SingleOrDefaultAsync(t=>t.ConfirmationId==entry.ConfirmationId,ct) is{} prior)
         {
+            if(entry.CustomerName.Length==0)entry.CustomerName=prior.CustomerName;
+            if(prior.RecipientKey!=entry.RecipientKey||prior.CustomerName!=entry.CustomerName)throw new DomainException("Service_ConfirmationConflict");
             if(prior.ProviderId!=entry.ProviderId||prior.PackageId!=entry.PackageId||prior.Principal!=entry.Principal||prior.Type!=entry.Type||prior.CustomerFee!=entry.CustomerFee||prior.ProviderFee!=entry.ProviderFee||prior.Commission!=entry.Commission||prior.ProviderCost!=entry.ProviderCost||prior.ProviderCostKnown!=entry.ProviderCostKnown||prior.Collected!=entry.Collected||prior.FloatChange!=entry.FloatChange||prior.CustomerPhone!=entry.CustomerPhone||prior.Reference!=entry.Reference||prior.PaymentMethod!=entry.PaymentMethod||prior.CheckoutId!=entry.CheckoutId||prior.AccountType!=entry.AccountType)throw new DomainException("Service_ConfirmationConflict");
             return prior;
         }
         var provider=await db.ServiceProviders.SingleOrDefaultAsync(p=>p.Id==entry.ProviderId,ct)??throw new DomainException("Service_SelectProvider");
         if(!provider.IsActive||!provider.AllowedTypes.Split(',').Contains(entry.Type))throw new DomainException("Service_Invalid");
+        var customer=await db.DigitalCustomers.SingleOrDefaultAsync(c=>c.RecipientKey==entry.RecipientKey,ct);
+        if(entry.CustomerName.Length>0){if(customer is null)db.DigitalCustomers.Add(new(){RecipientKey=entry.RecipientKey,Name=entry.CustomerName});else customer.Name=entry.CustomerName;}
+        else entry.CustomerName=customer?.Name??"";
         if(entry.Type=="PACKAGE")
         {
             var pack=await db.MobileServicePackages.SingleOrDefaultAsync(p=>p.Id==entry.PackageId&&p.ProviderId==entry.ProviderId&&p.IsActive,ct)??throw new DomainException("Service_Invalid");
@@ -93,7 +100,7 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
         var original=await db.ServiceTransactions.SingleAsync(t=>t.Id==id,ct);if(original.Status!="Confirmed"||original.ReversesId.HasValue)throw new DomainException("Service_Immutable");
         var posting=await db.ServicePostings.SingleAsync(p=>p.TransactionId==id,ct);
         var reversal=new ServiceTransaction{ConfirmationId=Guid.NewGuid(),ProviderId=original.ProviderId,Type="REVERSAL",Status="Confirmed",ReversesId=id,Reference=reference,Operator=auth.CurrentUser!.DisplayName,OccurredAt=DateTime.Now,StoreName=original.StoreName,ProviderName=original.ProviderName,Principal=original.Principal};
-        reversal.InvoiceProfileJson=original.InvoiceProfileJson;
+        reversal.InvoiceProfileJson=original.InvoiceProfileJson;reversal.RecipientKey=original.RecipientKey;reversal.CustomerName=original.CustomerName;reversal.CustomerPhone=original.CustomerPhone;
         db.ServiceTransactions.Add(reversal);original.Status="Reversed";original.Revision++;await db.SaveChangesAsync(ct);
         db.ServicePostings.Add(new(){TransactionId=reversal.Id,CashChange=-posting.CashChange,FloatChange=-posting.FloatChange,Income=-posting.Income});
         (await db.ServiceProviders.SingleAsync(p=>p.Id==original.ProviderId,ct)).Revision++;await db.SaveChangesAsync(ct);return reversal;
@@ -110,7 +117,8 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
         var loose=retail.SelectMany(s=>s.Lines).Where(l=>l.UnitCode is "kg" or "litre").Sum(l=>l.LineGross);
         return new(posts.Sum(p=>p.Income),posts.Sum(p=>p.CashChange),posts.Sum(p=>p.FloatChange),Net(t=>t.Principal,"CASHIN"),Net(t=>t.Principal,"CASHOUT"),Net(t=>t.Collected,"LOAD","PACKAGE"),Net(t=>t.Commission),rows.Count(t=>t.Status is "Draft" or "Pending"),rows.Count(t=>t.Status is "Failed" or "Reversed"),retail.Sum(s=>s.GrossTotal)-loose,loose,Net(t=>t.Principal,"TRANSFER"),rows.Count(t=>posted.Contains(t.Id)&&(t.Type=="PACKAGE"||t.Type=="LOAD")&&!t.ProviderCostKnown));
     }
-    public Task<List<ServicePosting>> PostingsAsync()=>db.ServicePostings.AsNoTracking().ToListAsync();
+    public Task<List<ServicePosting>> PostingsAsync(string? recipientKey=null)=>db.ServicePostings.AsNoTracking()
+        .Where(p=>recipientKey==null||db.ServiceTransactions.Any(t=>t.Id==p.TransactionId&&t.RecipientKey==recipientKey)).ToListAsync();
     public static ServiceTransaction PackageQuote(MobileServicePackage p,decimal? collected=null,decimal? cost=null,bool? costKnown=null)=>new(){Type="PACKAGE",ProviderId=p.ProviderId,PackageId=p.Id,PackageName=p.Name,PackageIdentifier=p.PackageIdentifier,AccountType=p.AccountType,PackageBenefits=p.Benefits,PackageValidity=p.Validity,Principal=(collected??(p.Price+p.CustomerFee))-p.CustomerFee,Collected=collected??(p.Price+p.CustomerFee),ProviderCost=(costKnown??p.ProviderCostKnown)?cost??p.ProviderCost:0,ProviderCostKnown=costKnown??p.ProviderCostKnown,CustomerFee=p.CustomerFee,ProviderFee=p.ProviderFee,Commission=p.Commission,FloatChange=0};
     public static ServiceTransaction ProviderQuote(ServiceProviderAccount p,string type,decimal amount)
     {

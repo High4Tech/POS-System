@@ -24,6 +24,8 @@ public sealed class MobileServicePackage
 }
 public sealed class ServiceTransaction
 {
+    public string RecipientKey{get;set;}="";
+    public string CustomerName{get;set;}="";
     public int? CheckoutId{get;set;}
     public string PaymentMethod{get;set;}="CASH";
     public bool ProviderCostKnown{get;set;}=true;
@@ -41,6 +43,7 @@ public sealed class ServiceTransaction
     public decimal Income=>Type is "LOAD" or "PACKAGE"&&!ProviderCostKnown?0:(Type is "CASHIN" or "CASHOUT" or "TRANSFER"?CustomerFee:Collected-ProviderCost)+Commission-ProviderFee;
     public void Validate()
     {
+        DigitalRecipient.Name(CustomerName);
         if(ConfirmationId==Guid.Empty||Type is not ("CASHIN" or "CASHOUT" or "TRANSFER" or "LOAD" or "PACKAGE")||Status is not ("Draft" or "Pending" or "Confirmed" or "Failed"))throw new DomainException("Service_Invalid");
         if(Principal<=0||new[]{Principal,CustomerFee,ProviderFee,Commission,ProviderCost,Collected,FloatChange}.Any(v=>v!=Money.Round2(v))||new[]{CustomerFee,ProviderFee,Commission,ProviderCost,Collected}.Any(v=>v<0))throw new DomainException("Service_InvalidAmount");
         if(Reference.Length>80||Reference.Any(char.IsControl)||CustomerPhone.Length>60||OccurredAt.Year<2000||OccurredAt>DateTime.Now.AddDays(1))throw new DomainException("Service_Invalid");
@@ -48,6 +51,11 @@ public sealed class ServiceTransaction
         if(Type=="TRANSFER"&&string.IsNullOrWhiteSpace(CustomerPhone))throw new DomainException("Retail_RecipientRequired");
         if(PaymentMethod is not ("CASH" or "CARD")||PaymentMethod=="CARD"&&Type=="CASHOUT")throw new DomainException("Digital_InvalidPayment");
     }
+}
+public sealed class DigitalCustomer
+{
+    public string RecipientKey{get;set;}="";
+    public string Name{get;set;}="";
 }
 public sealed class ServicePosting
 {

@@ -4,7 +4,9 @@
              xmlns:loc="clr-namespace:SupermarketPos.Wpf.Localization"
              xmlns:layout="clr-namespace:SupermarketPos.Wpf.Common"
              Background="{StaticResource BgBrush}">
-    <DockPanel Margin="24">
+    <TabControl Margin="24" SelectedIndex="{Binding CustomerTab}">
+    <TabItem Header="{loc:T Customers_Physical}">
+    <DockPanel Margin="4">
         <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
             <TextBlock Text="{loc:T Nav_Customers}" Style="{StaticResource H1}" />
             <TextBlock Text="{loc:T Customers_Search}" Style="{StaticResource FormLabel}" Margin="0,12,0,4" />
@@ -55,4 +57,50 @@
             </Border>
         </Grid>
     </DockPanel>
+    </TabItem>
+    <TabItem Header="{loc:T Customers_Digital}" Visibility="{Binding DigitalAvailable, Converter={StaticResource BoolToVis}}">
+        <DockPanel Margin="4">
+            <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                <TextBlock Text="{loc:T Customers_Digital}" Style="{StaticResource H1}"/>
+                <TextBlock Text="{loc:T Digital_CustomerHelp}" TextWrapping="Wrap" Margin="0,8,0,8"/>
+                <TextBox x:Name="DigitalCustomerSearch" Text="{Binding DigitalSearch, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:T Digital_CustomerSearch}"/>
+                <TextBlock Text="{Binding Error}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap"/>
+            </StackPanel>
+            <Grid layout:PanelHeights.Key="digital-customers">
+                <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="12"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                <GridSplitter Grid.Row="1" Style="{StaticResource HeightDivider}"/>
+                <Border Style="{StaticResource Card}" Padding="8">
+                    <DataGrid layout:TableLayout.Key="digital-customers" ItemsSource="{Binding DigitalCustomers}" SelectedItem="{Binding SelectedDigitalCustomer}" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="{loc:T Digital_Recipient}" Binding="{Binding Identifier}" Width="2*" ElementStyle="{StaticResource TableValue}"/>
+                            <DataGridTextColumn Header="{loc:T Customer_Name}" Binding="{Binding Name}" Width="2*" ElementStyle="{StaticResource TableName}"/>
+                            <DataGridTextColumn Header="{loc:T Service_Provider}" Binding="{Binding Provider}" Width="*" ElementStyle="{StaticResource TableName}"/>
+                            <DataGridTextColumn Header="{loc:T Digital_Transactions}" Binding="{Binding Transactions}" Width="*"/>
+                            <DataGridTextColumn Header="{loc:T Reports_Date}" Binding="{Binding Last}" Width="1.5*" ElementStyle="{StaticResource TableValue}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+                <Border Grid.Row="2" Style="{StaticResource Card}" Padding="8">
+                    <DockPanel>
+                        <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                            <Button Content="{loc:T Reports_OpenReceipt}" Command="{Binding OpenDigitalReceiptCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0"/>
+                            <Button Content="{loc:T Digital_EditCustomerName}" Command="{Binding EditDigitalNameCommand}" Style="{StaticResource GhostButton}"/>
+                        </WrapPanel>
+                        <DataGrid layout:TableLayout.Key="digital-customer-history" ItemsSource="{Binding DigitalHistory}" SelectedItem="{Binding SelectedDigitalTransaction}" IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{loc:T Service_Receipt}" Binding="{Binding Number}" Width="*" ElementStyle="{StaticResource TableValue}"/>
+                                <DataGridTextColumn Header="{loc:T Reports_Date}" Binding="{Binding Date}" Width="1.5*" ElementStyle="{StaticResource TableValue}"/>
+                                <DataGridTextColumn Header="{loc:T Service_Provider}" Binding="{Binding Provider}" Width="*" ElementStyle="{StaticResource TableName}"/>
+                                <DataGridTextColumn Header="{loc:T Service_Type}" Binding="{Binding Type}" Width="*" ElementStyle="{StaticResource TableName}"/>
+                                <DataGridTextColumn Header="{loc:T Service_Principal}" Binding="{Binding Principal}" Width="*" ElementStyle="{StaticResource TableMoney}"/>
+                                <DataGridTextColumn Header="{loc:T Digital_Fee}" Binding="{Binding Fee}" Width="*" ElementStyle="{StaticResource TableMoney}"/>
+                                <DataGridTextColumn Header="{loc:T Service_Status}" Binding="{Binding Status}" Width="*" ElementStyle="{StaticResource TableName}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </DockPanel>
+    </TabItem>
+    </TabControl>
 </UserControl>

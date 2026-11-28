@@ -10,7 +10,8 @@ using SupermarketPos.Wpf.Views;
 namespace SupermarketPos.Wpf.ViewModels;
 
 public sealed partial class CustomersViewModel(ISaleRepository sales, BulkRecordService records,
-    ReceiptPreviewDialog receipts, ITradeLedger ledger, IAuthService auth, SupermarketPos.Infrastructure.Business.ReturnsService returns) : ObservableObject
+    ReceiptPreviewDialog receipts, ITradeLedger ledger, IAuthService auth, SupermarketPos.Infrastructure.Business.ReturnsService returns,
+    SupermarketPos.Infrastructure.Business.DigitalServiceLedger digital, IBusinessSetup setup) : ObservableObject
 {
     private IReadOnlyList<CustomerRow> _all = [];
     [ObservableProperty] private IReadOnlyList<CustomerRow> _customers = [];
@@ -23,10 +24,11 @@ public sealed partial class CustomersViewModel(ISaleRepository sales, BulkRecord
     {
         try
         {
+            Error = null;
             _all = (await sales.GetCustomerSalesAsync()).GroupBy(Identity)
                 .Select(group => new CustomerRow(group.Key, group.ToArray())).ToArray();
             Filter();
-            Error = null;
+            await RefreshDigitalAsync();
         }
         catch (Exception) { Error = LocalizationManager.Instance["Customers_LoadError"]; }
     }
@@ -59,6 +61,7 @@ public sealed partial class CustomersViewModel(ISaleRepository sales, BulkRecord
     [RelayCommand]
     private async Task ViewLedgerAsync()
     {
+        if (CustomerTab == 1) { await LoadDigitalHistoryAsync(); return; }
         if (Selected is not { } customer || InAppDialog.IsOpen) return;
         try
         {

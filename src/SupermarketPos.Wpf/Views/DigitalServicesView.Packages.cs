@@ -16,10 +16,10 @@ public sealed partial class DigitalServicesView
     private FrameworkElement PackageCatalog(Action<double> keepResultsVisible)
     {
         var panel=new Grid();panel.RowDefinitions.Add(new(){Height=GridLength.Auto});panel.RowDefinitions.Add(new(){Height=new GridLength(1,GridUnitType.Star)});var filters=new StackPanel();panel.Children.Add(filters);
-        filters.SizeChanged+=(_,_)=>keepResultsVisible(filters.ActualHeight+260);
+        filters.SizeChanged+=(_,_)=>keepResultsVisible(filters.ActualHeight+120);
         var providers=_providers.Where(p=>p.IsActive&&p.AllowedTypes.Split(',').Contains("PACKAGE")).ToArray();if(!providers.Any(p=>p.Name==_network))_network=providers.FirstOrDefault()?.Name??"";
         filters.Children.Add(BusinessForm.Label("Retail_SelectNetwork"));var network=new ComboBox{ItemsSource=providers,DisplayMemberPath="Name",SelectedValuePath="Name",SelectedValue=_network,Margin=new Thickness(4)};filters.Children.Add(network);
-        network.SelectionChanged+=(_,_)=>{_network=(string?)network.SelectedValue??"";Record();};
+        network.SelectionChanged+=(_,_)=>{_network=(string?)network.SelectedValue??"";if(_cart.FirstOrDefault() is{} selected&&selected.ProviderName!=_network)DropRows();Record();};
         var search=new TextBox{Name="PackageSearch",MaxLength=150,Margin=new Thickness(4,4,4,8),ToolTip=T("Service_SearchPackages")};System.Windows.Automation.AutomationProperties.SetName(search,T("Service_SearchPackages"));filters.Children.Add(search);_search=search;
         var list=new ListBox{Name="PackageChoices",HorizontalContentAlignment=HorizontalAlignment.Stretch,BorderThickness=new Thickness(0),Background=System.Windows.Media.Brushes.Transparent};list.SetResourceReference(TagProperty,"ProductCardWidth");ScrollViewer.SetHorizontalScrollBarVisibility(list,ScrollBarVisibility.Disabled);Grid.SetRow(list,1);panel.Children.Add(list);
         var items=new FrameworkElementFactory(typeof(WrapPanel));list.ItemsPanel=new ItemsPanelTemplate(items);

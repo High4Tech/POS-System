@@ -13,5 +13,6 @@ public sealed partial class DigitalServicesView
         if(_retailInventory is not null)await _retailInventory.EnsureProviderTemplateAsync();await LoadAsync();
         if(type is "LOAD" or "PACKAGE"&&!HasDraft)_entry.Type=type;
         Record();
+        if(_cart.FirstOrDefault() is{} row)FocusRow(row,nameof(row.Recipient));
     });
 }

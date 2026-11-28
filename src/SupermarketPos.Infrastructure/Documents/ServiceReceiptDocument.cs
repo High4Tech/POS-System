@@ -38,6 +38,7 @@ public sealed class ServiceReceiptDocument:IDocument
                 if(transaction.Status!="Confirmed")c.Item().Text(T("Service_Status")+": "+T("Service_"+transaction.Status));
                 if(transaction.Reference.Length>0)c.Item().Text(T("Service_Reference")+": "+transaction.Reference);
                 if(transaction.CustomerPhone.Length>0)c.Item().Text(T(transaction.Type is "LOAD" or "PACKAGE"?"Customer_Phone":"Digital_Recipient")+": "+transaction.CustomerPhone);
+                if(transaction.CustomerName.Length>0)c.Item().Text(T("Customer_Name")+": "+transaction.CustomerName);
                 c.Item().Text(T("Digital_Price")+": "+Money.Format(transaction.Type=="PACKAGE"?transaction.Collected:transaction.Principal));
                 if(transaction.Type!="PACKAGE"&&transaction.CustomerFee>0)c.Item().Text(T("Digital_Fee")+": "+Money.Format(transaction.CustomerFee));
             }

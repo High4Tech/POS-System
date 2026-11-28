@@ -20,7 +20,7 @@ public sealed class DigitalCartLine:ObservableObject,IDataErrorInfo
     public string Name{get;init;}="";
     public string Title=>Type=="PACKAGE"?Name:LocalizationManager.Instance["Service_"+Type];
     public System.Windows.FlowDirection TitleDirection=>Title.Any(c=>c>=0x600&&c<=0x6ff)?System.Windows.FlowDirection.RightToLeft:System.Windows.FlowDirection.LeftToRight;
-    public override string ToString()=>Title;
+    public override string ToString()=>Title+" · "+Recipient+" · "+TotalText;
     public string ProviderName=>Provider.Name;
     public bool HasCost=>Type is "LOAD" or "PACKAGE";
     public bool HasFee=>Type!="PACKAGE";
@@ -32,8 +32,10 @@ public sealed class DigitalCartLine:ObservableObject,IDataErrorInfo
     public string CostText{get=>_cost;set=>SetProperty(ref _cost,value);}
     public string Recipient{get=>_recipient;set=>SetProperty(ref _recipient,value);}
     public string Reference{get=>_reference;set=>SetProperty(ref _reference,value);}
+    private string _customerName="";
+    public string CustomerName{get=>_customerName;set=>SetProperty(ref _customerName,value);}
     public bool ShowValidation{get;set;}
-    public decimal Total{get{try{return Number(AmountText,out var amount)?(Type=="CASHOUT"?-amount:amount)+(HasFee&&Number(FeeText,out var fee)?fee:0):0;}catch(OverflowException){return 0;}}}
+    public decimal Total{get{try{return Number(AmountText,out var amount)&&amount>0?(Type=="CASHOUT"?-amount:amount)+(HasFee&&Number(FeeText,out var fee)?fee:0):0;}catch(OverflowException){return 0;}}}
     public void RefreshTotal()=>OnPropertyChanged(nameof(TotalText));
     public string TotalText=>Money.Format(Total);
     public string Error=>string.Join("\n",Errors().Values.Select(k=>LocalizationManager.Instance[k]).Distinct());
@@ -42,6 +44,7 @@ public sealed class DigitalCartLine:ObservableObject,IDataErrorInfo
     public Dictionary<string,string> Errors()
     {
         var errors=new Dictionary<string,string>();
+        try{DigitalRecipient.Name(CustomerName);}catch(DomainException){errors[nameof(CustomerName)]="Validation_Text";}
         if(!Number(AmountText,out var amount)||amount<=0||Type=="PACKAGE"&&amount<Package?.CustomerFee)errors[nameof(AmountText)]="Service_InvalidAmount";
         if(HasFee&&(!Number(FeeText,out var fee)||fee<0))errors[nameof(FeeText)]="Service_InvalidAmount";
         if(HasCost&&CostText.Trim().Length>0&&(!Number(CostText,out var cost)||cost<0))errors[nameof(CostText)]="Service_InvalidAmount";
@@ -52,7 +55,7 @@ public sealed class DigitalCartLine:ObservableObject,IDataErrorInfo
         if(Reference.Length>80||Reference.Any(char.IsControl))errors[nameof(Reference)]="Validation_Text";
         return errors;
     }
-    public void ValidateFields(){ShowValidation=true;foreach(var name in new[]{nameof(AmountText),nameof(FeeText),nameof(CostText),nameof(Recipient),nameof(Reference)})OnPropertyChanged(name);}
+    public void ValidateFields(){ShowValidation=true;foreach(var name in new[]{nameof(AmountText),nameof(FeeText),nameof(CostText),nameof(Recipient),nameof(Reference),nameof(CustomerName)})OnPropertyChanged(name);}
     public ServiceTransaction Quote()
     {
         if(Errors().Count>0)throw new DomainException(Errors().First().Value);
@@ -62,7 +65,7 @@ public sealed class DigitalCartLine:ObservableObject,IDataErrorInfo
         if(Type!="PACKAGE"){quote.CustomerFee=fee;quote.Collected=Type=="CASHOUT"?0:amount+fee;}
         if(Type=="LOAD"){quote.ProviderCost=cost??0;quote.ProviderCostKnown=cost.HasValue;}
         if(Type=="LOAD")quote.AccountType=AccountType;
-        quote.ConfirmationId=ConfirmationId;quote.Status="Confirmed";quote.OccurredAt=DateTime.Now;quote.Reference=Reference.Trim();quote.CustomerPhone=Type is "LOAD" or "PACKAGE"?InvoicePhone.Normalize(Recipient):PakistanPayment.Recipient(Recipient,Provider.Name,Provider.AccountNumberLengths);
+        quote.ConfirmationId=ConfirmationId;quote.Status="Confirmed";quote.OccurredAt=DateTime.Now;quote.Reference=Reference.Trim();quote.CustomerPhone=Type is "LOAD" or "PACKAGE"?InvoicePhone.Normalize(Recipient):PakistanPayment.Recipient(Recipient,Provider.Name,Provider.AccountNumberLengths);quote.CustomerName=CustomerName;
         return quote;
     }
 }

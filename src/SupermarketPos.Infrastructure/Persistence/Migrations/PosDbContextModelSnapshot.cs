@@ -312,6 +312,22 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("SupermarketPos.Domain.Entities.DigitalCustomer", b =>
+                {
+                    b.Property<string>("RecipientKey")
+                        .HasMaxLength(160)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("RecipientKey");
+
+                    b.ToTable("DigitalCustomers");
+                });
+
             modelBuilder.Entity("SupermarketPos.Domain.Entities.InventoryBatch", b =>
                 {
                     b.Property<int>("Id")
@@ -1330,6 +1346,10 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("CustomerFee")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("CustomerPhone")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -1391,6 +1411,10 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RecipientKey")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Reference")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -1425,6 +1449,8 @@ namespace SupermarketPos.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ReversesId")
                         .IsUnique();
+
+                    b.HasIndex("RecipientKey", "OccurredAt");
 
                     b.ToTable("ServiceTransactions");
                 });
