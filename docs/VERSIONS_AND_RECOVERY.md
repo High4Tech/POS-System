@@ -20,6 +20,8 @@ Many November 17–21 copies have no exact source snapshot and reused an upstrea
 
 The [historical version catalog](LEGACY_DESKTOP_VERSIONS.md) lists all 47 preserved copies and their restore IDs. Its 229,372,017-byte archive replaces 12,588,719,082 bytes of repeated local application files. The seven historical data-only backup folders are retained separately.
 
+Cleanup completed on 28 November 2026 after GitHub's asset digest and three real restoration checks passed. Post-cleanup hashes confirmed the live app/recovery pair and all 15 historical business-backup files were unchanged. The [catalog](LEGACY_DESKTOP_VERSIONS.md#cleanup-verified-on-28-november-2026) records the removal totals and retained recovery pair.
+
 Download the archive from the repository's versioned releases, then restore a selected copy:
 
 ```powershell
@@ -29,5 +31,7 @@ Download the archive from the repository's versioned releases, then restore a se
 An old app must use a matching database backup; do not launch an obsolete executable against the current live database. Business data backups stay local and are not pushed to either repository. Keep the latest verified data/application recovery pair beside the live app.
 
 Local cleanup is permitted only after the remote archive digest matches its local SHA256, restore checks pass, and each removal target is verified to remain inside the intended POS directory. Live `App`, database, managed media, protected drafts, scanner data and business backup files are retained. In mixed historical backup folders, only manifest-listed application files are removed; their business data remains local.
+
+Run `pwsh -File ./engineering/Test-DesktopVersionRecovery.ps1` with PowerShell 7.2+ to check archive deduplication, exact restore, rejection of an invalid verification receipt, and preservation of the live app, database and newest recovery ZIP. It uses and removes its own temporary test directory. The process guard requires normal host CIM access; restricted sandboxes may block that check.
 
 For future updates, commit/tag the source before publishing and use the existing desktop update script. Do not create new full `App-before-*` runtime folders. Keep one verified local application/data recovery pair; preserve older code as Git versions and archive any binary-only history before pruning redundant app copies. Business-data backup retention is separate from application-version cleanup.

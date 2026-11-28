@@ -8,6 +8,14 @@ These 47 entries preserve the compiled application bytes. Some early builds reus
 
 Restoration checks passed for `App-before-20261117-135516` (334 files), `Backups/App-before-retail-extensions-20261119-190109` (426 files), and `Backups/Previous-application-20261127-165413138.zip` (427 files). Every restored file matched its archived SHA256; no obsolete executable was launched. Temporary QA restores were removed after checking them.
 
+## Cleanup verified on 28 November 2026
+
+GitHub confirmed the archive's uploaded state, exact byte length and matching SHA256 before deletion. All local application files were rehashed before removal. Removed 36 obsolete application/staging directories and 11 application ZIPs from `D:/SupermarketPos`, reclaiming 12,588,719,082 bytes (12.59 GB).
+
+Post-cleanup checks found zero obsolete application directories. The installed executable/DLL, app icon, desktop shortcut and latest paired recovery ZIPs remained unchanged. All 15 files in the seven historical business-backup folders retained their original hashes; the live database remained present. No new diagnostic reports were found. Business data, protected drafts, managed media, scanner files and data-backup retention were outside the removal plan.
+
+The retained application recovery is `Backups/Previous-application-20261128-081441393.zip`; its matching pre-update data backup is `Backups/Before-update-20261128-081441393.zip`. Their hashes and the installed beta.7 payload are recorded in [release verification](../engineering/Direct-Digital-20261128.md).
+
 | Exact restore version ID | Origin | Files |
 | --- | --- | ---: |
 | `.update-20261127-163335244` | directory | 428 |

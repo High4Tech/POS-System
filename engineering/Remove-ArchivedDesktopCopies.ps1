@@ -40,6 +40,7 @@ foreach($source in $manifest.Sources) {
         }
     }
     $plan.Add($source)
+    Write-Output ('Verified removal target: '+$source.Id)
 }
 # All inputs are verified before any deletion; mixed backups retain unlisted business files.
 $removed=0L
