@@ -25,6 +25,8 @@ if(args.Length==2&&args[0]=="query-plans")
         ("Receipt number","SELECT Id FROM Sales WHERE ReceiptNo='2026-000001'"),
         ("Invoice date window","SELECT Id FROM Sales WHERE CreatedAt>='2026-01-01' AND CreatedAt<'2026-12-31' ORDER BY CreatedAt DESC LIMIT 101"),
         ("Customer history/frequency","SELECT Id FROM Sales WHERE CustomerAccountKey='phone:03000000000' ORDER BY CreatedAt DESC, Id DESC LIMIT 500"),
+        ("Digital recipient history","SELECT Id FROM ServiceTransactions WHERE RecipientKey='phone:923001234567' ORDER BY OccurredAt DESC"),
+        ("Digital recipient postings","SELECT Id FROM ServicePostings WHERE TransactionId IN (SELECT Id FROM ServiceTransactions WHERE RecipientKey='phone:923001234567')"),
         ("Product sale history","SELECT SaleId FROM SaleLines WHERE ProductId=1"),
         ("Posted returns","SELECT Id FROM SaleReturns WHERE SaleId=1 AND Status='Posted'"),
         ("Stock movements","SELECT Id FROM StockMovements WHERE ProductId=1 ORDER BY OccurredAt DESC"),

@@ -151,16 +151,26 @@ public sealed partial class DigitalServicesView
     private void RemoveRow(DigitalCartLine row){row.PropertyChanged-=RowChanged;_cart.Remove(row);if(_cart.Count==0)_checkoutKey=Guid.NewGuid();RefreshCartSummary();}
     private void RowChanged(object? sender,PropertyChangedEventArgs e){if(e.PropertyName is nameof(DigitalCartLine.AmountText) or nameof(DigitalCartLine.FeeText) or nameof(DigitalCartLine.CostText) or nameof(DigitalCartLine.Recipient)){((DigitalCartLine)sender!).RefreshTotal();RefreshCartSummary();}}
     private void ClearCart(){DropRows();_checkoutKey=Guid.NewGuid();_resumed=false;_entry.Reset();_entryDirty=false;Record();FocusSearch();}
-    public void FocusSearch(){if(_search?.IsVisible==true){_search.Focus();_search.SelectAll();}}
+    public void FocusSearch()=>Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded,new Action(()=>
+    {
+        if(!InAppDialog.IsOpen&&_search is{IsVisible:true,IsEnabled:true} input)FocusInput(input);
+    }));
     private void RefreshCartSummary()
     {
         decimal total;try{total=_previewTotal?.Invoke()??_cart.Sum(l=>l.Total);}catch(OverflowException){total=0;_status.Text=T("Service_InvalidAmount");}
         if(_cartTotal is not null)_cartTotal.Text=Money.Format(Math.Abs(total));if(_settlementLabel is not null)_settlementLabel.Text=T(total<0?"Digital_ToPay":"Digital_ToCollect");
         OpenCashCommand?.NotifyCanExecuteChanged();OpenCardCommand?.NotifyCanExecuteChanged();ClearCartCommand?.NotifyCanExecuteChanged();RemoveSelectedCommand?.NotifyCanExecuteChanged();SaveDraftCommand?.NotifyCanExecuteChanged();ResumeDraftCommand?.NotifyCanExecuteChanged();
     }
-    private void FocusRow(DigitalCartLine row,string property)=>Dispatcher.BeginInvoke(()=>
+    private void FocusRow(DigitalCartLine row,string property)=>Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded,new Action(()=>
     {
+        if(InAppDialog.IsOpen||!_cart.Contains(row))return;
         if(_resumed&&_cart.Count>1&&!ReferenceEquals(_editingLine,row)){_editingLine=row;Record();}
-        if(_transactionFields.TryGetValue(property,out var input)){input.BringIntoView();input.Focus();input.SelectAll();}
-    });
+        if(_transactionFields.TryGetValue(property,out var input))FocusInput(input);
+    }));
+    private static void FocusInput(TextBox input)
+    {
+        input.Focus();input.SelectAll();input.BringIntoView();
+        for(DependencyObject? parent=VisualTreeHelper.GetParent(input);parent is not null;parent=VisualTreeHelper.GetParent(parent))
+            if(parent is ScrollViewer scroll)scroll.BringIntoView();
+    }
 }

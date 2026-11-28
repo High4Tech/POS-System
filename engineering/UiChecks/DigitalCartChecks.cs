@@ -72,6 +72,8 @@ internal static partial class Program
             LocalizationManager.Instance.SetLanguage(lang);sp.GetRequiredService<DesktopTextSize>().Save(size);await digital.OpenSalesAsync();Pump();
             for(var wait=0;!Descendants(digital).OfType<ListBox>().Any(l=>l.Name=="PackageChoices"&&l.Items.Count>0)&&wait<100;wait++){await Task.Delay(25);Pump();}
             var choices=Descendants(digital).OfType<ListBox>().Single(l=>l.Name=="PackageChoices");Assert(choices.ActualHeight>=100,$"Package viewport stays usable at {lang}/{size}");
+            var phone=Field("Recipient");var phoneBounds=phone.TransformToAncestor(window).TransformBounds(new Rect(0,0,phone.ActualWidth,phone.ActualHeight));
+            Assert(phoneBounds.Top>=0&&phoneBounds.Bottom<=window.ActualHeight,"Selected package recipient is scrolled into the visible workspace at "+lang+"/"+size);
             CheckWindow(window,$"direct-digital-{lang}-{size}");Capture(window,System.IO.Path.Combine(screens,$"direct-digital-{lang}-{size}.png"));
         }
         LocalizationManager.Instance.SetLanguage("en");sp.GetRequiredService<DesktopTextSize>().Save(100);Pump();
@@ -95,6 +97,17 @@ internal static partial class Program
         Descendants(nameForm).OfType<Button>().Single(b=>Equals(b.Content,LocalizationManager.Instance["Profile_Save"])).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));await editName;Pump();
         Assert(customers.SelectedDigitalCustomer!.Name=="Digital visitor","Optional customer name saves separately from physical accounts");
         Capture(window,System.IO.Path.Combine(screens,"digital-customers.png"));
+        foreach(var lang in new[]{"en","ur"})
+        {
+            LocalizationManager.Instance.SetLanguage(lang);sp.GetRequiredService<DesktopTextSize>().Save(200);Pump();
+            foreach(var grid in Descendants(window).OfType<DataGrid>())
+            {
+                var row=Descendants(grid).OfType<DataGridRow>().FirstOrDefault();
+                Assert(row is not null&&row.TransformToAncestor(grid).TransformBounds(new Rect(0,0,row.ActualWidth,row.ActualHeight)).Bottom<=grid.ActualHeight,"Digital customer table keeps space for its data row at "+lang+"/200");
+            }
+            Capture(window,System.IO.Path.Combine(screens,$"digital-customers-{lang}-200.png"));CheckWindow(window,$"digital-customers-{lang}-200");
+        }
+        LocalizationManager.Instance.SetLanguage("en");sp.GetRequiredService<DesktopTextSize>().Save(100);Pump();
         Assert(InvokeDigitalShortcut(window,shell,Key.F,ModifierKeys.Control),"Ctrl+F reaches digital customer search");Pump();
         Assert(Descendants(window).OfType<TextBox>().Single(t=>t.Name=="DigitalCustomerSearch").IsKeyboardFocused,"Digital customer search receives focus");
         var reopen=customers.OpenDigitalReceiptCommand.ExecuteAsync(null);

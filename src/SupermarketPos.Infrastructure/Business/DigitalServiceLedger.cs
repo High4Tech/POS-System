@@ -117,8 +117,12 @@ public sealed partial class DigitalServiceLedger(PosDbContext db,IUnitOfWork wor
         var loose=retail.SelectMany(s=>s.Lines).Where(l=>l.UnitCode is "kg" or "litre").Sum(l=>l.LineGross);
         return new(posts.Sum(p=>p.Income),posts.Sum(p=>p.CashChange),posts.Sum(p=>p.FloatChange),Net(t=>t.Principal,"CASHIN"),Net(t=>t.Principal,"CASHOUT"),Net(t=>t.Collected,"LOAD","PACKAGE"),Net(t=>t.Commission),rows.Count(t=>t.Status is "Draft" or "Pending"),rows.Count(t=>t.Status is "Failed" or "Reversed"),retail.Sum(s=>s.GrossTotal)-loose,loose,Net(t=>t.Principal,"TRANSFER"),rows.Count(t=>posted.Contains(t.Id)&&(t.Type=="PACKAGE"||t.Type=="LOAD")&&!t.ProviderCostKnown));
     }
-    public Task<List<ServicePosting>> PostingsAsync(string? recipientKey=null)=>db.ServicePostings.AsNoTracking()
-        .Where(p=>recipientKey==null||db.ServiceTransactions.Any(t=>t.Id==p.TransactionId&&t.RecipientKey==recipientKey)).ToListAsync();
+    public Task<List<ServicePosting>> PostingsAsync(string? recipientKey=null)
+    {
+        var query=db.ServicePostings.AsNoTracking();
+        if(recipientKey is not null)query=query.Where(p=>db.ServiceTransactions.Where(t=>t.RecipientKey==recipientKey).Select(t=>t.Id).Contains(p.TransactionId));
+        return query.ToListAsync();
+    }
     public static ServiceTransaction PackageQuote(MobileServicePackage p,decimal? collected=null,decimal? cost=null,bool? costKnown=null)=>new(){Type="PACKAGE",ProviderId=p.ProviderId,PackageId=p.Id,PackageName=p.Name,PackageIdentifier=p.PackageIdentifier,AccountType=p.AccountType,PackageBenefits=p.Benefits,PackageValidity=p.Validity,Principal=(collected??(p.Price+p.CustomerFee))-p.CustomerFee,Collected=collected??(p.Price+p.CustomerFee),ProviderCost=(costKnown??p.ProviderCostKnown)?cost??p.ProviderCost:0,ProviderCostKnown=costKnown??p.ProviderCostKnown,CustomerFee=p.CustomerFee,ProviderFee=p.ProviderFee,Commission=p.Commission,FloatChange=0};
     public static ServiceTransaction ProviderQuote(ServiceProviderAccount p,string type,decimal amount)
     {

@@ -61,12 +61,12 @@
     <TabItem Header="{loc:T Customers_Digital}" Visibility="{Binding DigitalAvailable, Converter={StaticResource BoolToVis}}">
         <DockPanel Margin="4">
             <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                <TextBlock Text="{loc:T Customers_Digital}" Style="{StaticResource H1}"/>
-                <TextBlock Text="{loc:T Digital_CustomerHelp}" TextWrapping="Wrap" Margin="0,8,0,8"/>
-                <TextBox x:Name="DigitalCustomerSearch" Text="{Binding DigitalSearch, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:T Digital_CustomerSearch}"/>
+                <TextBlock Text="{loc:T Customers_Search}" Style="{StaticResource FormLabel}" Margin="0,0,0,4"/>
+                <TextBox x:Name="DigitalCustomerSearch" Text="{Binding DigitalSearch, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:T Digital_CustomerSearch}" AutomationProperties.HelpText="{loc:T Digital_CustomerHelp}" ToolTip="{loc:T Digital_CustomerHelp}"/>
                 <TextBlock Text="{Binding Error}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap"/>
             </StackPanel>
-            <Grid layout:PanelHeights.Key="digital-customers">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Grid layout:PanelHeights.Key="digital-customers" MinHeight="{DynamicResource DigitalWorkspaceMinimumHeight}" Height="{Binding ViewportHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}">
                 <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="12"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HeightDivider}"/>
                 <Border Style="{StaticResource Card}" Padding="8">
@@ -100,6 +100,7 @@
                     </DockPanel>
                 </Border>
             </Grid>
+            </ScrollViewer>
         </DockPanel>
     </TabItem>
     </TabControl>
