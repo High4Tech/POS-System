@@ -13,6 +13,10 @@ Standalone Tech Retail edition of the existing High4Tech Windows POS. This sourc
 
 The shared projects stay intact. The standalone build flag selects the simple Retail experience; it does not remove full-edition source or migrate an existing store to another business type.
 
+## Download
+
+The [1.2.0-beta.7 testing release](https://github.com/High4Tech/pos_backup/releases/tag/retail-v1.2.0-beta.7) includes the shareable Windows installer. Its SHA256 is `78E00E57941F6AB7A86FB7A819DD54262EAE32BF32FB8084A06D0473DFE83455`, verified against GitHub's uploaded asset digest.
+
 ## Build the installer
 
 On Windows x64 with .NET 8 SDK, the existing dependencies and Velopack CLI:

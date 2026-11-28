@@ -18,6 +18,8 @@ Many November 17–21 copies have no exact source snapshot and reused an upstrea
 
 `engineering/Archive-DesktopVersions.ps1` creates and verifies this archive. `engineering/Restore-DesktopVersion.ps1` restores an exact version ID into a new directory and verifies every restored file. It never launches an old app or writes into the live store directory. The archive manifest lists all available version IDs.
 
+The [historical version catalog](LEGACY_DESKTOP_VERSIONS.md) lists all 47 preserved copies and their restore IDs. Its 229,372,017-byte archive replaces 12,588,719,082 bytes of repeated local application files. The seven historical data-only backup folders are retained separately.
+
 Download the archive from the repository's versioned releases, then restore a selected copy:
 
 ```powershell

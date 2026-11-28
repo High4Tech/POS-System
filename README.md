@@ -8,6 +8,8 @@ The full edition retains business onboarding, profiles, pharmacy/retail modules,
 
 Current release: **1.2.0-beta.7**. Digital services now use one transaction form followed directly by payment and receipt, with separate phone/account-based digital customer history and reports. Physical sales keep their existing cart. Actual bank/telecom operations use the authorized provider; the POS records them.
 
+Published releases: [full-edition source](https://github.com/High4Tech/POS-System/releases/tag/v1.2.0-beta.7), [standalone Retail installer](https://github.com/High4Tech/pos_backup/releases/tag/retail-v1.2.0-beta.7).
+
 See the [release verification](engineering/Direct-Digital-20261128.md), [version/recovery guide](docs/VERSIONS_AND_RECOVERY.md) and [retail feature and shortcut report](docs/RETAIL_FEATURES_AND_SHORTCUTS.md). The locally verified builds are development/testing builds; commercial enforcement and integrations need publisher configuration.
 
 ## Original project documentation

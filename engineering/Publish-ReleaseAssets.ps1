@@ -44,7 +44,9 @@ try {
             $config=@(('url = "'+$url+'"'),'request = "POST"',('header = "Authorization: Bearer '+$credential.password+'"'),
                 'header = "User-Agent: High4Tech-POS-Releases"','header = "X-GitHub-Api-Version: 2026-03-10"',
                 'header = "Content-Type: application/octet-stream"',('data-binary = "@'+$file.FullName.Replace('\','/')+'"')) -join "`n"
-            $answer=$config | & curl.exe --ipv4 --http1.1 --silent --show-error --fail-with-body --connect-timeout 30 --max-time 1800 --config -
+            $progressLog=$ProofFile+'.upload.log'
+            Write-Output ('Upload progress log: '+$progressLog)
+            $answer=$config | & curl.exe --ipv4 --http1.1 --show-error --fail-with-body --stderr $progressLog --connect-timeout 30 --max-time 3600 --config -
             $config=$null
             if($LASTEXITCODE -ne 0){throw 'Release upload did not complete; no local copy may be removed.'}
             $item=($answer -join "`n")|ConvertFrom-Json
