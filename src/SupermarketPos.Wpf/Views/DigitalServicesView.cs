@@ -49,7 +49,7 @@ public sealed partial class DigitalServicesView : UserControl
         var filters=new BusinessForm(3);var search=new TextBox{Name="DigitalHistorySearch"};var from=new DatePicker();var to=new DatePicker();filters.Field("Digital_CustomerSearch","Search",search);filters.Add("Reports_From",from);filters.Add("Reports_To",to);panel.Children.Add(filters);
         var table=Table(rows,"digital-service-history",("Service_Receipt","Number"),("Digital_AttemptDate","Date"),("Digital_PostedDate","PostedDate"),("Service_Provider","Provider"),("Service_Type","Type"),("Service_Status","Status"),("Digital_Recipient","Recipient"),("Customer_Name","CustomerName"),("Service_Principal","Principal"),("Digital_Fee","Fee"),("Service_Income","Income"));foreach(var column in table.Columns)column.Width=DataGridLength.Auto;panel.Children.Add(table);
         var customers=await _ledger.CustomersAsync();
-        void Filter(){var term=search.Text.Trim();var matched=customers.Where(c=>c.Matches(term)).Select(c=>c.Key).ToHashSet();table.ItemsSource=rows.Where(r=>(from.SelectedDate is not{} start||r.Transaction.OccurredAt.Date>=start.Date)&&(to.SelectedDate is not{} end||r.Transaction.OccurredAt.Date<=end.Date)&&(r.Matches(term)||matched.Contains(r.Transaction.RecipientKey))).ToArray();}
+        void Filter(){var term=search.Text.Trim();var matched=customers.Where(c=>c.Matches(term)).Select(c=>c.Key).ToHashSet();table.ItemsSource=rows.Where(r=>(from.SelectedDate is not{} start||r.ActivityDate.Date>=start.Date)&&(to.SelectedDate is not{} end||r.ActivityDate.Date<=end.Date)&&(r.Matches(term)||matched.Contains(r.Transaction.RecipientKey))).ToArray();}
         search.TextChanged+=(_,_)=>Filter();from.SelectedDateChanged+=(_,_)=>Filter();to.SelectedDateChanged+=(_,_)=>Filter();
         var actions=new WrapPanel();
         foreach(var state in new[]{"Confirmed","Failed","Reversed"})actions.Children.Add(BusinessForm.Button("Service_Action"+state,async(_,_)=>await Run(async()=>
@@ -153,6 +153,7 @@ public sealed partial class DigitalServicesView : UserControl
 }
 public sealed record ServiceHistoryRow(ServiceTransaction Transaction,ServicePosting? Posting)
 {
+    public DateTime ActivityDate=>Posting is null||Posting.PostedAt==default?Transaction.OccurredAt:Posting.PostedAt;
     public string PostedDate=>Posting is null?"":(Posting.PostedAt==default?Transaction.OccurredAt:Posting.PostedAt).ToString("yyyy-MM-dd HH:mm");
     public string Recipient=>Transaction.CustomerPhone;public string CustomerName=>Transaction.CustomerName;public string Fee=>Money.Format(Transaction.CustomerFee);
     public bool Matches(string term)=>new[]{Number,Recipient,CustomerName,Provider,Type,Transaction.PackageName}.Any(v=>v.Contains(term,StringComparison.CurrentCultureIgnoreCase));
