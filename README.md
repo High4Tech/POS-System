@@ -1,10 +1,18 @@
-# 🛒 Supermarket POS
+# Wijgandu POS — High4Tech
 
-## High4Tech Windows POS
+## Current Windows application
 
 The current Windows source is in `src/`. The Android scanner is in `mobile-scanner/`, the update and licensing worker is in `publisher/`, and local verification tools are in `engineering/`.
 
-See the [retail feature and shortcut report](docs/RETAIL_FEATURES_AND_SHORTCUTS.md) for the current workflows, verification results, and source tags. The screenshots below show the original project.
+The full edition retains business onboarding, profiles, pharmacy/retail modules, optional FBR configuration, licensing and update modules. The separate [Wijgandu Retail edition](docs/RETAIL_EDITION.md) uses simple local onboarding, Tech Retail features and an independent data folder.
+
+Current release: **1.2.0-beta.7**. Digital services now use one transaction form followed directly by payment and receipt, with separate phone/account-based digital customer history and reports. Physical sales keep their existing cart. Actual bank/telecom operations use the authorized provider; the POS records them.
+
+See the [release verification](engineering/Direct-Digital-20261128.md), [version/recovery guide](docs/VERSIONS_AND_RECOVERY.md) and [retail feature and shortcut report](docs/RETAIL_FEATURES_AND_SHORTCUTS.md). The locally verified builds are development/testing builds; commercial enforcement and integrations need publisher configuration.
+
+## Original project documentation
+
+The descriptions and screenshots below document the original project, not the current Windows UI or shortcuts. Current source is preserved as Git commits and version tags.
 
 A real, object-oriented **point-of-sale** desktop application for a small supermarket — scan products, build a cart, apply discounts, take payment, print a TR-style receipt, and decrement stock — backed by an admin area for products, inventory, sales history and end-of-day reports.
 

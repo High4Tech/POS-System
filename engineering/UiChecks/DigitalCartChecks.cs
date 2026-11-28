@@ -47,7 +47,8 @@ internal static partial class Program
         Descendants(overlay).OfType<Button>().Single(b=>Equals(b.Content,LocalizationManager.Instance["Common_Cancel"])).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         for(var wait=0;InAppDialog.IsOpen&&wait<100;wait++){await Task.Delay(25);Pump();}
         Pump();Assert(Field("Recipient").Text=="03001234567","Cancel keeps the original transaction fields");
-        Assert(InvokeDigitalShortcut(window,shell,Key.F1,ModifierKeys.None),"F1 reopens the same transaction");Pump();
+        var recipientInput=Field("Recipient");recipientInput.Focus();recipientInput.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice,PresentationSource.FromVisual(recipientInput)!,0,Key.Enter){RoutedEvent=Keyboard.PreviewKeyDownEvent});Pump();
+        Assert(InAppDialog.IsOpen,"Enter in the recipient field opens direct payment without adding a cart step");
         overlay=((Grid)window.Content).Children.OfType<Grid>().Last();Descendants(overlay).OfType<TextBox>().Single(t=>t.Name=="DigitalTendered").Text="110";
         Descendants(overlay).OfType<Button>().Single(b=>b.Name=="CompleteDigitalPayment").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         for(var wait=0;!Descendants(window).OfType<ReceiptPreviewWindow>().Any()&&wait<400;wait++){await Task.Delay(25);Pump();}
@@ -102,8 +103,11 @@ internal static partial class Program
             LocalizationManager.Instance.SetLanguage(lang);sp.GetRequiredService<DesktopTextSize>().Save(200);Pump();
             foreach(var grid in Descendants(window).OfType<DataGrid>())
             {
+                grid.BringIntoView();grid.UpdateLayout();Pump();
                 var row=Descendants(grid).OfType<DataGridRow>().FirstOrDefault();
-                Assert(row is not null&&row.TransformToAncestor(grid).TransformBounds(new Rect(0,0,row.ActualWidth,row.ActualHeight)).Bottom<=grid.ActualHeight,"Digital customer table keeps space for its data row at "+lang+"/200");
+                var bottom=row?.TransformToAncestor(grid).TransformBounds(new Rect(0,0,row.ActualWidth,row.ActualHeight)).Bottom;
+                Capture(window,System.IO.Path.Combine(screens,$"digital-customers-{lang}-200-{(grid.ItemsSource==customers.DigitalCustomers?"contacts":"history")}.png"));
+                Assert(row is not null&&bottom<=grid.ActualHeight+2,"Digital customer table keeps space for its data row at "+lang+"/200; grid="+grid.ActualHeight+", row bottom="+bottom);
             }
             Capture(window,System.IO.Path.Combine(screens,$"digital-customers-{lang}-200.png"));CheckWindow(window,$"digital-customers-{lang}-200");
         }

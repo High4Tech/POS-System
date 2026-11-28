@@ -61,6 +61,16 @@ public sealed partial class DigitalLedgerTests
         Assert.Empty(db.Context.DigitalCustomers);Assert.Empty(db.Context.ServiceTransactions);Assert.Empty(db.Context.ServiceCheckouts);
     }
 
+    [Fact]public async Task RecipientPostingReadsExcludeOtherCustomers()
+    {
+        using var db=new TestDb();var(ledger,_)=await Fixture(db);var provider=(await ledger.ProvidersAsync()).Single();
+        var first=CartEntry(provider,"LOAD",100);var second=CartEntry(provider,"LOAD",200);second.CustomerPhone="03007654321";
+        await ledger.CheckoutAsync(Guid.NewGuid(),[first],"CASH",100);await ledger.CheckoutAsync(Guid.NewGuid(),[second],"CASH",200);
+        Assert.Equal(first.Id,Assert.Single(await ledger.PostingsAsync(first.RecipientKey)).TransactionId);
+        Assert.Equal(second.Id,Assert.Single(await ledger.PostingsAsync(second.RecipientKey)).TransactionId);
+        Assert.Equal(2,(await ledger.PostingsAsync()).Count);
+    }
+
     [Fact]public async Task ExistingHistoryGetsRecipientKeysWithoutChangingOriginalValues()
     {
         using var connection=new SqliteConnection("Data Source=:memory:");await connection.OpenAsync();
