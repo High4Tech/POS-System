@@ -14,6 +14,20 @@ using Velopack.Sources;
 
 internal static partial class Program
 {
+    private static async Task SignedRetailPackageChecks(string[] args,SoftwareUpdates updates)
+    {
+        Assert(RetailTestEdition.Standalone,"Real Retail package checks use the published standalone edition");
+        var index=Array.IndexOf(args,"--signed-retail-package");if(index<0||index+2>=args.Length)throw new ArgumentException("Supply signed metadata and its package.");
+        var envelope=JsonSerializer.Deserialize<SignedEnvelope>(File.ReadAllText(args[index+1]),SignedDocuments.Json)!;
+        var release=RetailUpdatePolicy.Validate(envelope,RetailUpdatePolicy.PublicKey,"1.2.0-beta.7",15);
+        Assert(release.FileName==Path.GetFileName(args[index+2]),"Actual Retail package matches its publisher-signed filename and upgrade policy");
+        await (Task)typeof(SoftwareUpdates).GetMethod("VerifyPackageCoreAsync",BindingFlags.NonPublic|BindingFlags.Static)!.Invoke(null,[args[index+2],release,true,CancellationToken.None])!;_checks++;
+        if(args.Contains("--online-feed"))
+        {
+            await updates.CheckAsync();Assert(updates.LastCheck.HasValue&&updates.Available is null,"Published Retail feed verifies without licensing and treats the current release as up to date");
+        }
+    }
+
     private static async Task CompletionUpdateChecks(string root,SoftwareUpdates updates)
     {
         Assert(AppBrand.Name==(RetailTestEdition.Enabled?"Wijgandu":"ORMA"),"Software branding follows the edition");

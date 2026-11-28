@@ -20,3 +20,5 @@ Verify focused regression cases, additive migration/backup restore and both edit
 - Main shortcut helper self-check passed: rename, repeat, preserve unrelated Wijgandu shortcut, and reject an unrelated existing ORMA target.
 
 Approved devices return to unassigned stock; existing shelf balances are preserved and location assignment remains in Products & Stock. Historical costs and original invoices are never reconstructed from current prices. Credit refunds appear separately from original sales in X/Z/range PDFs and Reports. Retail uses its own signed public testing feed; main commercial licensing and Authenticode policy remain intact.
+
+Published ORMA payload passed 52 completion/update checks and 269 direct-checkout/receipt/keyboard assertions. Retail candidate verification caught WPF reusing the full edition's cached .g.resources when switching flags. The build script now cleans generated outputs before publishing, and ModelTools verifies the embedded icon against the already-verified edition icon. The actual ORMA payload passed this check; the mixed Retail candidate was rejected. Rebuild Retail and re-sign its final bytes before publication.

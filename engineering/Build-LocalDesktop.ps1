@@ -51,6 +51,9 @@ $previousPriority = $buildProcess.PriorityClass
 try {
     $env:DOTNET_PROCESSOR_COUNT = '2'
     $buildProcess.PriorityClass = 'BelowNormal'
+    # WPF otherwise reuses the prior edition's linked embedded resources.
+    & $Dotnet clean $project -c Release -r win-x64 --disable-build-servers '-m:1' '-nodeReuse:false' @editionOptions -v:q
+    if ($LASTEXITCODE -ne 0) { throw 'POS build-output cleanup failed.' }
     & $Dotnet publish $project -c Release -r win-x64 --self-contained true -o $out --disable-build-servers '-m:1' '-nodeReuse:false' '-p:UseSharedCompilation=false' @restoreOptions "-p:Version=$Version" `
         '-p:IncludeSourceRevisionInInformationalVersion=false' "-p:InformationalVersion=$build" `
         "-p:BuildTimestampUtc=$builtAt" "-p:BuildSourceFingerprint=$fingerprint" @editionOptions
@@ -60,7 +63,7 @@ try {
     if(-not (Test-Path -LiteralPath $publishedIcon)-or(Get-FileHash -LiteralPath $publishedIcon).Hash -ne (Get-FileHash -LiteralPath (Join-Path $repo $iconSource)).Hash){throw 'The startup icon must exist at its WPF content path.'}
 
     $assembly = Join-Path $out 'SupermarketPos.dll'
-    & $Dotnet run --project (Join-Path $PSScriptRoot 'ModelTools\ModelTools.csproj') --disable-build-servers --property:UseSharedCompilation=false --property:BuildInParallel=false @restoreOptions -- verify-local-build $assembly
+    & $Dotnet run --project (Join-Path $PSScriptRoot 'ModelTools\ModelTools.csproj') --disable-build-servers --property:UseSharedCompilation=false --property:BuildInParallel=false @restoreOptions -- verify-local-build $assembly $publishedIcon
     if ($LASTEXITCODE -ne 0) { throw 'Release verification failed.' }
 
 } finally {

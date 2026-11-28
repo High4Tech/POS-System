@@ -69,7 +69,7 @@ if(args.Length==2&&args[0]=="query-plans")
     return;
 }
 
-if(args.Length==2&&args[0]=="verify-local-build")
+if(args.Length is 2 or 3&&args[0]=="verify-local-build")
 {
     using var file=File.OpenRead(args[1]);using var pe=new PEReader(file);var reader=pe.GetMetadataReader();var definition=reader.GetAssemblyDefinition();
     var values=new Dictionary<string,string?>();
@@ -85,7 +85,18 @@ if(args.Length==2&&args[0]=="verify-local-build")
         !DateTimeOffset.TryParse(values.GetValueOrDefault("BuildTimestampUtc"),out _) ||
         values.GetValueOrDefault("BuildSourceFingerprint") is not { Length:64 } fingerprint || !fingerprint.All(Uri.IsHexDigit))
         throw new Exception("A verified Release build needs a UTC build timestamp and SHA-256 source fingerprint.");
-    Console.WriteLine($"Verified local development build {definition.Version}: no embedded publisher endpoint or activation requirement.");return;
+    if(args.Length==3)
+    {
+        var resource=reader.ManifestResources.Select(h=>reader.GetManifestResource(h)).Single(r=>reader.GetString(r.Name)=="SupermarketPos.g.resources"&&r.Implementation.IsNil);
+        var block=pe.GetSectionData(pe.PEHeaders.CorHeader!.ResourcesDirectory.RelativeVirtualAddress);
+        var blob=block.GetReader(checked((int)resource.Offset),block.Length-checked((int)resource.Offset));
+        using var resources=new System.Resources.ResourceReader(new MemoryStream(blob.ReadBytes(blob.ReadInt32())));
+        var entries=resources.GetEnumerator();string? iconHash=null;
+        while(entries.MoveNext())if((string)entries.Key=="assets/app.ico"&&entries.Value is Stream icon)iconHash=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(icon));
+        using var expected=File.OpenRead(args[2]);
+        if(iconHash!=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(expected)))throw new Exception("Embedded WPF icon differs from the verified edition icon. Clean the build outputs before switching editions.");
+    }
+    Console.WriteLine($"Verified local development build {definition.Version}: no embedded publisher endpoint or activation requirement; requested embedded icon matched.");return;
 }
 
 if(args.Length==2&&args[0]=="receipt-check")

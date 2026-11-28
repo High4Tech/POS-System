@@ -72,7 +72,7 @@ internal static partial class Program
         }
         Assert(!await db.ServicePostings.AnyAsync(),"Pending and failed UI actions create no financial postings");
         var ledger=sp.GetRequiredService<DigitalServiceLedger>();var provider=(await ledger.ProvidersAsync()).First(p=>p.IsActive&&p.AllowedTypes.Split(',').Contains("LOAD"));
-        var old=DigitalServiceLedger.Quote(provider,"LOAD",100);old.ConfirmationId=Guid.NewGuid();old.Status="Pending";old.CustomerPhone="03001234569";old.OccurredAt=DateTime.Today.AddDays(-1);
+        var old=DigitalServiceLedger.ProviderQuote(provider,"LOAD",100);old.ConfirmationId=Guid.NewGuid();old.Status="Pending";old.CustomerPhone="03001234569";old.OccurredAt=DateTime.Today.AddDays(-1);
         await ledger.SaveUnsettledAsync(old);await ledger.SetStatusAsync(old.Id,"Confirmed",true);
         var row=new ServiceHistoryRow(old,(await ledger.PostingsAsync()).Single(p=>p.TransactionId==old.Id));
         Assert(row.ActivityDate.Date==DateTime.Today&&row.Date.StartsWith(DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")),"Completed history filters follow posting date while preserving the original attempt date");

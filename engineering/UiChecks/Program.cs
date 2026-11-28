@@ -58,6 +58,12 @@ internal static partial class Program
             // Check actual WPF two-way bindings, including init-only profile properties.
             var profile=new SupermarketPos.Domain.Business.BusinessProfile();var form=new BusinessForm();var input=form.Text("Settings_StoreName",profile,nameof(profile.StoreName));input.Text="Bound shop";input.GetBindingExpression(TextBox.TextProperty)!.UpdateSource();Assert(profile.StoreName=="Bound shop","Business fields bind to the saved profile");
             var screenshots=Directory.CreateDirectory(Path.Combine(root,"screens")).FullName;
+            if(args.Contains("--signed-retail-package"))
+            {
+                Wait(SignedRetailPackageChecks(args,sp.GetRequiredService<SoftwareUpdates>()));
+                Wait(scope.DisposeAsync().AsTask());Wait(provider.DisposeAsync().AsTask());
+                Console.WriteLine($"PASS: {_checks} signed Retail package/feed assertions.");app.Shutdown();return 0;
+            }
             if(args.Contains("--completion-checks"))
             {
                 Wait(CompletionUpdateChecks(root,sp.GetRequiredService<SoftwareUpdates>()));

@@ -59,7 +59,7 @@ $lock = [IO.File]::Open((Join-Path $root '.desktop-update.lock'), 'OpenOrCreate'
 try {
     Assert-Closed
     $tool = Join-Path $PSScriptRoot 'ModelTools\ModelTools.csproj'
-    & $Dotnet run --project $tool --no-build -- verify-local-build (Join-Path $source $assembly)
+    & $Dotnet run --project $tool --no-build -- verify-local-build (Join-Path $source $assembly) (Join-Path $source 'Assets/app.ico')
     if ($LASTEXITCODE -ne 0) { throw 'The Release payload failed build metadata verification.' }
     Copy-Item -LiteralPath $source -Destination $stage -Recurse
     $hashes = Get-PayloadHashes $source
